@@ -1,7 +1,7 @@
 import mongoose from "mongoose" ;
 import { config } from "./config";
 
-module.exports = async () => {
+export default async () => {
 	try {
 		const conn = await mongoose.connect(config.mongo.url);
 		console.log(`MongoDB Connected: ${conn.connection.host}`);
