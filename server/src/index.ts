@@ -24,12 +24,11 @@ const main = async () => {
 		plugins: [ApolloServerPluginLandingPageLocalDefault({ embed: true })],
 	});
 
+	connectDB();
 	// The `listen` method launches a web server.
 	server.listen().then(({ url }: any) => {
 		console.log(`Server ready at ${url}`);
 	});
-
-	connectDB();
 };
 
 main();
