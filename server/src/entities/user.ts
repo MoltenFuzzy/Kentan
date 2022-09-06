@@ -3,7 +3,8 @@
 
 // import { ObjectId } from "@typegoose/typegoose";
 import { prop, getModelForClass } from "@typegoose/typegoose";
-import { Field, ObjectType } from "type-graphql";
+import { Field, ObjectType, InputType } from "type-graphql";
+import { IsEmail, MaxLength, MinLength } from "class-validator";
 
 @ObjectType()
 export class User {
@@ -20,3 +21,13 @@ export class User {
 }
 
 export const UserModel = getModelForClass(User); // UserModel is a regular Mongoose Model with correct types
+
+@InputType()
+export class CreateUserInput {
+	@Field(() => String)
+	username: string;
+
+	@IsEmail()
+	@Field(() => String)
+	email: string;
+}
