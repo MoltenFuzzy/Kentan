@@ -24,6 +24,7 @@
     "@mantine/carousel": "5.2.4",
     "@mantine/core": "5.2.4",
     "@mantine/dates": "5.2.4",
+    "@mantine/ds": "^5.2.6",
     "@mantine/hooks": "5.2.4",
     "@mantine/next": "5.2.4",
     "@mantine/notifications": "5.2.4",
