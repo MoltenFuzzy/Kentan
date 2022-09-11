@@ -15,13 +15,19 @@ export default createStyles((theme) => ({
   },
 
   search: {
-    width: '50%',
+    width: '45%',
     [theme.fn.smallerThan('xs')]: {
       display: 'none',
     },
   },
 
   toggle: {
+    [theme.fn.smallerThan('xs')]: {
+      display: 'none',
+    },
+  },
+
+  register: {
     [theme.fn.smallerThan('xs')]: {
       display: 'none',
     },
@@ -40,7 +46,7 @@ export default createStyles((theme) => ({
     borderRadius: theme.radius.sm,
     textDecoration: 'none',
     color: theme.colorScheme === 'dark' ? theme.colors.dark[0] : theme.colors.gray[7],
-    fontSize: theme.fontSizes.sm,
+    fontSize: theme.fontSizes.lg,
     fontWeight: 500,
 
     '&:hover': {

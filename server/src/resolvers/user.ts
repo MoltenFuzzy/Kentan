@@ -1,19 +1,29 @@
 import { Arg, Mutation, Query, Resolver } from "type-graphql";
-import { User, UserModel, CreateUserInput} from "../entities/user";
+import { User, UserModel, CreateUserInput } from "../entities/user";
 
 @Resolver()
 export class UserResolver {
 	// returns json of all users
 	@Query(() => [User])
-	async getAllUsers() : Promise<User[] | null> {
+	async getAllUsers(): Promise<User[] | null> {
 		return await UserModel.find();
 	}
 
-	// i think i need to create a type/interface for the user 
-	// so I can pass in all the properties
-	//* Done
+	@Query(() => User, { nullable: true })
+	async getUserById(@Arg("id") id: string): Promise<User | null> {
+		return await UserModel.findById(id);
+	}
+
 	@Mutation(() => User)
-	async createUser(@Arg("UserInput") UserInput: CreateUserInput): Promise<User | null> {
-		return UserModel.create(UserInput);
+	async createUser(
+		@Arg("UserInput") UserInput: CreateUserInput
+	): Promise<User | null> {
+		return await UserModel.create(UserInput);
+	}
+
+	@Mutation(() => Boolean)
+	async deleteUser(@Arg("id", () => String) id: string): Promise<boolean> {
+		await UserModel.deleteOne({ _id: id });
+		return true;
 	}
 }

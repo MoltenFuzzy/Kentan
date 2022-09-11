@@ -1,7 +1,6 @@
 import { useState } from 'react';
-import { Header, Autocomplete, Container, Group, Burger, Text, Box } from '@mantine/core';
+import { Header, Autocomplete, Container, Group, Burger, Text, Box, Space } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
-import { IconSearch } from '@tabler/icons';
 import { ColorSchemeToggle } from '../ColorSchemeToggle/ColorSchemeToggle';
 import useStyles from './NavBar.styles';
 
@@ -36,7 +35,7 @@ export function NavBar({ links }: NavBarProps) {
           size="md"
           className={classes.search}
           placeholder="Search"
-          icon={<IconSearch size={16} stroke={1.5} />}
+          // icon={<IconSearch size={16} stroke={1.5} />}
           data={[]} // put cached search history here
         />
         <Group spacing={10} className={classes.links}>
@@ -45,6 +44,11 @@ export function NavBar({ links }: NavBarProps) {
         <Box className={classes.toggle}>
           <ColorSchemeToggle />
         </Box>
+        {/* check if user logged in to render */}
+        <Group className={classes.register}>
+          <Text size="md">Login</Text>
+          <Text size="md">Register</Text>
+        </Group>
         <Burger opened={opened} onClick={toggle} className={classes.burger} size="sm" />
       </Container>
     </Header>

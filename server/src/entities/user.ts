@@ -8,19 +8,21 @@ import { IsEmail, MaxLength, MinLength } from "class-validator";
 
 @ObjectType()
 export class User {
-	@Field({ nullable: true })
-	@prop()
-	username?: string;
+	@Field()
+	@prop({ unique: true })
+	username!: string;
 
 	@Field()
-	@prop({ required: true })
-	email: string;
+	@prop({ unique: true })
+	email!: string;
 
 	@prop()
 	password: string;
 }
 
-export const UserModel = getModelForClass(User); // UserModel is a regular Mongoose Model with correct types
+export const UserModel = getModelForClass(User, {
+	schemaOptions: { timestamps: true },
+}); // UserModel is a regular Mongoose Model with correct types
 
 @InputType()
 export class CreateUserInput {

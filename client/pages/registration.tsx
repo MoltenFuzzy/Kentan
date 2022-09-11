@@ -1,13 +1,11 @@
 import { useState, useEffect } from 'react';
 
-function registration() {
+export function registration() {
   const [name, setName] = useState('');
 
   useEffect(() => {
     setName('test');
   }, []);
 
-  return <div>{name}</div>;
+  return <div>Registration</div>;
 }
-
-export default registration;

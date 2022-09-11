@@ -1,4 +1,3 @@
-import { Welcome } from '../components/Welcome/Welcome';
 import { NavBar, NavBarProps } from '../components/NavBar/NavBar';
 
 export default function HomePage() {
@@ -12,7 +11,6 @@ export default function HomePage() {
   };
   return (
     <>
-      {/* <Welcome /> */}
       <NavBar links={props.links} />
     </>
   );
