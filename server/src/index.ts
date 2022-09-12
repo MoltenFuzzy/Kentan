@@ -1,4 +1,4 @@
-import "reflect-metadata"
+import "reflect-metadata";
 import { ApolloServer } from "apollo-server";
 import {
 	ApolloServerPluginLandingPageGraphQLPlayground,
@@ -24,7 +24,11 @@ const main = async () => {
 		plugins: [ApolloServerPluginLandingPageLocalDefault({ embed: true })],
 	});
 
+	// cant set custom path :(
+	// https://github.com/apollographql/apollo-server/issues/1617
+
 	connectDB();
+
 	// The `listen` method launches a web server.
 	server.listen().then(({ url }: any) => {
 		console.log(`Server ready at ${url}`);

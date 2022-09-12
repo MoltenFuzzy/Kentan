@@ -9,14 +9,8 @@ import {
 	ColorSchemeProvider,
 } from "@mantine/core";
 import { NotificationsProvider } from "@mantine/notifications";
-import {
-	useQuery,
-	useQueryClient,
-	QueryClient,
-	QueryClientProvider,
-} from "@tanstack/react-query";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-import { request, gql } from "graphql-request";
 import "../styles/globals.css";
 
 const queryClient = new QueryClient();

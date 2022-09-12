@@ -1,13 +1,10 @@
-import { useEffect } from "react";
 import { TextInput, Button, Group, Box } from "@mantine/core";
 import { useForm } from "@mantine/form";
-import { useMutation } from "@tanstack/react-query";
-import { gql, GraphQLClient } from "graphql-request";
-interface User {
-	username: string;
-	password: string;
-	email: string;
-}
+import gqlClient from "../src/clients/gqlClient";
+import {
+	CreateUserMutation,
+	useCreateUserMutation,
+} from "../src/generated/generates";
 
 export default function Register() {
 	const form = useForm({
@@ -21,11 +18,18 @@ export default function Register() {
 		},
 	});
 
+	const { mutate, data } = useCreateUserMutation<CreateUserMutation, Error>(
+		gqlClient,
+		{}
+	);
+
 	return (
 		<>
 			<h1 className="text-3xl font-bold underline">Hello world!</h1>
 			<Box sx={{ maxWidth: 300 }} mx="auto">
-				<form onSubmit={form.onSubmit((values) => console.log(values))}>
+				<form
+					onSubmit={form.onSubmit((values) => mutate({ userInput: values }))}
+				>
 					<TextInput
 						withAsterisk
 						label="Username"
