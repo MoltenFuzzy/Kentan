@@ -5,7 +5,7 @@ import { User, UserModel, CreateUserInput } from "../entities/user";
 export class UserResolver {
 	// returns json of all users
 	@Query(() => [User])
-	async getAllUsers(): Promise<User[] | null> {
+	async getUsers(): Promise<User[] | null> {
 		return await UserModel.find();
 	}
 

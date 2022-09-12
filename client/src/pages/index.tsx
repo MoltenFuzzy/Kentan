@@ -1,4 +1,5 @@
 import { NavBar, NavBarProps } from '../components/NavBar/NavBar';
+import Link from 'next/link';
 
 export default function HomePage() {
   const props: NavBarProps = {
@@ -12,6 +13,9 @@ export default function HomePage() {
   return (
     <>
       <NavBar links={props.links} />
+      {/* <Link href="/registration">
+        <a>Register</a>
+      </Link> */}
     </>
   );
 }
