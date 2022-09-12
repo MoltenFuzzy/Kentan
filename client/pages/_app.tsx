@@ -17,6 +17,7 @@ import {
 } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { request, gql } from "graphql-request";
+import "../styles/globals.css";
 
 const queryClient = new QueryClient();
 

@@ -3,7 +3,6 @@ import { TextInput, Button, Group, Box } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { useMutation } from "@tanstack/react-query";
 import { gql, GraphQLClient } from "graphql-request";
-
 interface User {
 	username: string;
 	password: string;
@@ -23,26 +22,29 @@ export default function Register() {
 	});
 
 	return (
-		<Box sx={{ maxWidth: 300 }} mx="auto">
-			<form onSubmit={form.onSubmit((values) => console.log(values))}>
-				<TextInput
-					withAsterisk
-					label="Username"
-					placeholder="Username"
-					{...form.getInputProps("username")}
-				/>
+		<>
+			<h1 className="text-3xl font-bold underline">Hello world!</h1>
+			<Box sx={{ maxWidth: 300 }} mx="auto">
+				<form onSubmit={form.onSubmit((values) => console.log(values))}>
+					<TextInput
+						withAsterisk
+						label="Username"
+						placeholder="Username"
+						{...form.getInputProps("username")}
+					/>
 
-				<TextInput
-					withAsterisk
-					label="Email"
-					placeholder="Email"
-					{...form.getInputProps("email")}
-				/>
+					<TextInput
+						withAsterisk
+						label="Email"
+						placeholder="Email"
+						{...form.getInputProps("email")}
+					/>
 
-				<Group position="right" mt="md">
-					<Button type="submit">Submit</Button>
-				</Group>
-			</form>
-		</Box>
+					<Group position="right" mt="md">
+						<Button type="submit">Submit</Button>
+					</Group>
+				</form>
+			</Box>
+		</>
 	);
 }
