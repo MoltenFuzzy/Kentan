@@ -1,4 +1,5 @@
 import { NavBar, NavBarProps } from "../components/NavBar/NavBar";
+import { TextInput } from "@mantine/core";
 import Link from "next/link";
 
 export default function HomePage() {
@@ -13,9 +14,6 @@ export default function HomePage() {
 	return (
 		<>
 			<NavBar links={props.links} />
-			{/* <Link href="/registration">
-        <a>Register</a>
-      </Link> */}
 		</>
 	);
 }

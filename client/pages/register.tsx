@@ -25,7 +25,6 @@ export default function Register() {
 
 	return (
 		<>
-			<h1 className="text-3xl font-bold underline">Hello world!</h1>
 			<Box sx={{ maxWidth: 300 }} mx="auto">
 				<form
 					onSubmit={form.onSubmit((values) => mutate({ userInput: values }))}
