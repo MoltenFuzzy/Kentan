@@ -1,5 +1,6 @@
 import { GraphQLClient } from 'graphql-request';
-import { useMutation, UseMutationOptions } from '@tanstack/react-query';
+import { RequestInit } from 'graphql-request/dist/types.dom';
+import { useMutation, useQuery, UseMutationOptions, UseQueryOptions } from '@tanstack/react-query';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
@@ -63,6 +64,25 @@ export type CreateUserMutationVariables = Exact<{
 
 export type CreateUserMutation = { __typename?: 'Mutation', createUser: { __typename?: 'User', username: string, email: string } };
 
+export type DeleteUserMutationVariables = Exact<{
+  deleteUserId: Scalars['String'];
+}>;
+
+
+export type DeleteUserMutation = { __typename?: 'Mutation', deleteUser: boolean };
+
+export type GetUserByIdQueryVariables = Exact<{
+  getUserByIdId: Scalars['String'];
+}>;
+
+
+export type GetUserByIdQuery = { __typename?: 'Query', getUserById?: { __typename?: 'User', username: string, email: string } | null };
+
+export type QueryQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type QueryQuery = { __typename?: 'Query', getUsers: Array<{ __typename?: 'User', username: string, email: string }> };
+
 
 export const CreateUserDocument = `
     mutation CreateUser($userInput: CreateUserInput!) {
@@ -83,5 +103,67 @@ export const useCreateUserMutation = <
     useMutation<CreateUserMutation, TError, CreateUserMutationVariables, TContext>(
       ['CreateUser'],
       (variables?: CreateUserMutationVariables) => fetcher<CreateUserMutation, CreateUserMutationVariables>(client, CreateUserDocument, variables, headers)(),
+      options
+    );
+export const DeleteUserDocument = `
+    mutation DeleteUser($deleteUserId: String!) {
+  deleteUser(id: $deleteUserId)
+}
+    `;
+export const useDeleteUserMutation = <
+      TError = unknown,
+      TContext = unknown
+    >(
+      client: GraphQLClient,
+      options?: UseMutationOptions<DeleteUserMutation, TError, DeleteUserMutationVariables, TContext>,
+      headers?: RequestInit['headers']
+    ) =>
+    useMutation<DeleteUserMutation, TError, DeleteUserMutationVariables, TContext>(
+      ['DeleteUser'],
+      (variables?: DeleteUserMutationVariables) => fetcher<DeleteUserMutation, DeleteUserMutationVariables>(client, DeleteUserDocument, variables, headers)(),
+      options
+    );
+export const GetUserByIdDocument = `
+    query GetUserById($getUserByIdId: String!) {
+  getUserById(id: $getUserByIdId) {
+    username
+    email
+  }
+}
+    `;
+export const useGetUserByIdQuery = <
+      TData = GetUserByIdQuery,
+      TError = unknown
+    >(
+      client: GraphQLClient,
+      variables: GetUserByIdQueryVariables,
+      options?: UseQueryOptions<GetUserByIdQuery, TError, TData>,
+      headers?: RequestInit['headers']
+    ) =>
+    useQuery<GetUserByIdQuery, TError, TData>(
+      ['GetUserById', variables],
+      fetcher<GetUserByIdQuery, GetUserByIdQueryVariables>(client, GetUserByIdDocument, variables, headers),
+      options
+    );
+export const QueryDocument = `
+    query Query {
+  getUsers {
+    username
+    email
+  }
+}
+    `;
+export const useQueryQuery = <
+      TData = QueryQuery,
+      TError = unknown
+    >(
+      client: GraphQLClient,
+      variables?: QueryQueryVariables,
+      options?: UseQueryOptions<QueryQuery, TError, TData>,
+      headers?: RequestInit['headers']
+    ) =>
+    useQuery<QueryQuery, TError, TData>(
+      variables === undefined ? ['Query'] : ['Query', variables],
+      fetcher<QueryQuery, QueryQueryVariables>(client, QueryDocument, variables, headers),
       options
     );
