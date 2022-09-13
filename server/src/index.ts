@@ -16,6 +16,7 @@ const main = async () => {
 
 	// The ApolloServer constructor requires two parameters: your schema
 	// definition and your set of resolvers.
+	// https://www.apollographql.com/docs/apollo-server/security/cors/
 	const server = new ApolloServer({
 		schema,
 		introspection: true,

@@ -11,6 +11,7 @@ import {
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { ColorSchemeToggle } from "../ColorSchemeToggle/ColorSchemeToggle";
+import Link from "next/link";
 import useStyles from "./NavBar.styles";
 
 export interface NavBarProps {
@@ -57,8 +58,12 @@ export function NavBar({ links }: NavBarProps) {
 				</Box>
 				{/* check if user logged in to render */}
 				<Group className={classes.register}>
-					<Text size="md">Login</Text>
-					<Text size="md">Register</Text>
+					<Link href="/login">
+						<Text size="md">Login</Text>
+					</Link>
+					<Link href="/register">
+						<Text size="md">Register</Text>
+					</Link>
 				</Group>
 				<Burger
 					opened={opened}

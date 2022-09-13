@@ -1,4 +1,4 @@
-import { TextInput, Button, Group, Box } from "@mantine/core";
+import { TextInput, Button, Group, Box, PasswordInput } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import gqlClient from "../src/clients/gqlClient";
 import {
@@ -34,6 +34,13 @@ export default function Register() {
 						label="Username"
 						placeholder="Username"
 						{...form.getInputProps("username")}
+					/>
+
+					<PasswordInput
+						placeholder="Password"
+						label="Password"
+						description="Password must include at least one letter, number and special character"
+						withAsterisk
 					/>
 
 					<TextInput
