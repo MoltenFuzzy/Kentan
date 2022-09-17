@@ -39,7 +39,7 @@ export function NavBar({ links }: NavBarProps) {
 	));
 
 	return (
-		<Header height={70} mb={50}>
+		<Header className={classes.head} height={70} mb={50}>
 			<Container size="xl" className={classes.header}>
 				<Image width={100} src={logo.src} alt="logo" />
 				<Autocomplete

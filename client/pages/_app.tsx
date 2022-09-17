@@ -7,6 +7,7 @@ import {
 	MantineProvider,
 	ColorScheme,
 	ColorSchemeProvider,
+	MantineThemeColorsOverride,
 } from "@mantine/core";
 import { NotificationsProvider } from "@mantine/notifications";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -14,6 +15,8 @@ import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import "../styles/globals.css";
 
 const queryClient = new QueryClient();
+
+// colors : https://mantine.dev/theming/colors/
 
 export default function App(props: AppProps & { colorScheme: ColorScheme }) {
 	const { Component, pageProps } = props;
@@ -47,7 +50,23 @@ export default function App(props: AppProps & { colorScheme: ColorScheme }) {
 					toggleColorScheme={toggleColorScheme}
 				>
 					<MantineProvider
-						theme={{ colorScheme }}
+						theme={{
+							colorScheme,
+							colors: {
+								dark: [
+									"#eaf3fb",
+									"#cdd9e5",
+									"#aec0d0",
+									"#8ea7bd",
+									"#131C24",
+									"#131C24",
+									"#131C24",
+									"#131C24",
+									"#131C24",
+									"#181515",
+								],
+							},
+						}}
 						withGlobalStyles
 						withNormalizeCSS
 					>

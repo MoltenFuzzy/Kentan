@@ -1,6 +1,13 @@
 import { createStyles } from "@mantine/core";
 
 export default createStyles((theme) => ({
+	head: {
+		backgroundColor:
+			theme.colorScheme === "dark"
+				? theme.colors.dark[9]
+				: theme.colors.gray[0],
+	},
+
 	header: {
 		display: "flex",
 		justifyContent: "space-between",

@@ -1,16 +1,5 @@
 import React from "react";
-import {
-	Button,
-	Group,
-	Box,
-	Container,
-	Card,
-	Image,
-	Text,
-	Badge,
-	Space,
-} from "@mantine/core";
-import { ColorSchemeToggle } from "../components/ColorSchemeToggle/ColorSchemeToggle";
+import { Button, Group, Card, Image, Text } from "@mantine/core";
 import Link from "next/link";
 import logo from "../images/logo.png";
 
