@@ -12,12 +12,12 @@ export class User {
 	@prop({ unique: true })
 	username!: string;
 
+	@prop()
+	password: string;
+
 	@Field()
 	@prop({ unique: true })
 	email!: string;
-
-	@prop()
-	password: string;
 }
 
 export const UserModel = getModelForClass(User, {

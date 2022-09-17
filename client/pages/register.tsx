@@ -6,7 +6,7 @@ import {
 	useCreateUserMutation,
 } from "../src/generated/generates";
 
-export default function Register() {
+export default function RegisterPage() {
 	const form = useForm({
 		initialValues: {
 			username: "",
@@ -14,6 +14,12 @@ export default function Register() {
 		},
 
 		validate: {
+			username: (value) =>
+				/^[a-zA-Z0-9](_(?!(\.|_))|\.(?!(_|\.))|[a-zA-Z0-9]){6,18}[a-zA-Z0-9]$/.test(
+					value
+				)
+					? null
+					: "Invalid username",
 			email: (value) => (/^\S+@\S+$/.test(value) ? null : "Invalid email"),
 		},
 	});

@@ -1,16 +1,44 @@
-import { NavBar, NavBarProps } from "../components/NavBar/NavBar";
+import React from "react";
+import {
+	Button,
+	Group,
+	Box,
+	Container,
+	Card,
+	Image,
+	Text,
+	Badge,
+	Space,
+} from "@mantine/core";
+import { ColorSchemeToggle } from "../components/ColorSchemeToggle/ColorSchemeToggle";
+import Link from "next/link";
+import logo from "../images/logo.png";
 
-export default function HomePage() {
-	const props: NavBarProps = {
-		links: [
-			{ link: "dddd", label: "test" },
-			{ link: "dsadsa", label: "test1" },
-			{ link: "dddaasdd", label: "test2" },
-		],
-	};
+export default function IndexPage() {
 	return (
 		<>
-			<NavBar links={props.links} />
+			{/* <ColorSchemeToggle /> */}
+			<Group
+				className="items-center justify-center h-screen"
+				position="center"
+				// spacing={125}
+			>
+				<Image width={600} src={logo.src} alt="logo"></Image>
+				<Card shadow="sm" p="lg" radius="md" withBorder>
+					<Group className="w-96">
+						<Link href="/login">
+							<Button color="blue" fullWidth radius="md">
+								<Text size="md">Login</Text>
+							</Button>
+						</Link>
+						<Link href="/register">
+							<Button color="pink" fullWidth radius="md">
+								<Text size="md">Register</Text>
+							</Button>
+						</Link>
+					</Group>
+				</Card>
+			</Group>
 		</>
 	);
 }

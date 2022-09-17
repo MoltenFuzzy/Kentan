@@ -7,12 +7,14 @@ import {
 	Burger,
 	Text,
 	Box,
-	Space,
+	Image,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { ColorSchemeToggle } from "../ColorSchemeToggle/ColorSchemeToggle";
+import { IconMessageCircle, IconBell } from "@tabler/icons";
 import Link from "next/link";
 import useStyles from "./NavBar.styles";
+import logo from "../../images/logo.png";
 
 export interface NavBarProps {
 	links: { link: string; label: string }[];
@@ -23,47 +25,35 @@ export function NavBar({ links }: NavBarProps) {
 	const [active, setActive] = useState(links[0].link);
 	const { classes, cx } = useStyles();
 
-	const items = links.map((link) => (
-		<a
-			key={link.label}
-			href={link.link}
-			className={cx(classes.link, {
-				[classes.linkActive]: active === link.link,
-			})}
-			onClick={(event) => {
-				event.preventDefault();
-				setActive(link.link);
-			}}
-		>
-			{link.label}
-		</a>
+	const items = links.map((link, index) => (
+		// <Link key={index} href={link.link}>
+		<span className={cx(classes.link)}>
+			{link.label === "messages" && (
+				<IconMessageCircle size={35} strokeWidth={2} color={"#DDA170"} />
+			)}
+			{link.label === "notifications" && (
+				<IconBell size={35} strokeWidth={2} color={"#DDA170"} />
+			)}
+		</span>
+		// </Link>
 	));
 
 	return (
-		<Header height={70} mb={120}>
+		<Header height={70} mb={50}>
 			<Container size="xl" className={classes.header}>
-				<Text size={30}>EatDeez</Text>
+				<Image width={100} src={logo.src} alt="logo" />
 				<Autocomplete
 					size="md"
 					className={classes.search}
 					placeholder="Search"
-					// icon={<IconSearch size={16} stroke={1.5} />}
 					data={[]} // put cached search history here
 				/>
 				<Group spacing={10} className={classes.links}>
 					{items}
 				</Group>
-				<Box className={classes.toggle}>
-					<ColorSchemeToggle />
-				</Box>
 				{/* check if user logged in to render */}
 				<Group className={classes.register}>
-					<Link href="/login">
-						<Text size="md">Login</Text>
-					</Link>
-					<Link href="/register">
-						<Text size="md">Register</Text>
-					</Link>
+					<Text size="md">Logout</Text>
 				</Group>
 				<Burger
 					opened={opened}
@@ -71,6 +61,9 @@ export function NavBar({ links }: NavBarProps) {
 					className={classes.burger}
 					size="sm"
 				/>
+				<Box className={classes.toggle}>
+					<ColorSchemeToggle />
+				</Box>
 			</Container>
 		</Header>
 	);
