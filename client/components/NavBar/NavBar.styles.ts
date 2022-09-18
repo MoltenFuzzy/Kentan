@@ -2,6 +2,7 @@ import { createStyles } from "@mantine/core";
 
 export default createStyles((theme) => ({
 	head: {
+		boxShadow: "0 2px 4px 0 rgba(0,0,0,.3)",
 		backgroundColor:
 			theme.colorScheme === "dark"
 				? theme.colors.dark[9]
@@ -10,7 +11,7 @@ export default createStyles((theme) => ({
 
 	header: {
 		display: "flex",
-		justifyContent: "space-between",
+		justifyContent: "space-around",
 		alignItems: "center",
 		height: "100%",
 	},

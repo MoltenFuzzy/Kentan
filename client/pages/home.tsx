@@ -1,5 +1,6 @@
+import { Grid, Container, Group, MediaQuery, Stack } from "@mantine/core";
 import { NavBar, NavBarProps } from "../components/NavBar/NavBar";
-import Post from "../components/Post/Post";
+import { Post } from "../components/Post/Post";
 
 export default function HomePage() {
 	const props: NavBarProps = {
@@ -11,9 +12,22 @@ export default function HomePage() {
 	return (
 		<>
 			<NavBar links={props.links} />
-			<Post />
-			<Post />
-			<Post />
+			<Grid justify="center" align="flex-start">
+				<Grid.Col span={5}>
+					<Stack spacing={10}>
+						<Post body="hello world" />
+						<Post body="hello world" />
+						<Post body="hello world" />
+					</Stack>
+				</Grid.Col>
+				<Grid.Col span={2}>
+					<MediaQuery query="(max-width: 1200px)" styles={{ display: "none" }}>
+						<Stack spacing={10}>
+							<div className="bg-slate-700 h-96">Default container</div>
+						</Stack>
+					</MediaQuery>
+				</Grid.Col>
+			</Grid>
 		</>
 	);
 }

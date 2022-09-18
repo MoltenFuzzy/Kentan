@@ -8,10 +8,11 @@ import {
 	Text,
 	Box,
 	Image,
+	Avatar,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { ColorSchemeToggle } from "../ColorSchemeToggle/ColorSchemeToggle";
-import { IconMessageCircle, IconBell } from "@tabler/icons";
+import { IconMessageCircle, IconBell, IconBellX } from "@tabler/icons";
 import Link from "next/link";
 import useStyles from "./NavBar.styles";
 import logo from "../../images/logo.png";
@@ -22,7 +23,6 @@ export interface NavBarProps {
 
 export function NavBar({ links }: NavBarProps) {
 	const [opened, { toggle }] = useDisclosure(false);
-	const [active, setActive] = useState(links[0].link);
 	const { classes, cx } = useStyles();
 
 	const items = links.map((link, index) => (
@@ -39,9 +39,11 @@ export function NavBar({ links }: NavBarProps) {
 	));
 
 	return (
-		<Header className={classes.head} height={70} mb={50}>
+		<Header className={classes.head} height={70} mb={30}>
 			<Container size="xl" className={classes.header}>
-				<Image width={100} src={logo.src} alt="logo" />
+				<Link href="/">
+					<Image width={80} src={logo.src} alt="logo" />
+				</Link>
 				<Autocomplete
 					size="md"
 					className={classes.search}
@@ -50,10 +52,14 @@ export function NavBar({ links }: NavBarProps) {
 				/>
 				<Group spacing={10} className={classes.links}>
 					{items}
-				</Group>
-				{/* check if user logged in to render */}
-				<Group className={classes.register}>
-					<Text size="md">Logout</Text>
+					<div className={cx(classes.link)}>
+						<Avatar color="green" size={35} radius="xl">
+							KP
+						</Avatar>
+					</div>
+					<div className={cx(classes.link)}>
+						<ColorSchemeToggle />
+					</div>
 				</Group>
 				<Burger
 					opened={opened}
@@ -61,9 +67,9 @@ export function NavBar({ links }: NavBarProps) {
 					className={classes.burger}
 					size="sm"
 				/>
-				<Box className={classes.toggle}>
+				{/* <Box className={classes.toggle}>
 					<ColorSchemeToggle />
-				</Box>
+				</Box> */}
 			</Container>
 		</Header>
 	);
