@@ -2,15 +2,13 @@ import React from "react";
 import { TextInput, Button, Group, Box, PasswordInput } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import gqlClient from "../src/clients/gqlClient";
-import {
-	CreateUserMutation,
-	useCreateUserMutation,
-} from "../src/generated/generates";
+import { GetUsersQuery, useGetUsersQuery } from "../src/generated/generates";
 
 export default function LoginPage() {
 	const form = useForm({
 		initialValues: {
 			username: "",
+			password: "",
 			email: "",
 		},
 
@@ -25,27 +23,25 @@ export default function LoginPage() {
 		},
 	});
 
-	const { mutate, data } = useCreateUserMutation<CreateUserMutation, Error>(
-		gqlClient,
-		{}
-	);
-
 	return (
 		<>
 			<Box sx={{ maxWidth: 300 }} mx="auto">
-				<form
-					onSubmit={form.onSubmit((values) => mutate({ userInput: values }))}
-				>
+				{/* on submit verify creds, return true if valid?? */}
+				<form onSubmit={form.onSubmit((values) => console.log(values))}>
 					<TextInput
 						label="Username"
 						placeholder="Username"
 						{...form.getInputProps("username")}
 					/>
 
-					<PasswordInput placeholder="Password" label="Password" />
+					<PasswordInput
+						placeholder="Password"
+						label="Password"
+						{...form.getInputProps("password")}
+					/>
 
 					<Group position="right" mt="md">
-						<Button type="submit">Submit</Button>
+						<Button type="submit">Login</Button>
 					</Group>
 				</form>
 			</Box>

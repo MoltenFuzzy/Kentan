@@ -10,6 +10,7 @@ export default function RegisterPage() {
 	const form = useForm({
 		initialValues: {
 			username: "",
+			password: "",
 			email: "",
 		},
 
@@ -43,10 +44,11 @@ export default function RegisterPage() {
 					/>
 
 					<PasswordInput
+						withAsterisk
 						placeholder="Password"
 						label="Password"
 						description="Password must include at least one letter, number and special character"
-						withAsterisk
+						{...form.getInputProps("password")}
 					/>
 
 					<TextInput
@@ -57,7 +59,7 @@ export default function RegisterPage() {
 					/>
 
 					<Group position="right" mt="md">
-						<Button type="submit">Submit</Button>
+						<Button type="submit">Register</Button>
 					</Group>
 				</form>
 			</Box>

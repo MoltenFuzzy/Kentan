@@ -22,13 +22,14 @@ const main = async () => {
 		introspection: true,
 		csrfPrevention: true,
 		cache: "bounded",
+		context: ({ req, res }) => ({ req, res }),
 		plugins: [ApolloServerPluginLandingPageLocalDefault({ embed: true })],
 	});
 
 	// cant set custom path :(
 	// https://github.com/apollographql/apollo-server/issues/1617
 
-	connectDB();
+	await connectDB();
 
 	// The `listen` method launches a web server.
 	server.listen().then(({ url }: any) => {

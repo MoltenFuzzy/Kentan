@@ -13,7 +13,7 @@ export class User {
 	username!: string;
 
 	@prop()
-	password: string;
+	password!: string;
 
 	@Field()
 	@prop({ unique: true })
@@ -28,6 +28,9 @@ export const UserModel = getModelForClass(User, {
 export class CreateUserInput {
 	@Field(() => String)
 	username: string;
+
+	@Field(() => String)
+	password: string;
 
 	@IsEmail()
 	@Field(() => String)

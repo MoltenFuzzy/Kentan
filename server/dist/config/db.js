@@ -12,27 +12,16 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-require("reflect-metadata");
-const apollo_server_1 = require("apollo-server");
-const apollo_server_core_1 = require("apollo-server-core");
-const type_graphql_1 = require("type-graphql");
-const resolvers_1 = require("./resolvers/resolvers");
-const db_1 = __importDefault(require("./config/db"));
-const main = () => __awaiter(void 0, void 0, void 0, function* () {
-    const schema = yield (0, type_graphql_1.buildSchema)({
-        resolvers: resolvers_1.resolvers,
-    });
-    const server = new apollo_server_1.ApolloServer({
-        schema,
-        introspection: true,
-        csrfPrevention: true,
-        cache: "bounded",
-        plugins: [(0, apollo_server_core_1.ApolloServerPluginLandingPageLocalDefault)({ embed: true })],
-    });
-    (0, db_1.default)();
-    server.listen().then(({ url }) => {
-        console.log(`Server ready at ${url}`);
-    });
+const mongoose_1 = __importDefault(require("mongoose"));
+const config_1 = require("./config");
+exports.default = () => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const conn = yield mongoose_1.default.connect(config_1.config.mongo.url);
+        console.log(`MongoDB Connected: ${conn.connection.host}`);
+    }
+    catch (error) {
+        console.log(error);
+        process.exit(1);
+    }
 });
-main();
-//# sourceMappingURL=index.js.map
+//# sourceMappingURL=db.js.map

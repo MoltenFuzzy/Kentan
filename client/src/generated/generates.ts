@@ -21,6 +21,7 @@ export type Scalars = {
 
 export type CreateUserInput = {
   email: Scalars['String'];
+  password: Scalars['String'];
   username: Scalars['String'];
 };
 
@@ -78,10 +79,10 @@ export type GetUserByIdQueryVariables = Exact<{
 
 export type GetUserByIdQuery = { __typename?: 'Query', getUserById?: { __typename?: 'User', username: string, email: string } | null };
 
-export type QueryQueryVariables = Exact<{ [key: string]: never; }>;
+export type GetUsersQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type QueryQuery = { __typename?: 'Query', getUsers: Array<{ __typename?: 'User', username: string, email: string }> };
+export type GetUsersQuery = { __typename?: 'Query', getUsers: Array<{ __typename?: 'User', username: string, email: string }> };
 
 
 export const CreateUserDocument = `
@@ -145,25 +146,25 @@ export const useGetUserByIdQuery = <
       fetcher<GetUserByIdQuery, GetUserByIdQueryVariables>(client, GetUserByIdDocument, variables, headers),
       options
     );
-export const QueryDocument = `
-    query Query {
+export const GetUsersDocument = `
+    query GetUsers {
   getUsers {
     username
     email
   }
 }
     `;
-export const useQueryQuery = <
-      TData = QueryQuery,
+export const useGetUsersQuery = <
+      TData = GetUsersQuery,
       TError = unknown
     >(
       client: GraphQLClient,
-      variables?: QueryQueryVariables,
-      options?: UseQueryOptions<QueryQuery, TError, TData>,
+      variables?: GetUsersQueryVariables,
+      options?: UseQueryOptions<GetUsersQuery, TError, TData>,
       headers?: RequestInit['headers']
     ) =>
-    useQuery<QueryQuery, TError, TData>(
-      variables === undefined ? ['Query'] : ['Query', variables],
-      fetcher<QueryQuery, QueryQueryVariables>(client, QueryDocument, variables, headers),
+    useQuery<GetUsersQuery, TError, TData>(
+      variables === undefined ? ['GetUsers'] : ['GetUsers', variables],
+      fetcher<GetUsersQuery, GetUsersQueryVariables>(client, GetUsersDocument, variables, headers),
       options
     );
