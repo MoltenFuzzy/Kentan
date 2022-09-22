@@ -12,6 +12,7 @@ import {
 import { NotificationsProvider } from "@mantine/notifications";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import { SessionProvider } from "next-auth/react";
 import "../styles/globals.css";
 
 const queryClient = new QueryClient();
@@ -19,7 +20,7 @@ const queryClient = new QueryClient();
 // colors : https://mantine.dev/theming/colors/
 
 export default function App(props: AppProps & { colorScheme: ColorScheme }) {
-	const { Component, pageProps } = props;
+	const { Component, session, ...pageProps } = props;
 	const [colorScheme, setColorScheme] = useState<ColorScheme>(
 		props.colorScheme
 	);
@@ -35,60 +36,62 @@ export default function App(props: AppProps & { colorScheme: ColorScheme }) {
 
 	return (
 		<>
-			<QueryClientProvider client={queryClient}>
-				<Head>
-					<title>Unnamed</title>
-					<meta
-						name="viewport"
-						content="minimum-scale=1, initial-scale=1, width=device-width"
-					/>
-					<link rel="shortcut icon" href="/favicon.svg" />
-				</Head>
+			<SessionProvider session={session}>
+				<QueryClientProvider client={queryClient}>
+					<Head>
+						<title>Kentan</title>
+						<meta
+							name="viewport"
+							content="minimum-scale=1, initial-scale=1, width=device-width"
+						/>
+						<link rel="shortcut icon" href="/favicon.svg" />
+					</Head>
 
-				<ColorSchemeProvider
-					colorScheme={colorScheme}
-					toggleColorScheme={toggleColorScheme}
-				>
-					<MantineProvider
-						theme={{
-							colorScheme,
-							colors: {
-								// dark: [
-								// 	"#eaf3fb",
-								// 	"#cdd9e5",
-								// 	"#aec0d0",
-								// 	"#8ea7bd",
-								// 	"#131C24",
-								// 	"#131C24",
-								// 	"#131C24",
-								// 	"#131C24",
-								// 	"#131C24",
-								// 	"#181515",
-								// ],
-								milkTea: [
-									"#ffefe0",
-									"#f6d5ba",
-									"#ecbb92",
-									"#e3a068",
-									"#da853e",
-									"#c16b25",
-									"#97531c",
-									"#6d3c13",
-									"#432308",
-									"#1c0a00",
-								],
-							},
-						}}
-						withGlobalStyles
-						withNormalizeCSS
+					<ColorSchemeProvider
+						colorScheme={colorScheme}
+						toggleColorScheme={toggleColorScheme}
 					>
-						<NotificationsProvider>
-							<Component {...pageProps} />
-						</NotificationsProvider>
-					</MantineProvider>
-				</ColorSchemeProvider>
-				<ReactQueryDevtools />
-			</QueryClientProvider>
+						<MantineProvider
+							theme={{
+								colorScheme,
+								colors: {
+									// dark: [
+									// 	"#eaf3fb",
+									// 	"#cdd9e5",
+									// 	"#aec0d0",
+									// 	"#8ea7bd",
+									// 	"#131C24",
+									// 	"#131C24",
+									// 	"#131C24",
+									// 	"#131C24",
+									// 	"#131C24",
+									// 	"#181515",
+									// ],
+									milkTea: [
+										"#ffefe0",
+										"#f6d5ba",
+										"#ecbb92",
+										"#e3a068",
+										"#da853e",
+										"#c16b25",
+										"#97531c",
+										"#6d3c13",
+										"#432308",
+										"#1c0a00",
+									],
+								},
+							}}
+							withGlobalStyles
+							withNormalizeCSS
+						>
+							<NotificationsProvider>
+								<Component {...pageProps} />
+							</NotificationsProvider>
+						</MantineProvider>
+					</ColorSchemeProvider>
+					<ReactQueryDevtools />
+				</QueryClientProvider>
+			</SessionProvider>
 		</>
 	);
 }

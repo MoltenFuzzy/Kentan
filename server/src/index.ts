@@ -1,10 +1,6 @@
 import "reflect-metadata";
 import { ApolloServer } from "apollo-server";
-import {
-	ApolloServerPluginLandingPageGraphQLPlayground,
-	ApolloServerPluginLandingPageLocalDefault,
-	ApolloServerPluginLandingPageProductionDefault,
-} from "apollo-server-core";
+import { ApolloServerPluginLandingPageLocalDefault } from "apollo-server-core";
 import { buildSchema } from "type-graphql";
 import { resolvers } from "./resolvers/resolvers";
 import connectDB from "./config/db";
@@ -32,7 +28,7 @@ const main = async () => {
 	await connectDB();
 
 	// The `listen` method launches a web server.
-	server.listen().then(({ url }: any) => {
+	server.listen().then(({ url }) => {
 		console.log(`Server ready at ${url}`);
 	});
 };

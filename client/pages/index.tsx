@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
 	Button,
 	Group,
@@ -11,7 +11,11 @@ import {
 	Space,
 } from "@mantine/core";
 import Link from "next/link";
+import { useSession, signIn, signOut, getProviders } from "next-auth/react";
 import logo from "../images/logo.png";
+import { GetServerSideProps } from "next";
+import { Session } from "next-auth";
+import { ProviderType } from "next-auth/providers";
 
 const useStyles = createStyles((theme) => ({
 	card: {
@@ -31,6 +35,23 @@ const useStyles = createStyles((theme) => ({
 
 export default function IndexPage() {
 	const { classes, cx } = useStyles();
+	const { data: session } = useSession();
+
+	useEffect(() => {
+		const fetchProv = async () => {
+			return await getProviders();
+		};
+		console.log(fetchProv());
+	});
+
+	if (session) {
+		return (
+			<>
+				Signed in as {JSON.stringify(session.user)} <br />
+				<button onClick={() => signOut()}>Sign out</button>
+			</>
+		);
+	}
 
 	return (
 		<Center style={{ height: "100vh" }}>
@@ -67,6 +88,31 @@ export default function IndexPage() {
 						label={<Text size={18}>or</Text>}
 						labelPosition="center"
 					/>
+					<Button
+						size="lg"
+						color="milkTea.3"
+						fullWidth
+						radius="md"
+						onClick={() => signIn("google")}
+					>
+						<Text weight={700} color="dark" size={26}>
+							Sign in with Google
+						</Text>
+					</Button>
+					{/* {Object.values(providers).map((provider) => (
+						<Button
+							size="lg"
+							color="milkTea.3"
+							fullWidth
+							radius="md"
+							key={provider.name}
+							onClick={() => signIn(provider.id)}
+						>
+							<Text weight={700} color="dark" size={26}>
+								Sign in with {provider.name}
+							</Text>
+						</Button>
+					))} */}
 				</Card>
 			</Group>
 		</Center>

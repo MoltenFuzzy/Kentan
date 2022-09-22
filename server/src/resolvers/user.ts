@@ -1,4 +1,5 @@
 import argon2id from "argon2";
+import { unwatchFile } from "fs";
 import { sign } from "jsonwebtoken";
 import {
 	Arg,
@@ -9,8 +10,13 @@ import {
 	Query,
 	Resolver,
 } from "type-graphql";
-import { User, UserModel, CreateUserInput } from "../entities/user";
-import { Context } from "../context";
+import {
+	User,
+	UserModel,
+	CreateUserInput,
+	AuthUserInput,
+} from "../entities/user";
+import { Context } from "../types/context";
 
 @ObjectType()
 class LoginResponse {
@@ -31,6 +37,7 @@ export class UserResolver {
 		return await UserModel.findById(id);
 	}
 
+	// TODO: #1 Add our own credential auth later
 	@Mutation(() => LoginResponse)
 	async loginUser(
 		@Arg("username") username: string,
@@ -47,9 +54,31 @@ export class UserResolver {
 			throw new Error("Invalid Password");
 		}
 
-		// res.cookie()
 		return {
-			accessToken: sign({ userId: user.id }, process.env.JWT_SECRET as string),
+			accessToken: sign({ userId: user.id }, process.env.JWT_SECRET!),
+		};
+	}
+
+	@Mutation(() => LoginResponse)
+	async authUser(
+		@Arg("UserInput") UserInput: AuthUserInput,
+		// maybe pass in email, however we need to put all user data into DB
+		@Ctx() { req, res }: Context
+	): Promise<LoginResponse> {
+		// put refresh token in cookie?
+		// res.cookie()
+
+		// if email does not exist, add to database?
+		const user = await UserModel.findOne({ email: UserInput.email });
+		if (!user) {
+			// await UserModel.create({});
+		}
+		console.log(UserInput);
+
+		return {
+			// we can gurrentinee that access token will be defined as long as auth user is called
+			// bc it is only called when sign in callback is successful
+			accessToken: UserInput.accessToken!,
 		};
 	}
 

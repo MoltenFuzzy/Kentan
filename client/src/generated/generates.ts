@@ -25,10 +25,17 @@ export type CreateUserInput = {
   username: Scalars['String'];
 };
 
+export type LoginResponse = {
+  __typename?: 'LoginResponse';
+  accessToken: Scalars['String'];
+};
+
 export type Mutation = {
   __typename?: 'Mutation';
+  authUser: LoginResponse;
   createUser: User;
   deleteUser: Scalars['Boolean'];
+  loginUser: LoginResponse;
 };
 
 
@@ -39,6 +46,12 @@ export type MutationCreateUserArgs = {
 
 export type MutationDeleteUserArgs = {
   id: Scalars['String'];
+};
+
+
+export type MutationLoginUserArgs = {
+  password: Scalars['String'];
+  username: Scalars['String'];
 };
 
 export type Query = {
