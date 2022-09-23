@@ -1,50 +1,98 @@
-import React from "react";
-import { TextInput, Button, Group, Box, PasswordInput } from "@mantine/core";
-import { useForm } from "@mantine/form";
-import gqlClient from "../src/clients/gqlClient";
-import { GetUsersQuery, useGetUsersQuery } from "../src/generated/generates";
+import React, { useEffect, useState } from "react";
+import {
+	Button,
+	Group,
+	Card,
+	Image,
+	Text,
+	createStyles,
+	Divider,
+	Center,
+	Space,
+} from "@mantine/core";
+import Link from "next/link";
+import { useSession, signIn, signOut, getProviders } from "next-auth/react";
+import logo from "../images/logo.png";
+import { GetServerSideProps } from "next";
+import { Session } from "next-auth";
+import { useRouter } from "next/router";
+
+const useStyles = createStyles((theme) => ({
+	card: {
+		backgroundColor:
+			theme.colorScheme === "dark"
+				? theme.colors.dark[9]
+				: theme.colors.gray[4],
+	},
+
+	buttonText: {
+		color:
+			theme.colorScheme === "dark"
+				? theme.colors.dark[9]
+				: theme.colors.gray[0],
+	},
+}));
 
 export default function LoginPage() {
-	const form = useForm({
-		initialValues: {
-			username: "",
-			password: "",
-			email: "",
-		},
+	const { classes, cx } = useStyles();
 
-		validate: {
-			username: (value) =>
-				/^[a-zA-Z0-9](_(?!(\.|_))|\.(?!(_|\.))|[a-zA-Z0-9]){6,18}[a-zA-Z0-9]$/.test(
-					value
-				)
-					? null
-					: "Invalid username",
-			email: (value) => (/^\S+@\S+$/.test(value) ? null : "Invalid email"),
-		},
-	});
+	const router = useRouter();
+	const { status } = useSession();
+
+	useEffect(() => {
+		if (status === "authenticated") {
+			void router.push("/");
+		}
+	}, [status]);
 
 	return (
-		<>
-			<Box sx={{ maxWidth: 300 }} mx="auto">
-				{/* on submit verify creds, return true if valid?? */}
-				<form onSubmit={form.onSubmit((values) => console.log(values))}>
-					<TextInput
-						label="Username"
-						placeholder="Username"
-						{...form.getInputProps("username")}
-					/>
-
-					<PasswordInput
-						placeholder="Password"
-						label="Password"
-						{...form.getInputProps("password")}
-					/>
-
-					<Group position="right" mt="md">
-						<Button type="submit">Login</Button>
+		<Center style={{ height: "100vh" }}>
+			<Group className="items-center justify-center">
+				<div>
+					<Image height={500} width={500} src={logo.src} alt="logo"></Image>
+				</div>
+				<Space w={120} />
+				<Card
+					className={cx(classes.card)}
+					shadow="sm"
+					p="lg"
+					radius="md"
+					withBorder
+				>
+					<Group className="w-96">
+						<Link href="/login">
+							<Button size="lg" color="milkTea.3" fullWidth radius="md">
+								<Text weight={700} color="dark" size={26}>
+									Login
+								</Text>
+							</Button>
+						</Link>
+						<Link href="/register">
+							<Button size="lg" color="milkTea.3" fullWidth radius="md">
+								<Text weight={700} color="dark" size={26}>
+									Register
+								</Text>
+							</Button>
+						</Link>
 					</Group>
-				</form>
-			</Box>
-		</>
+					<Divider
+						my="sm"
+						label={<Text size={18}>or</Text>}
+						labelPosition="center"
+					/>
+					<Button
+						size="lg"
+						color="milkTea.3"
+						fullWidth
+						radius="md"
+						onClick={() => signIn("google")}
+					>
+						<Text weight={700} color="dark" size={26}>
+							Sign in with Google
+						</Text>
+					</Button>
+				</Card>
+			</Group>
+		</Center>
 	);
 }

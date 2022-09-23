@@ -3,7 +3,7 @@ import GoogleProvider from "next-auth/providers/google";
 // import CredentialsProvider from "next-auth/providers/credentials";
 import gqlClient from "../../../src/clients/gqlClient";
 import { gql } from "graphql-request";
-import { JWT } from "next-auth/jwt";
+import { Account, User } from "next-auth";
 
 export default NextAuth({
 	providers: [
@@ -13,7 +13,7 @@ export default NextAuth({
 		}),
 	],
 	secret: process.env.JWT_SECRET,
-	pages: {},
+	pages: { signIn: "/login" },
 	session: {
 		strategy: "jwt",
 		maxAge: 60 * 60 * 24 * 7, // 7 days
@@ -27,26 +27,7 @@ export default NextAuth({
 			// if signin provider gives us access token, and etc tokens, then we dont need to generate one in the backend
 			// if not then we have to do it for all providers
 			if (account.provider === "google") {
-				//! BUG: USER DOESNT HAVE ACCESSTOKEN PROPERTY
-				const mutation = gql`
-					mutation Mutation($authUserUserInput: AuthUserInput!) {
-						authUser(UserInput: $authUserUserInput) {
-							accessToken
-						}
-					}
-				`;
-
-				const variables = {
-					authUserUserInput: {
-						name: user.name,
-						password: null,
-						email: user.email,
-						avatar: user.image,
-						accessToken: account.access_token,
-						refreshToken: account.refresh_token,
-					},
-				};
-				user.accessToken = await gqlClient.request(mutation, variables);
+				AuthUser(user, account);
 				return true;
 			}
 			return false;
@@ -69,11 +50,32 @@ export default NextAuth({
 
 		async session({ session, token }) {
 			session.user.accessToken = token?.accessToken;
-			session.user.refreshToken = token?.refreshToken;
-			session.user.accessTokenExpires = token.accessTokenExpires;
+			// session.user.refreshToken = token?.refreshToken;
+			// session.user.accessTokenExpires = token.accessTokenExpires;
 			return session;
 		},
 	},
 	// Enable debug messages in the console if you are having problems
 	debug: process.env.NODE_ENV === "development",
 });
+
+function AuthUser(user: User, account: Account) {
+	const mutation = gql`
+		mutation Mutation($authUserUserInput: AuthUserInput!) {
+			authUser(UserInput: $authUserUserInput)
+		}
+	`;
+
+	const variables = {
+		authUserUserInput: {
+			name: user.name,
+			password: null,
+			email: user.email,
+			avatar: user.image,
+			refreshToken: account.refresh_token,
+		},
+	};
+	//! BUG: this line of code causes callback errors >:(
+	// user.accessToken = await gqlClient.request(mutation, variables);
+	gqlClient.request(mutation, variables);
+}

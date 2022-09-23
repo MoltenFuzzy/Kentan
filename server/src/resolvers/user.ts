@@ -59,27 +59,26 @@ export class UserResolver {
 		};
 	}
 
-	@Mutation(() => LoginResponse)
+	@Mutation(() => Boolean)
 	async authUser(
 		@Arg("UserInput") UserInput: AuthUserInput,
 		// maybe pass in email, however we need to put all user data into DB
 		@Ctx() { req, res }: Context
-	): Promise<LoginResponse> {
-		// put refresh token in cookie?
-		// res.cookie()
-
+	): Promise<boolean> {
 		// if email does not exist, add to database?
 		const user = await UserModel.findOne({ email: UserInput.email });
 		if (!user) {
-			// await UserModel.create({});
+			console.log("Creating User");
+			console.log(UserInput);
+			await UserModel.create({
+				name: UserInput.name,
+				password: UserInput.password,
+				email: UserInput.email,
+				avatar: UserInput.avatar,
+				refreshToken: UserInput.refreshToken,
+			});
 		}
-		console.log(UserInput);
-
-		return {
-			// we can gurrentinee that access token will be defined as long as auth user is called
-			// bc it is only called when sign in callback is successful
-			accessToken: UserInput.accessToken!,
-		};
+		return true;
 	}
 
 	@Mutation(() => User)

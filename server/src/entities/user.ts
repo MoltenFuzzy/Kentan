@@ -5,19 +5,22 @@
 import { prop, getModelForClass } from "@typegoose/typegoose";
 import { Field, ObjectType, InputType } from "type-graphql";
 import { IsEmail, MaxLength, MinLength } from "class-validator";
-import * as mongoose from "mongoose";
 
 @ObjectType()
 export class User {
-	@Field()
-	_id!: string;
+	// @Field()
+	// _id!: string;
 
 	@Field()
-	@prop({ unique: true })
-	username!: string;
-
 	@prop()
-	password!: string;
+	name: string;
+
+	@Field()
+	@prop()
+	username?: string;
+
+	@prop({ nullable: true })
+	password: string;
 
 	@Field()
 	@prop({ unique: true })
@@ -25,7 +28,7 @@ export class User {
 
 	@Field()
 	@prop()
-	avatar!: string;
+	avatar?: string;
 
 	@prop()
 	refreshToken!: string;
@@ -62,23 +65,8 @@ export class AuthUserInput {
 	email!: string;
 
 	@Field(() => String, { nullable: true })
-	accessToken?: string;
-
-	@Field(() => String, { nullable: true })
 	refreshToken?: string;
 
 	@Field(() => String, { nullable: true })
 	avatar?: string;
-
-	@Field(() => String, { nullable: true })
-	resetPasswordToken?: string;
-
-	@Field(() => String, { nullable: true })
-	resetPasswordExpiration?: string;
-
-	@Field(() => Number, { nullable: true })
-	loginAttempts?: number;
-
-	@Field(() => String, { nullable: true })
-	lockUntil?: string;
 }

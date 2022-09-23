@@ -9,6 +9,7 @@ import {
 	Box,
 	Image,
 	Avatar,
+	Button,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { ColorSchemeToggle } from "../ColorSchemeToggle/ColorSchemeToggle";
@@ -16,6 +17,7 @@ import { IconMessageCircle, IconBell, IconBellX } from "@tabler/icons";
 import Link from "next/link";
 import useStyles from "./NavBar.styles";
 import logo from "../../images/logo.png";
+import { signOut } from "next-auth/react";
 
 export interface NavBarProps {
 	links: { link: string; label: string }[];
@@ -60,6 +62,7 @@ export function NavBar({ links }: NavBarProps) {
 					<div className={cx(classes.link)}>
 						<ColorSchemeToggle />
 					</div>
+					<Button onClick={() => signOut()}> Log out</Button>
 				</Group>
 				<Burger
 					opened={opened}
