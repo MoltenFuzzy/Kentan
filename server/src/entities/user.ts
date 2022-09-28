@@ -1,17 +1,15 @@
 // https://stackoverflow.com/questions/63580523/combining-type-graphql-with-typegoose-using-multiple-decorators
 // We can combine typegoose and type-graphql schemas and models
 
-// import { ObjectId } from "@typegoose/typegoose";
 import { prop as Property, getModelForClass } from "@typegoose/typegoose";
 import { Field, ObjectType, InputType, ID } from "type-graphql";
 import { IsEmail, MaxLength, MinLength } from "class-validator";
-import { Schema } from "mongoose";
+import { ObjectId } from "mongodb";
 
 @ObjectType()
 export class User {
 	@Field((type) => ID)
-	@Property()
-	_id: Schema.Types.ObjectId;
+	readonly _id: ObjectId;
 
 	@Field()
 	@Property()

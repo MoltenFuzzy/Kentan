@@ -1,27 +1,51 @@
-import { prop, getModelForClass } from "@typegoose/typegoose";
+import { prop as Property, getModelForClass } from "@typegoose/typegoose";
 import { Field, ObjectType, InputType, ID } from "type-graphql";
-import { Schema } from "mongoose";
+import { ObjectId } from "mongodb";
+import { Ref } from "../types/types";
+import { User } from "./user";
+
+//! https://www.becomebetterprogrammer.com/typescript-partial-type/
+
+@ObjectType()
+export class Author {
+	// @Field((type) => User)
+	// @Property({ ref: User, required: true })
+	// author: Ref<User>;
+
+	// Should we allow the querying of the author's data?
+	// only reason i would need the author's id is to find the author's data
+	@Field((type) => User)
+	@Property({ ref: User, required: true })
+	_id: Ref<User>;
+
+	@Field()
+	@Property()
+	name: string;
+
+	@Field()
+	@Property()
+	avatarImage: string;
+}
 
 @ObjectType()
 export class Post {
 	@Field((type) => ID)
-	@prop()
-	authorId: Schema.Types.ObjectId;
+	readonly _id: ObjectId;
 
-	@Field({ nullable: true })
-	@prop({ nullable: true })
-	avatarImage?: string;
+	@Field((type) => Author)
+	@Property()
+	author: Author;
 
 	@Field()
-	@prop()
+	@Property()
 	body: string;
 
 	@Field((type) => [String])
-	@prop({ type: String, required: true, default: [] })
+	@Property({ type: String, required: true, default: [] })
 	categories: string[];
 
 	@Field()
-	@prop()
+	@Property()
 	likes: number;
 }
 
@@ -30,12 +54,21 @@ export const PostModel = getModelForClass(Post, {
 });
 
 @InputType()
-export class CreatePostInput {
+export class CreateAuthorInput implements Partial<User> {
+	@Field(() => ID)
+	_id?: ObjectId;
+
 	@Field(() => String)
-	authorId!: Schema.Types.ObjectId;
+	name: string;
 
 	@Field(() => String, { nullable: true })
-	avatarImage?: string;
+	avatarImage?: string | undefined;
+}
+
+@InputType()
+export class CreatePostInput {
+	@Field(() => CreateAuthorInput)
+	author: CreateAuthorInput;
 
 	@Field(() => String)
 	body: string;
