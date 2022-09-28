@@ -21,7 +21,7 @@ export type Scalars = {
 
 export type AuthUserInput = {
   avatar?: InputMaybe<Scalars['String']>;
-  email?: InputMaybe<Scalars['String']>;
+  email: Scalars['String'];
   name: Scalars['String'];
   password?: InputMaybe<Scalars['String']>;
   refreshToken?: InputMaybe<Scalars['String']>;
@@ -29,7 +29,7 @@ export type AuthUserInput = {
 };
 
 export type CreatePostInput = {
-  author: Scalars['String'];
+  authorId: Scalars['String'];
   avatarImage?: InputMaybe<Scalars['String']>;
   body: Scalars['String'];
   likes: Scalars['Float'];
@@ -83,7 +83,7 @@ export type MutationProviderAuthUserArgs = {
 
 export type Post = {
   __typename?: 'Post';
-  author: Scalars['ID'];
+  authorId: Scalars['ID'];
   avatarImage?: Maybe<Scalars['String']>;
   body: Scalars['String'];
   categories: Array<Scalars['String']>;
@@ -92,19 +92,20 @@ export type Post = {
 
 export type Query = {
   __typename?: 'Query';
-  getPostByAuthorId?: Maybe<Post>;
-  getPosts: Array<Post>;
-  getUserById?: Maybe<User>;
-  getUsers: Array<User>;
+  postByAuthorId?: Maybe<Post>;
+  posts: Array<Post>;
+  /** get user by object id */
+  user?: Maybe<User>;
+  users: Array<User>;
 };
 
 
-export type QueryGetPostByAuthorIdArgs = {
+export type QueryPostByAuthorIdArgs = {
   id: Scalars['String'];
 };
 
 
-export type QueryGetUserByIdArgs = {
+export type QueryUserArgs = {
   id: Scalars['String'];
 };
 
@@ -116,6 +117,13 @@ export type User = {
   name: Scalars['String'];
   username?: Maybe<Scalars['String']>;
 };
+
+export type CreatePostMutationVariables = Exact<{
+  postInput: CreatePostInput;
+}>;
+
+
+export type CreatePostMutation = { __typename?: 'Mutation', createPost: { __typename?: 'Post', authorId: string, body: string, categories: Array<string>, likes: number } };
 
 export type CreateUserMutationVariables = Exact<{
   userInput: CreateUserInput;
@@ -138,31 +146,47 @@ export type ProviderAuthUserMutationVariables = Exact<{
 
 export type ProviderAuthUserMutation = { __typename?: 'Mutation', providerAuthUser: string };
 
-export type CreatePostMutationVariables = Exact<{
-  postInput: CreatePostInput;
+export type PostsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type PostsQuery = { __typename?: 'Query', posts: Array<{ __typename?: 'Post', avatarImage?: string | null, body: string, likes: number }> };
+
+export type UserQueryVariables = Exact<{
+  userId: Scalars['String'];
 }>;
 
 
-export type CreatePostMutation = { __typename?: 'Mutation', createPost: { __typename?: 'Post', author: string, body: string, categories: Array<string>, likes: number } };
+export type UserQuery = { __typename?: 'Query', user?: { __typename?: 'User', _id: string, name: string, username?: string | null, avatar: string, email: string } | null };
 
-export type GetPostsQueryVariables = Exact<{ [key: string]: never; }>;
-
-
-export type GetPostsQuery = { __typename?: 'Query', getPosts: Array<{ __typename?: 'Post', author: string, avatarImage?: string | null, body: string, categories: Array<string>, likes: number }> };
-
-export type GetUserByIdQueryVariables = Exact<{
-  getUserByIdId: Scalars['String'];
-}>;
+export type UsersQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetUserByIdQuery = { __typename?: 'Query', getUserById?: { __typename?: 'User', username?: string | null, email: string } | null };
-
-export type GetUsersQueryVariables = Exact<{ [key: string]: never; }>;
+export type UsersQuery = { __typename?: 'Query', users: Array<{ __typename?: 'User', _id: string, name: string, username?: string | null, email: string, avatar: string }> };
 
 
-export type GetUsersQuery = { __typename?: 'Query', getUsers: Array<{ __typename?: 'User', username?: string | null, email: string }> };
-
-
+export const CreatePostDocument = `
+    mutation CreatePost($postInput: CreatePostInput!) {
+  createPost(PostInput: $postInput) {
+    authorId
+    body
+    categories
+    likes
+  }
+}
+    `;
+export const useCreatePostMutation = <
+      TError = unknown,
+      TContext = unknown
+    >(
+      client: GraphQLClient,
+      options?: UseMutationOptions<CreatePostMutation, TError, CreatePostMutationVariables, TContext>,
+      headers?: RequestInit['headers']
+    ) =>
+    useMutation<CreatePostMutation, TError, CreatePostMutationVariables, TContext>(
+      ['CreatePost'],
+      (variables?: CreatePostMutationVariables) => fetcher<CreatePostMutation, CreatePostMutationVariables>(client, CreatePostDocument, variables, headers)(),
+      options
+    );
 export const CreateUserDocument = `
     mutation CreateUser($userInput: CreateUserInput!) {
   createUser(UserInput: $userInput) {
@@ -220,95 +244,76 @@ export const useProviderAuthUserMutation = <
       (variables?: ProviderAuthUserMutationVariables) => fetcher<ProviderAuthUserMutation, ProviderAuthUserMutationVariables>(client, ProviderAuthUserDocument, variables, headers)(),
       options
     );
-export const CreatePostDocument = `
-    mutation CreatePost($postInput: CreatePostInput!) {
-  createPost(PostInput: $postInput) {
-    author
-    body
-    categories
-    likes
-  }
-}
-    `;
-export const useCreatePostMutation = <
-      TError = unknown,
-      TContext = unknown
-    >(
-      client: GraphQLClient,
-      options?: UseMutationOptions<CreatePostMutation, TError, CreatePostMutationVariables, TContext>,
-      headers?: RequestInit['headers']
-    ) =>
-    useMutation<CreatePostMutation, TError, CreatePostMutationVariables, TContext>(
-      ['CreatePost'],
-      (variables?: CreatePostMutationVariables) => fetcher<CreatePostMutation, CreatePostMutationVariables>(client, CreatePostDocument, variables, headers)(),
-      options
-    );
-export const GetPostsDocument = `
-    query GetPosts {
-  getPosts {
-    author
+export const PostsDocument = `
+    query Posts {
+  posts {
     avatarImage
     body
-    categories
     likes
   }
 }
     `;
-export const useGetPostsQuery = <
-      TData = GetPostsQuery,
+export const usePostsQuery = <
+      TData = PostsQuery,
       TError = unknown
     >(
       client: GraphQLClient,
-      variables?: GetPostsQueryVariables,
-      options?: UseQueryOptions<GetPostsQuery, TError, TData>,
+      variables?: PostsQueryVariables,
+      options?: UseQueryOptions<PostsQuery, TError, TData>,
       headers?: RequestInit['headers']
     ) =>
-    useQuery<GetPostsQuery, TError, TData>(
-      variables === undefined ? ['GetPosts'] : ['GetPosts', variables],
-      fetcher<GetPostsQuery, GetPostsQueryVariables>(client, GetPostsDocument, variables, headers),
+    useQuery<PostsQuery, TError, TData>(
+      variables === undefined ? ['Posts'] : ['Posts', variables],
+      fetcher<PostsQuery, PostsQueryVariables>(client, PostsDocument, variables, headers),
       options
     );
-export const GetUserByIdDocument = `
-    query GetUserById($getUserByIdId: String!) {
-  getUserById(id: $getUserByIdId) {
+export const UserDocument = `
+    query User($userId: String!) {
+  user(id: $userId) {
+    _id
+    name
     username
+    avatar
     email
   }
 }
     `;
-export const useGetUserByIdQuery = <
-      TData = GetUserByIdQuery,
+export const useUserQuery = <
+      TData = UserQuery,
       TError = unknown
     >(
       client: GraphQLClient,
-      variables: GetUserByIdQueryVariables,
-      options?: UseQueryOptions<GetUserByIdQuery, TError, TData>,
+      variables: UserQueryVariables,
+      options?: UseQueryOptions<UserQuery, TError, TData>,
       headers?: RequestInit['headers']
     ) =>
-    useQuery<GetUserByIdQuery, TError, TData>(
-      ['GetUserById', variables],
-      fetcher<GetUserByIdQuery, GetUserByIdQueryVariables>(client, GetUserByIdDocument, variables, headers),
+    useQuery<UserQuery, TError, TData>(
+      ['User', variables],
+      fetcher<UserQuery, UserQueryVariables>(client, UserDocument, variables, headers),
       options
     );
-export const GetUsersDocument = `
-    query GetUsers {
-  getUsers {
+export const UsersDocument = `
+    query Users {
+  users {
+    _id
+    name
     username
     email
+    avatar
   }
 }
     `;
-export const useGetUsersQuery = <
-      TData = GetUsersQuery,
+export const useUsersQuery = <
+      TData = UsersQuery,
       TError = unknown
     >(
       client: GraphQLClient,
-      variables?: GetUsersQueryVariables,
-      options?: UseQueryOptions<GetUsersQuery, TError, TData>,
+      variables?: UsersQueryVariables,
+      options?: UseQueryOptions<UsersQuery, TError, TData>,
       headers?: RequestInit['headers']
     ) =>
-    useQuery<GetUsersQuery, TError, TData>(
-      variables === undefined ? ['GetUsers'] : ['GetUsers', variables],
-      fetcher<GetUsersQuery, GetUsersQueryVariables>(client, GetUsersDocument, variables, headers),
+    useQuery<UsersQuery, TError, TData>(
+      variables === undefined ? ['Users'] : ['Users', variables],
+      fetcher<UsersQuery, UsersQueryVariables>(client, UsersDocument, variables, headers),
       options
     );

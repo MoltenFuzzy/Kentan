@@ -1,9 +1,0 @@
-query Posts {
-  posts {
-    authorId
-    avatarImage
-    body
-    categories
-    likes
-  }
-}

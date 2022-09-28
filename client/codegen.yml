@@ -1,5 +1,5 @@
 schema: http://localhost:4000/
-documents: './src/**/*.graphql'
+documents: './src/**/*.gql'
 generates:
   ./src/generated/generates.ts:
     plugins:
@@ -9,7 +9,6 @@ generates:
     config:
       fetcher: graphql-request
   ./src/graphql/sdk.ts:
-    documents: 'src/graphql/operation.graphql'
     plugins:
       - typescript
       - typescript-operations

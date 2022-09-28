@@ -1,0 +1,23 @@
+mutation CreatePost($postInput: CreatePostInput!) {
+  createPost(PostInput: $postInput) {
+    authorId
+    body
+    categories
+    likes
+  }
+}
+
+mutation CreateUser($userInput: CreateUserInput!) {
+  createUser(UserInput: $userInput) {
+    username
+    email
+  }
+}
+
+mutation DeleteUser($deleteUserId: String!) {
+  deleteUser(id: $deleteUserId)
+}
+
+mutation ProviderAuthUser($userInput: AuthUserInput!) {
+  providerAuthUser(UserInput: $userInput)
+}

@@ -19,12 +19,15 @@ import {
 	useCreatePostMutation,
 	CreatePostMutation,
 	CreatePostInput,
+	usePostsQuery,
 } from "../src/generated/generates";
+import { PostsQuery } from "../src/graphql/sdk";
 
 export default function HomePage() {
 	const ref = useRef<HTMLTextAreaElement>(null);
 	const router = useRouter();
 	const { data: session, status } = useSession();
+	const { data: postPayload } = usePostsQuery<PostsQuery, Error>(gqlClient, {});
 	const [posts, setPosts] = useState<PostProps[]>([]);
 
 	// render user post on client
@@ -32,7 +35,7 @@ export default function HomePage() {
 	// decide to fast reload page every minute???
 	// post state fetches like the 20 most recent posts for now
 	// TODO: later we can use categories for the post to determine which posts are displayed to the user
-	// TODO: how do we protect our api?
+	// TODO: how do we protect our api? api keys, tokens , etc
 
 	// TURN INTO CUSTOM HOOK?
 	useEffect(() => {
@@ -41,9 +44,27 @@ export default function HomePage() {
 		}
 	}, [status]);
 
+	useEffect(() => {
+		let posts: PostProps[] = [];
+		if (postPayload?.posts) {
+			postPayload.posts.forEach((post) => {
+				// posts.push({
+				// 	username: post.username,
+				// 	avatarImage: post.avatarImage,
+				// 	body: post.body,
+				// 	likes: post.likes,
+				// });
+			});
+		}
+		setPosts(posts);
+	}, []);
+
 	// add get post query
 
-	const { mutate } = useCreatePostMutation<CreatePostMutation, Error>(
+	const { mutate: createPost } = useCreatePostMutation<
+		CreatePostMutation,
+		Error
+	>(
 		gqlClient, // client
 		{
 			onSuccess: (data) => {
@@ -53,24 +74,25 @@ export default function HomePage() {
 	);
 
 	// if im using graphql, i need to have a reason to use it
-	//! https://stackoverflow.com/questions/54636363/how-to-generate-the-same-graphql-query-with-different-fields
+	// https://stackoverflow.com/questions/54636363/how-to-generate-the-same-graphql-query-with-different-fields
 
 	const handleSubmit = (e: React.KeyboardEvent) => {
 		if (e.key === "Enter") {
 			const newPost: PostProps = {
-				avatar: session?.user.image!,
+				avatarImage: session?.user.image!,
 				username: session?.user.name!,
 				body: ref.current?.value!,
+				likes: 0,
 			};
 			const newPostInput: CreatePostInput = {
-				author: session?.user.id!,
+				authorId: session?.user.id!,
 				avatarImage: session?.user.image,
 				body: ref.current?.value!,
 				likes: 10,
 			};
 			// so new posts are at the top
 			setPosts([newPost, ...posts]);
-			mutate({ postInput: newPostInput });
+			createPost({ postInput: newPostInput });
 		}
 	};
 
@@ -87,11 +109,13 @@ export default function HomePage() {
 				<Grid>
 					<Col span={8}>
 						<Stack spacing={10}>
-							{posts.map((post) => (
+							{posts.map((post, index) => (
 								<Post
-									avatar={post.avatar}
+									key={index}
+									avatarImage={post.avatarImage}
 									username={post.username}
 									body={post.body}
+									likes={post.likes}
 								/>
 							))}
 						</Stack>

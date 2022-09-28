@@ -17,7 +17,7 @@ export type Scalars = {
 
 export type AuthUserInput = {
   avatar?: InputMaybe<Scalars['String']>;
-  email?: InputMaybe<Scalars['String']>;
+  email: Scalars['String'];
   name: Scalars['String'];
   password?: InputMaybe<Scalars['String']>;
   refreshToken?: InputMaybe<Scalars['String']>;
@@ -25,7 +25,7 @@ export type AuthUserInput = {
 };
 
 export type CreatePostInput = {
-  author: Scalars['String'];
+  authorId: Scalars['String'];
   avatarImage?: InputMaybe<Scalars['String']>;
   body: Scalars['String'];
   likes: Scalars['Float'];
@@ -79,7 +79,7 @@ export type MutationProviderAuthUserArgs = {
 
 export type Post = {
   __typename?: 'Post';
-  author: Scalars['ID'];
+  authorId: Scalars['ID'];
   avatarImage?: Maybe<Scalars['String']>;
   body: Scalars['String'];
   categories: Array<Scalars['String']>;
@@ -88,19 +88,20 @@ export type Post = {
 
 export type Query = {
   __typename?: 'Query';
-  getPostByAuthorId?: Maybe<Post>;
-  getPosts: Array<Post>;
-  getUserById?: Maybe<User>;
-  getUsers: Array<User>;
+  postByAuthorId?: Maybe<Post>;
+  posts: Array<Post>;
+  /** get user by object id */
+  user?: Maybe<User>;
+  users: Array<User>;
 };
 
 
-export type QueryGetPostByAuthorIdArgs = {
+export type QueryPostByAuthorIdArgs = {
   id: Scalars['String'];
 };
 
 
-export type QueryGetUserByIdArgs = {
+export type QueryUserArgs = {
   id: Scalars['String'];
 };
 
@@ -112,6 +113,13 @@ export type User = {
   name: Scalars['String'];
   username?: Maybe<Scalars['String']>;
 };
+
+export type CreatePostMutationVariables = Exact<{
+  postInput: CreatePostInput;
+}>;
+
+
+export type CreatePostMutation = { __typename?: 'Mutation', createPost: { __typename?: 'Post', authorId: string, body: string, categories: Array<string>, likes: number } };
 
 export type CreateUserMutationVariables = Exact<{
   userInput: CreateUserInput;
@@ -134,31 +142,34 @@ export type ProviderAuthUserMutationVariables = Exact<{
 
 export type ProviderAuthUserMutation = { __typename?: 'Mutation', providerAuthUser: string };
 
-export type CreatePostMutationVariables = Exact<{
-  postInput: CreatePostInput;
+export type PostsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type PostsQuery = { __typename?: 'Query', posts: Array<{ __typename?: 'Post', avatarImage?: string | null, body: string, likes: number }> };
+
+export type UserQueryVariables = Exact<{
+  userId: Scalars['String'];
 }>;
 
 
-export type CreatePostMutation = { __typename?: 'Mutation', createPost: { __typename?: 'Post', author: string, body: string, categories: Array<string>, likes: number } };
+export type UserQuery = { __typename?: 'Query', user?: { __typename?: 'User', _id: string, name: string, username?: string | null, avatar: string, email: string } | null };
 
-export type GetPostsQueryVariables = Exact<{ [key: string]: never; }>;
-
-
-export type GetPostsQuery = { __typename?: 'Query', getPosts: Array<{ __typename?: 'Post', author: string, avatarImage?: string | null, body: string, categories: Array<string>, likes: number }> };
-
-export type GetUserByIdQueryVariables = Exact<{
-  getUserByIdId: Scalars['String'];
-}>;
+export type UsersQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetUserByIdQuery = { __typename?: 'Query', getUserById?: { __typename?: 'User', username?: string | null, email: string } | null };
-
-export type GetUsersQueryVariables = Exact<{ [key: string]: never; }>;
+export type UsersQuery = { __typename?: 'Query', users: Array<{ __typename?: 'User', _id: string, name: string, username?: string | null, email: string, avatar: string }> };
 
 
-export type GetUsersQuery = { __typename?: 'Query', getUsers: Array<{ __typename?: 'User', username?: string | null, email: string }> };
-
-
+export const CreatePostDocument = gql`
+    mutation CreatePost($postInput: CreatePostInput!) {
+  createPost(PostInput: $postInput) {
+    authorId
+    body
+    categories
+    likes
+  }
+}
+    `;
 export const CreateUserDocument = gql`
     mutation CreateUser($userInput: CreateUserInput!) {
   createUser(UserInput: $userInput) {
@@ -177,40 +188,34 @@ export const ProviderAuthUserDocument = gql`
   providerAuthUser(UserInput: $userInput)
 }
     `;
-export const CreatePostDocument = gql`
-    mutation CreatePost($postInput: CreatePostInput!) {
-  createPost(PostInput: $postInput) {
-    author
-    body
-    categories
-    likes
-  }
-}
-    `;
-export const GetPostsDocument = gql`
-    query GetPosts {
-  getPosts {
-    author
+export const PostsDocument = gql`
+    query Posts {
+  posts {
     avatarImage
     body
-    categories
     likes
   }
 }
     `;
-export const GetUserByIdDocument = gql`
-    query GetUserById($getUserByIdId: String!) {
-  getUserById(id: $getUserByIdId) {
+export const UserDocument = gql`
+    query User($userId: String!) {
+  user(id: $userId) {
+    _id
+    name
     username
+    avatar
     email
   }
 }
     `;
-export const GetUsersDocument = gql`
-    query GetUsers {
-  getUsers {
+export const UsersDocument = gql`
+    query Users {
+  users {
+    _id
+    name
     username
     email
+    avatar
   }
 }
     `;
@@ -222,6 +227,9 @@ const defaultWrapper: SdkFunctionWrapper = (action, _operationName, _operationTy
 
 export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = defaultWrapper) {
   return {
+    CreatePost(variables: CreatePostMutationVariables, requestHeaders?: Dom.RequestInit["headers"]): Promise<CreatePostMutation> {
+      return withWrapper((wrappedRequestHeaders) => client.request<CreatePostMutation>(CreatePostDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'CreatePost', 'mutation');
+    },
     CreateUser(variables: CreateUserMutationVariables, requestHeaders?: Dom.RequestInit["headers"]): Promise<CreateUserMutation> {
       return withWrapper((wrappedRequestHeaders) => client.request<CreateUserMutation>(CreateUserDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'CreateUser', 'mutation');
     },
@@ -231,17 +239,14 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
     ProviderAuthUser(variables: ProviderAuthUserMutationVariables, requestHeaders?: Dom.RequestInit["headers"]): Promise<ProviderAuthUserMutation> {
       return withWrapper((wrappedRequestHeaders) => client.request<ProviderAuthUserMutation>(ProviderAuthUserDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'ProviderAuthUser', 'mutation');
     },
-    CreatePost(variables: CreatePostMutationVariables, requestHeaders?: Dom.RequestInit["headers"]): Promise<CreatePostMutation> {
-      return withWrapper((wrappedRequestHeaders) => client.request<CreatePostMutation>(CreatePostDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'CreatePost', 'mutation');
+    Posts(variables?: PostsQueryVariables, requestHeaders?: Dom.RequestInit["headers"]): Promise<PostsQuery> {
+      return withWrapper((wrappedRequestHeaders) => client.request<PostsQuery>(PostsDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'Posts', 'query');
     },
-    GetPosts(variables?: GetPostsQueryVariables, requestHeaders?: Dom.RequestInit["headers"]): Promise<GetPostsQuery> {
-      return withWrapper((wrappedRequestHeaders) => client.request<GetPostsQuery>(GetPostsDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'GetPosts', 'query');
+    User(variables: UserQueryVariables, requestHeaders?: Dom.RequestInit["headers"]): Promise<UserQuery> {
+      return withWrapper((wrappedRequestHeaders) => client.request<UserQuery>(UserDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'User', 'query');
     },
-    GetUserById(variables: GetUserByIdQueryVariables, requestHeaders?: Dom.RequestInit["headers"]): Promise<GetUserByIdQuery> {
-      return withWrapper((wrappedRequestHeaders) => client.request<GetUserByIdQuery>(GetUserByIdDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'GetUserById', 'query');
-    },
-    GetUsers(variables?: GetUsersQueryVariables, requestHeaders?: Dom.RequestInit["headers"]): Promise<GetUsersQuery> {
-      return withWrapper((wrappedRequestHeaders) => client.request<GetUsersQuery>(GetUsersDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'GetUsers', 'query');
+    Users(variables?: UsersQueryVariables, requestHeaders?: Dom.RequestInit["headers"]): Promise<UsersQuery> {
+      return withWrapper((wrappedRequestHeaders) => client.request<UsersQuery>(UsersDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'Users', 'query');
     }
   };
 }

@@ -2,7 +2,7 @@
 // We can combine typegoose and type-graphql schemas and models
 
 // import { ObjectId } from "@typegoose/typegoose";
-import { prop, getModelForClass } from "@typegoose/typegoose";
+import { prop as Property, getModelForClass } from "@typegoose/typegoose";
 import { Field, ObjectType, InputType, ID } from "type-graphql";
 import { IsEmail, MaxLength, MinLength } from "class-validator";
 import { Schema } from "mongoose";
@@ -10,29 +10,29 @@ import { Schema } from "mongoose";
 @ObjectType()
 export class User {
 	@Field((type) => ID)
-	@prop()
+	@Property()
 	_id: Schema.Types.ObjectId;
 
 	@Field()
-	@prop()
+	@Property()
 	name: string;
 
 	@Field({ nullable: true })
-	@prop({ nullable: true })
+	@Property({ nullable: true })
 	username?: string;
 
-	@prop({ nullable: true })
+	@Property({ nullable: true })
 	password: string;
 
 	@Field()
-	@prop({ unique: true })
+	@Property({ unique: true })
 	email!: string;
 
 	@Field()
-	@prop()
+	@Property({ nullable: true })
 	avatar?: string;
 
-	@prop()
+	@Property()
 	refreshToken!: string;
 }
 
@@ -62,15 +62,19 @@ export class AuthUserInput {
 	@Field(() => String)
 	email: string;
 
+	// in case avatar link is not provided, it will be null
 	@Field(() => String, { nullable: true })
 	avatar?: string;
 
+	// in case they sign in with google, no username is provided intially
 	@Field(() => String, { nullable: true })
 	username?: string;
 
+	// in case they sign in with google, no password is needed
 	@Field(() => String, { nullable: true })
 	password?: string;
 
+	// idk what this is for yet
 	@Field(() => String, { nullable: true })
 	refreshToken?: string;
 }
