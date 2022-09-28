@@ -3,20 +3,22 @@
 
 // import { ObjectId } from "@typegoose/typegoose";
 import { prop, getModelForClass } from "@typegoose/typegoose";
-import { Field, ObjectType, InputType } from "type-graphql";
+import { Field, ObjectType, InputType, ID } from "type-graphql";
 import { IsEmail, MaxLength, MinLength } from "class-validator";
+import { Schema } from "mongoose";
 
 @ObjectType()
 export class User {
-	// @Field()
-	// _id!: string;
+	@Field((type) => ID)
+	@prop()
+	_id: Schema.Types.ObjectId;
 
 	@Field()
 	@prop()
 	name: string;
 
-	@Field()
-	@prop()
+	@Field({ nullable: true })
+	@prop({ nullable: true })
 	username?: string;
 
 	@prop({ nullable: true })
@@ -50,10 +52,18 @@ export class CreateUserInput {
 	@Field(() => String)
 	email: string;
 }
+
+// NOTE: in type-graphql by default, all fields are non nullable, just like properties in TypeScript.
 @InputType()
 export class AuthUserInput {
 	@Field(() => String)
 	name: string;
+
+	@Field(() => String)
+	email: string;
+
+	@Field(() => String, { nullable: true })
+	avatar?: string;
 
 	@Field(() => String, { nullable: true })
 	username?: string;
@@ -62,11 +72,5 @@ export class AuthUserInput {
 	password?: string;
 
 	@Field(() => String, { nullable: true })
-	email!: string;
-
-	@Field(() => String, { nullable: true })
 	refreshToken?: string;
-
-	@Field(() => String, { nullable: true })
-	avatar?: string;
 }

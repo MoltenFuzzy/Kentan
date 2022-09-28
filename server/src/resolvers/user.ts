@@ -1,10 +1,10 @@
 import argon2id from "argon2";
-import { unwatchFile } from "fs";
 import { sign } from "jsonwebtoken";
 import {
 	Arg,
 	Ctx,
 	Field,
+	ID,
 	Mutation,
 	ObjectType,
 	Query,
@@ -17,6 +17,7 @@ import {
 	AuthUserInput,
 } from "../entities/user";
 import { Context } from "../types/context";
+import { ObjectId } from "mongoose";
 
 @ObjectType()
 class LoginResponse {
@@ -28,12 +29,12 @@ class LoginResponse {
 export class UserResolver {
 	// returns json of all users
 	@Query(() => [User])
-	async getUsers(): Promise<User[] | null> {
+	async users(): Promise<User[] | null> {
 		return await UserModel.find();
 	}
 
-	@Query(() => User, { nullable: true })
-	async getUserById(@Arg("id") id: string): Promise<User | null> {
+	@Query(() => User, { nullable: true, description: "get user by object id" })
+	async user(@Arg("id") id: string): Promise<User | null> {
 		return await UserModel.findById(id);
 	}
 
@@ -59,18 +60,18 @@ export class UserResolver {
 		};
 	}
 
-	@Mutation(() => Boolean)
-	async authUser(
+	@Mutation(() => ID)
+	async providerAuthUser(
 		@Arg("UserInput") UserInput: AuthUserInput,
 		// maybe pass in email, however we need to put all user data into DB
 		@Ctx() { req, res }: Context
-	): Promise<boolean> {
+	): Promise<ObjectId> {
 		// if email does not exist, add to database?
-		const user = await UserModel.findOne({ email: UserInput.email });
+		let user = await UserModel.findOne({ email: UserInput.email });
 		if (!user) {
 			console.log("Creating User");
 			console.log(UserInput);
-			await UserModel.create({
+			user = await UserModel.create({
 				name: UserInput.name,
 				password: UserInput.password,
 				email: UserInput.email,
@@ -78,7 +79,9 @@ export class UserResolver {
 				refreshToken: UserInput.refreshToken,
 			});
 		}
-		return true;
+		// not returning user id in jwt token because its an internal api
+		// https://stackoverflow.com/questions/65030095/should-i-return-user-data-in-an-authentication-endpoint-using-jwt
+		return user._id;
 	}
 
 	@Mutation(() => User)

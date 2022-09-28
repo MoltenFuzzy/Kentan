@@ -1,6 +1,9 @@
-query GetUserById($getUserByIdId: String!) {
-  getUserById(id: $getUserByIdId) {
+query User($userId: String!) {
+  user(id: $userId) {
+    _id
+    name
     username
     email
+    avatar
   }
 }

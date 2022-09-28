@@ -8,3 +8,9 @@ generates:
       - typescript-react-query
     config:
       fetcher: graphql-request
+  ./src/graphql/sdk.ts:
+    documents: 'src/graphql/operation.graphql'
+    plugins:
+      - typescript
+      - typescript-operations
+      - typescript-graphql-request

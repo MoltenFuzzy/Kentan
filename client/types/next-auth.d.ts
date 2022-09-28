@@ -7,12 +7,15 @@ declare module "next-auth" {
 	 */
 	interface Session {
 		user: {
-			username: string | undefined;
-			name: string | undefined;
-			email: string | undefined;
-			accessToken: string | undefined;
-			refreshToken: string | undefined;
-			accessTokenExpires: number | undefined;
+			// the reason why this is optional is because the user is not logged in and the id is not available
+			id?: string;
+			email?: string;
+			username?: string;
+			name?: string;
+			image?: string;
+			accessToken?: string;
+			refreshToken?: string;
+			accessTokenExpires?: number;
 		};
 	}
 
@@ -21,13 +24,12 @@ declare module "next-auth" {
 		refreshToken: string;
 		accessTokenExpires: string;
 	}
-
-	interface Profile {}
 }
 
 declare module "next-auth/jwt" {
 	/** Returned by the `jwt` callback and `getToken`, when using JWT sessions */
 	interface JWT {
+		userId?: string;
 		/** OpenID ID Token */
 		idToken?: string;
 		accessToken?: string;

@@ -1,9 +1,8 @@
 import NextAuth from "next-auth/next";
 import GoogleProvider from "next-auth/providers/google";
-// import CredentialsProvider from "next-auth/providers/credentials";
 import gqlClient from "../../../src/clients/gqlClient";
-import { gql } from "graphql-request";
 import { Account, User } from "next-auth";
+import { getSdk, ProviderAuthUserMutation } from "../../../src/graphql/sdk"; // THIS FILE IS THE GENERATED FILE
 
 export default NextAuth({
 	providers: [
@@ -27,7 +26,7 @@ export default NextAuth({
 			// if signin provider gives us access token, and etc tokens, then we dont need to generate one in the backend
 			// if not then we have to do it for all providers
 			if (account.provider === "google") {
-				AuthUser(user, account);
+				user.id = (await AuthUser(user, account)).providerAuthUser;
 				return true;
 			}
 			return false;
@@ -38,6 +37,7 @@ export default NextAuth({
 			if (user) {
 				token = {
 					...token,
+					userId: user.id,
 					idToken: account?.id_token,
 					accessToken: account?.access_token,
 					refreshToken: account?.refresh_token,
@@ -48,7 +48,10 @@ export default NextAuth({
 			return token;
 		},
 
-		async session({ session, token }) {
+		async session({ session, token, user }) {
+			// for some reason user in session is undefined always
+			// https://stackoverflow.com/questions/72073321/why-did-user-object-is-undefined-in-nextauth-session-callback
+			session.user.id = token?.userId;
 			session.user.accessToken = token?.accessToken;
 			// session.user.refreshToken = token?.refreshToken;
 			// session.user.accessTokenExpires = token.accessTokenExpires;
@@ -60,22 +63,15 @@ export default NextAuth({
 });
 
 function AuthUser(user: User, account: Account) {
-	const mutation = gql`
-		mutation Mutation($authUserUserInput: AuthUserInput!) {
-			authUser(UserInput: $authUserUserInput)
-		}
-	`;
-
+	const sdk = getSdk(gqlClient);
 	const variables = {
-		authUserUserInput: {
-			name: user.name,
+		userInput: {
+			name: user.name!,
 			password: null,
 			email: user.email,
 			avatar: user.image,
 			refreshToken: account.refresh_token,
 		},
 	};
-	//! BUG: this line of code causes callback errors >:(
-	// user.accessToken = await gqlClient.request(mutation, variables);
-	gqlClient.request(mutation, variables);
+	return sdk.ProviderAuthUser(variables);
 }

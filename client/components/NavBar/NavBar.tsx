@@ -17,37 +17,43 @@ import { IconMessageCircle, IconBell, IconBellX } from "@tabler/icons";
 import Link from "next/link";
 import useStyles from "./NavBar.styles";
 import logo from "../../images/logo.png";
-import { signOut } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 
 export interface NavBarProps {
 	links: { link: string; label: string }[];
 }
 
-export function NavBar({ links }: NavBarProps) {
+const links = [
+	{ link: "messages", label: "messages" },
+	{ link: "notifications", label: "notifications" },
+];
+
+export function NavBar() {
 	const [opened, { toggle }] = useDisclosure(false);
 	const { classes, cx } = useStyles();
+	const { data: session, status } = useSession();
 
 	const items = links.map((link, index) => (
-		// <Link key={index} href={link.link}>
-		<span className={cx(classes.link)}>
-			{link.label === "messages" && (
-				<IconMessageCircle size={35} strokeWidth={2} color={"#DDA170"} />
-			)}
-			{link.label === "notifications" && (
-				<IconBell size={35} strokeWidth={2} color={"#DDA170"} />
-			)}
-		</span>
-		// </Link>
+		<Link key={index} href={link.link}>
+			<span className={cx(classes.link)}>
+				{link.label === "messages" && (
+					<IconMessageCircle size={35} strokeWidth={2} color={"#FFFFFF"} />
+				)}
+				{link.label === "notifications" && (
+					<IconBell size={35} strokeWidth={2} color={"#FFFFFF"} />
+				)}
+			</span>
+		</Link>
 	));
 
 	return (
-		<Header className={classes.head} height={70} mb={30}>
+		<Header className={classes.head} height={56} mb={30}>
 			<Container size="xl" className={classes.header}>
 				<Link href="/">
-					<Image width={80} src={logo.src} alt="logo" />
+					<Image width={45} src={logo.src} alt="logo" />
 				</Link>
 				<Autocomplete
-					size="md"
+					size="sm"
 					className={classes.search}
 					placeholder="Search"
 					data={[]} // put cached search history here
@@ -55,9 +61,12 @@ export function NavBar({ links }: NavBarProps) {
 				<Group spacing={10} className={classes.links}>
 					{items}
 					<div className={cx(classes.link)}>
-						<Avatar color="green" size={35} radius="xl">
-							KP
-						</Avatar>
+						<Avatar
+							src={session?.user?.image}
+							color="green"
+							size={35}
+							radius="xl"
+						/>
 					</div>
 					<div className={cx(classes.link)}>
 						<ColorSchemeToggle />

@@ -11,7 +11,7 @@ export default createStyles((theme) => ({
 
 	header: {
 		display: "flex",
-		justifyContent: "space-around",
+		justifyContent: "space-evenly",
 		alignItems: "center",
 		height: "100%",
 	},

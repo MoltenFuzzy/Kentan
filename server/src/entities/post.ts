@@ -1,20 +1,28 @@
 import { prop, getModelForClass } from "@typegoose/typegoose";
-import { ObjectId } from "mongoose";
-import { Field, ObjectType, InputType } from "type-graphql";
+import { Field, ObjectType, InputType, ID } from "type-graphql";
+import { Schema } from "mongoose";
 
 @ObjectType()
 export class Post {
-	@Field()
+	@Field((type) => ID)
 	@prop()
-	author!: ObjectId;
+	authorId: Schema.Types.ObjectId;
+
+	@Field({ nullable: true })
+	@prop({ nullable: true })
+	avatarImage?: string;
 
 	@Field()
 	@prop()
-	body!: string;
+	body: string;
+
+	@Field((type) => [String])
+	@prop({ type: String, required: true, default: [] })
+	categories: string[];
 
 	@Field()
 	@prop()
-	likes!: number;
+	likes: number;
 }
 
 export const PostModel = getModelForClass(Post, {
@@ -24,7 +32,10 @@ export const PostModel = getModelForClass(Post, {
 @InputType()
 export class CreatePostInput {
 	@Field(() => String)
-	author: string;
+	authorId!: Schema.Types.ObjectId;
+
+	@Field(() => String, { nullable: true })
+	avatarImage?: string;
 
 	@Field(() => String)
 	body: string;

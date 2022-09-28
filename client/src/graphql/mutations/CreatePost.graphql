@@ -1,0 +1,8 @@
+mutation CreatePost($postInput: CreatePostInput!) {
+  createPost(PostInput: $postInput) {
+    author
+    body
+    categories
+    likes
+  }
+}

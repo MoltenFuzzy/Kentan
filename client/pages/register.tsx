@@ -25,7 +25,7 @@ export default function RegisterPage() {
 		},
 	});
 
-	const { mutate, data } = useCreateUserMutation<CreateUserMutation, Error>(
+	const { mutate } = useCreateUserMutation<CreateUserMutation, Error>(
 		gqlClient,
 		{}
 	);

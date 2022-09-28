@@ -1,19 +1,33 @@
 import React from "react";
-import { Button, Box, useMantineColorScheme, Text } from "@mantine/core";
+import {
+	useMantineColorScheme,
+	Button,
+	Text,
+	Group,
+	Avatar,
+	Stack,
+} from "@mantine/core";
 
 export interface PostProps {
-	className?: string;
-	body?: string;
+	body: string;
+	username: string;
+	avatar: string;
 }
 
-const Post = (props: PostProps) => {
+const Post = ({ body, username, avatar }: PostProps) => {
 	const { colorScheme, toggleColorScheme } = useMantineColorScheme();
 	return (
-		<div className="bg-zinc-700 rounded-md">
-			<Text size="sm">{props.body}</Text>
-			<Button>Like</Button>
-			<Button>Reply</Button>
-		</div>
+		<Group className="bg-zinc-700 rounded-md align p-2">
+			<Avatar src={avatar} className="mb-16" color="green" radius="xl" />
+			<Stack spacing={7}>
+				<Text weight={700}>{username}</Text>
+				<Text size="sm">{body}</Text>
+				<Group className="mt-2">
+					<Button size="xs">Like</Button>
+					<Button size="xs">Reply</Button>
+				</Group>
+			</Stack>
+		</Group>
 	);
 };
 

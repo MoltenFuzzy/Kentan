@@ -1,0 +1,3 @@
+mutation ProviderAuthUser($userInput: AuthUserInput!) {
+  providerAuthUser(UserInput: $userInput)
+}
