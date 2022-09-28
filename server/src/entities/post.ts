@@ -12,8 +12,9 @@ export class Author {
 	// @Property({ ref: User, required: true })
 	// author: Ref<User>;
 
-	// Should we allow the querying of the author's data?
-	// only reason i would need the author's id is to find the author's data
+	//! COME BACK TO THIS: Should we allow the querying of the author's data?
+	//! only reason i would need the author's id is to find the author's data
+	//! BUT IF WE POPULATE THE AUTHOR'S DATA EVERY TIME WE QUERY ALL POSTS, IT MIGHT BE SLOW
 	@Field((type) => User)
 	@Property({ ref: User, required: true })
 	_id: Ref<User>;
