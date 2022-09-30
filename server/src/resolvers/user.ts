@@ -17,7 +17,7 @@ import {
 	AuthUserInput,
 } from "../entities/user";
 import { Context } from "../types/context";
-import { ObjectId } from "mongoose";
+import { ObjectId } from "mongodb";
 
 @ObjectType()
 class LoginResponse {

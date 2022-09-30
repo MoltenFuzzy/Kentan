@@ -20,15 +20,30 @@ import {
 	CreatePostMutation,
 	CreatePostInput,
 	usePostsQuery,
+	PostsQuery,
 } from "../src/generated/generates";
-import { PostsQuery } from "../src/graphql/sdk";
+import useAuth from "../util/useAuth";
 
 export default function HomePage() {
 	const ref = useRef<HTMLTextAreaElement>(null);
-	const router = useRouter();
-	const { data: session, status } = useSession();
-	const { data: postPayload } = usePostsQuery<PostsQuery, Error>(gqlClient, {});
+	const { data: session } = useSession();
+	const { data: postPayload, refetch } = usePostsQuery<PostsQuery, Error>(
+		gqlClient,
+		{}
+	);
+	const { mutate: createPost } = useCreatePostMutation<
+		CreatePostMutation,
+		Error
+	>(
+		gqlClient, // client
+		{
+			onSuccess: (data) => {
+				console.log(data);
+			},
+		}
+	);
 	const [posts, setPosts] = useState<PostProps[]>([]);
+	useAuth();
 
 	// render user post on client
 	// send post to backend post document
@@ -36,13 +51,6 @@ export default function HomePage() {
 	// post state fetches like the 20 most recent posts for now
 	// TODO: later we can use categories for the post to determine which posts are displayed to the user
 	// TODO: how do we protect our api? api keys, tokens , etc
-
-	// TURN INTO CUSTOM HOOK?
-	useEffect(() => {
-		if (status === "unauthenticated") {
-			void router.push("/login");
-		}
-	}, [status]);
 
 	useEffect(() => {
 		let posts: PostProps[] = [];
@@ -58,20 +66,6 @@ export default function HomePage() {
 		}
 		setPosts(posts);
 	}, []);
-
-	// add get post query
-
-	const { mutate: createPost } = useCreatePostMutation<
-		CreatePostMutation,
-		Error
-	>(
-		gqlClient, // client
-		{
-			onSuccess: (data) => {
-				console.log(data);
-			},
-		}
-	);
 
 	// if im using graphql, i need to have a reason to use it
 	// https://stackoverflow.com/questions/54636363/how-to-generate-the-same-graphql-query-with-different-fields
@@ -126,7 +120,7 @@ export default function HomePage() {
 							styles={{ display: "none" }}
 						>
 							<Stack spacing={10}>
-								<div className="bg-zinc-700 rounded-md h-96 cen"></div>
+								<div className="cen h-96 rounded-md bg-zinc-700"></div>
 							</Stack>
 						</MediaQuery>
 					</Col>
