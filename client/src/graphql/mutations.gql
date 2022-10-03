@@ -1,9 +1,14 @@
 mutation CreatePost($postInput: CreatePostInput!) {
   createPost(PostInput: $postInput) {
-    authorId
+    author {
+      _id
+      name
+      avatarImage
+    }
     body
-    categories
     likes
+    _id
+    categories
   }
 }
 

@@ -1,10 +1,28 @@
 query Posts {
   posts {
-    avatarImage
     body
     likes
+    author {
+      avatarImage
+      name
+    }
   }
 }
+
+query PostsAll {
+  posts {
+    _id
+    categories
+    body
+    likes
+    author {
+      _id
+      avatarImage
+      name
+    }
+  }
+}
+
 
 query User($userId: String!) {
   user(id: $userId) {

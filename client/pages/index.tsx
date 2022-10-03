@@ -27,23 +27,9 @@ import useAuth from "../util/useAuth";
 export default function HomePage() {
 	const ref = useRef<HTMLTextAreaElement>(null);
 	const { data: session } = useSession();
-	const { data: postPayload, refetch } = usePostsQuery<PostsQuery, Error>(
-		gqlClient,
-		{}
-	);
-	const { mutate: createPost } = useCreatePostMutation<
-		CreatePostMutation,
-		Error
-	>(
-		gqlClient, // client
-		{
-			onSuccess: (data) => {
-				console.log(data);
-			},
-		}
-	);
-	const [posts, setPosts] = useState<PostProps[]>([]);
-	useAuth();
+	const { data, refetch } = usePostsQuery<PostsQuery, Error>(gqlClient, {});
+	const { mutate: createPost } = useCreatePostMutation<CreatePostMutation, Error>(gqlClient, {});
+	const status = useAuth();
 
 	// render user post on client
 	// send post to backend post document
@@ -52,41 +38,34 @@ export default function HomePage() {
 	// TODO: later we can use categories for the post to determine which posts are displayed to the user
 	// TODO: how do we protect our api? api keys, tokens , etc
 
-	useEffect(() => {
-		let posts: PostProps[] = [];
-		if (postPayload?.posts) {
-			postPayload.posts.forEach((post) => {
-				// posts.push({
-				// 	username: post.username,
-				// 	avatarImage: post.avatarImage,
-				// 	body: post.body,
-				// 	likes: post.likes,
-				// });
-			});
-		}
-		setPosts(posts);
-	}, []);
+	useEffect(() => {}, []);
 
 	// if im using graphql, i need to have a reason to use it
 	// https://stackoverflow.com/questions/54636363/how-to-generate-the-same-graphql-query-with-different-fields
 
 	const handleSubmit = (e: React.KeyboardEvent) => {
 		if (e.key === "Enter") {
-			const newPost: PostProps = {
-				avatarImage: session?.user.image!,
-				username: session?.user.name!,
-				body: ref.current?.value!,
-				likes: 0,
-			};
+			// TODO: USE MORE PARTIALS TYPES
 			const newPostInput: CreatePostInput = {
-				authorId: session?.user.id!,
-				avatarImage: session?.user.image,
+				author: {
+					_id: session?.user.id!,
+					name: session?.user.name!,
+					avatarImage: session?.user.image,
+				},
 				body: ref.current?.value!,
 				likes: 10,
 			};
-			// so new posts are at the top
-			setPosts([newPost, ...posts]);
+			// when we create post it does return a post we can use to update the state <-- THIS WILL BE SLOWER SINCE WE HAVE TO WAIT FOR THE MUTATION TO FINISH
 			createPost({ postInput: newPostInput });
+			//! Probably not the best thing to do? but it is typesafe
+			data?.posts?.push({
+				author: {
+					name: session?.user.name!,
+					avatarImage: session?.user.image!,
+				},
+				body: ref.current?.value!,
+				likes: 10,
+			});
 		}
 	};
 
@@ -94,20 +73,16 @@ export default function HomePage() {
 		<>
 			<NavBar />
 			<Container size="xl">
-				<Textarea
-					label="Post Something noob"
-					ref={ref}
-					onKeyDown={handleSubmit}
-				></Textarea>
+				<Textarea label="Post Something noob" ref={ref} onKeyDown={handleSubmit}></Textarea>
 				<Space h="md" />
 				<Grid>
 					<Col span={8}>
 						<Stack spacing={10}>
-							{posts.map((post, index) => (
+							{data?.posts.map((post, index) => (
 								<Post
 									key={index}
-									avatarImage={post.avatarImage}
-									username={post.username}
+									avatarImage={post.author.avatarImage}
+									username={post.author.name} // ! CHANGE THIS TO USERNAME LATER
 									body={post.body}
 									likes={post.likes}
 								/>
@@ -115,10 +90,7 @@ export default function HomePage() {
 						</Stack>
 					</Col>
 					<Col span={4}>
-						<MediaQuery
-							query="(max-width: 1000px)"
-							styles={{ display: "none" }}
-						>
+						<MediaQuery query="(max-width: 1000px)" styles={{ display: "none" }}>
 							<Stack spacing={10}>
 								<div className="cen h-96 rounded-md bg-zinc-700"></div>
 							</Stack>

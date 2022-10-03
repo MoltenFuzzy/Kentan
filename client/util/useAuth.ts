@@ -2,7 +2,7 @@ import { useSession, signOut } from "next-auth/react";
 import { useEffect } from "react";
 import { useRouter } from "next/router";
 
-export default function useAuth(): void {
+export default function useAuth(): string | null {
 	const router = useRouter();
 	const { status } = useSession();
 
@@ -11,4 +11,6 @@ export default function useAuth(): void {
 			void router.push("/login");
 		}
 	}, [status]);
+
+	return status; // "authenticated" | "unauthenticated" | "loading"
 }

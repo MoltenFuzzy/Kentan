@@ -24,9 +24,21 @@ export type AuthUserInput = {
   username?: InputMaybe<Scalars['String']>;
 };
 
-export type CreatePostInput = {
-  authorId: Scalars['String'];
+export type Author = {
+  __typename?: 'Author';
+  _id: Scalars['ID'];
+  avatarImage: Scalars['String'];
+  name: Scalars['String'];
+};
+
+export type CreateAuthorInput = {
+  _id: Scalars['ID'];
   avatarImage?: InputMaybe<Scalars['String']>;
+  name: Scalars['String'];
+};
+
+export type CreatePostInput = {
+  author: CreateAuthorInput;
   body: Scalars['String'];
   likes: Scalars['Float'];
 };
@@ -79,8 +91,8 @@ export type MutationProviderAuthUserArgs = {
 
 export type Post = {
   __typename?: 'Post';
-  authorId: Scalars['ID'];
-  avatarImage?: Maybe<Scalars['String']>;
+  _id: Scalars['ID'];
+  author: Author;
   body: Scalars['String'];
   categories: Array<Scalars['String']>;
   likes: Scalars['Float'];
@@ -119,7 +131,7 @@ export type CreatePostMutationVariables = Exact<{
 }>;
 
 
-export type CreatePostMutation = { __typename?: 'Mutation', createPost: { __typename?: 'Post', authorId: string, body: string, categories: Array<string>, likes: number } };
+export type CreatePostMutation = { __typename?: 'Mutation', createPost: { __typename?: 'Post', body: string, likes: number, _id: string, categories: Array<string>, author: { __typename?: 'Author', _id: string, name: string, avatarImage: string } } };
 
 export type CreateUserMutationVariables = Exact<{
   userInput: CreateUserInput;
@@ -145,7 +157,12 @@ export type ProviderAuthUserMutation = { __typename?: 'Mutation', providerAuthUs
 export type PostsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type PostsQuery = { __typename?: 'Query', posts: Array<{ __typename?: 'Post', avatarImage?: string | null, body: string, likes: number }> };
+export type PostsQuery = { __typename?: 'Query', posts: Array<{ __typename?: 'Post', body: string, likes: number, author: { __typename?: 'Author', avatarImage: string, name: string } }> };
+
+export type PostsAllQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type PostsAllQuery = { __typename?: 'Query', posts: Array<{ __typename?: 'Post', _id: string, categories: Array<string>, body: string, likes: number, author: { __typename?: 'Author', _id: string, avatarImage: string, name: string } }> };
 
 export type UserQueryVariables = Exact<{
   userId: Scalars['String'];
@@ -163,10 +180,15 @@ export type UsersQuery = { __typename?: 'Query', users: Array<{ __typename?: 'Us
 export const CreatePostDocument = gql`
     mutation CreatePost($postInput: CreatePostInput!) {
   createPost(PostInput: $postInput) {
-    authorId
+    author {
+      _id
+      name
+      avatarImage
+    }
     body
-    categories
     likes
+    _id
+    categories
   }
 }
     `;
@@ -191,9 +213,27 @@ export const ProviderAuthUserDocument = gql`
 export const PostsDocument = gql`
     query Posts {
   posts {
-    avatarImage
     body
     likes
+    author {
+      avatarImage
+      name
+    }
+  }
+}
+    `;
+export const PostsAllDocument = gql`
+    query PostsAll {
+  posts {
+    _id
+    categories
+    body
+    likes
+    author {
+      _id
+      avatarImage
+      name
+    }
   }
 }
     `;
@@ -241,6 +281,9 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
     },
     Posts(variables?: PostsQueryVariables, requestHeaders?: Dom.RequestInit["headers"]): Promise<PostsQuery> {
       return withWrapper((wrappedRequestHeaders) => client.request<PostsQuery>(PostsDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'Posts', 'query');
+    },
+    PostsAll(variables?: PostsAllQueryVariables, requestHeaders?: Dom.RequestInit["headers"]): Promise<PostsAllQuery> {
+      return withWrapper((wrappedRequestHeaders) => client.request<PostsAllQuery>(PostsAllDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'PostsAll', 'query');
     },
     User(variables: UserQueryVariables, requestHeaders?: Dom.RequestInit["headers"]): Promise<UserQuery> {
       return withWrapper((wrappedRequestHeaders) => client.request<UserQuery>(UserDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'User', 'query');

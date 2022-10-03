@@ -10,8 +10,8 @@ export class PostResolver {
 
 	@Query(() => [Post])
 	async posts(): Promise<Post[] | null> {
-		// TODO: make populate only if id is requested
-		return await PostModel.find().populate("author._id");
+		return await PostModel.find();
+		// return await PostModel.find().populate("author._id");
 	}
 
 	@Mutation(() => Post)
