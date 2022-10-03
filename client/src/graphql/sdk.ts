@@ -27,7 +27,7 @@ export type AuthUserInput = {
 export type Author = {
   __typename?: 'Author';
   _id: Scalars['ID'];
-  avatarImage: Scalars['String'];
+  avatarImage?: Maybe<Scalars['String']>;
   name: Scalars['String'];
 };
 
@@ -131,7 +131,7 @@ export type CreatePostMutationVariables = Exact<{
 }>;
 
 
-export type CreatePostMutation = { __typename?: 'Mutation', createPost: { __typename?: 'Post', body: string, likes: number, _id: string, categories: Array<string>, author: { __typename?: 'Author', _id: string, name: string, avatarImage: string } } };
+export type CreatePostMutation = { __typename?: 'Mutation', createPost: { __typename?: 'Post', body: string, likes: number, _id: string, categories: Array<string>, author: { __typename?: 'Author', _id: string, name: string, avatarImage?: string | null } } };
 
 export type CreateUserMutationVariables = Exact<{
   userInput: CreateUserInput;
@@ -157,12 +157,12 @@ export type ProviderAuthUserMutation = { __typename?: 'Mutation', providerAuthUs
 export type PostsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type PostsQuery = { __typename?: 'Query', posts: Array<{ __typename?: 'Post', body: string, likes: number, author: { __typename?: 'Author', avatarImage: string, name: string } }> };
+export type PostsQuery = { __typename?: 'Query', posts: Array<{ __typename?: 'Post', body: string, likes: number, author: { __typename?: 'Author', _id: string, avatarImage?: string | null, name: string } }> };
 
 export type PostsAllQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type PostsAllQuery = { __typename?: 'Query', posts: Array<{ __typename?: 'Post', _id: string, categories: Array<string>, body: string, likes: number, author: { __typename?: 'Author', _id: string, avatarImage: string, name: string } }> };
+export type PostsAllQuery = { __typename?: 'Query', posts: Array<{ __typename?: 'Post', _id: string, categories: Array<string>, body: string, likes: number, author: { __typename?: 'Author', _id: string, avatarImage?: string | null, name: string } }> };
 
 export type UserQueryVariables = Exact<{
   userId: Scalars['String'];
@@ -216,6 +216,7 @@ export const PostsDocument = gql`
     body
     likes
     author {
+      _id
       avatarImage
       name
     }

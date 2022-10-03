@@ -26,9 +26,9 @@ export class Author {
 	@Property()
 	name: string;
 
-	@Field()
-	@Property()
-	avatarImage: string;
+	@Field({ nullable: true })
+	@Property({ nullable: true })
+	avatarImage?: string;
 }
 
 @ObjectType()
@@ -71,7 +71,7 @@ export class CreateAuthorInput implements Partial<User> {
 	name: string;
 
 	@Field(() => String, { nullable: true })
-	avatarImage?: string | undefined;
+	avatarImage?: string;
 }
 
 @InputType()

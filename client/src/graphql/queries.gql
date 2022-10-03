@@ -3,6 +3,7 @@ query Posts {
     body
     likes
     author {
+      _id
       avatarImage
       name
     }

@@ -50,22 +50,16 @@ export default function HomePage() {
 				author: {
 					_id: session?.user.id!,
 					name: session?.user.name!,
+					// !BUG: this is not working sometimes so we should have a default image or store user in context
 					avatarImage: session?.user.image,
 				},
 				body: ref.current?.value!,
-				likes: 10,
+				likes: 0,
 			};
 			// when we create post it does return a post we can use to update the state <-- THIS WILL BE SLOWER SINCE WE HAVE TO WAIT FOR THE MUTATION TO FINISH
 			createPost({ postInput: newPostInput });
 			//! Probably not the best thing to do? but it is typesafe
-			data?.posts?.push({
-				author: {
-					name: session?.user.name!,
-					avatarImage: session?.user.image!,
-				},
-				body: ref.current?.value!,
-				likes: 10,
-			});
+			data?.posts?.push(newPostInput); // to render client side for user experience
 		}
 	};
 
@@ -78,15 +72,18 @@ export default function HomePage() {
 				<Grid>
 					<Col span={8}>
 						<Stack spacing={10}>
-							{data?.posts.map((post, index) => (
-								<Post
-									key={index}
-									avatarImage={post.author.avatarImage}
-									username={post.author.name} // ! CHANGE THIS TO USERNAME LATER
-									body={post.body}
-									likes={post.likes}
-								/>
-							))}
+							{data?.posts
+								.slice() // slicing to clone array so we can reverse it
+								.reverse()
+								.map((post, index) => (
+									<Post
+										key={index}
+										avatarImage={post.author.avatarImage}
+										username={post.author.name} // ! CHANGE THIS TO USERNAME LATER
+										body={post.body}
+										likes={post.likes}
+									/>
+								))}
 						</Stack>
 					</Col>
 					<Col span={4}>

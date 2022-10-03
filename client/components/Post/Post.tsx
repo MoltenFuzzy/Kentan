@@ -1,16 +1,9 @@
 import React from "react";
-import {
-	useMantineColorScheme,
-	Button,
-	Text,
-	Group,
-	Avatar,
-	Stack,
-} from "@mantine/core";
+import { useMantineColorScheme, Button, Text, Group, Avatar, Stack } from "@mantine/core";
 
 export interface PostProps {
 	username: string;
-	avatarImage: string;
+	avatarImage: string | undefined | null;
 	body: string;
 	likes: number;
 }
@@ -18,7 +11,7 @@ export interface PostProps {
 const Post = ({ body, username, avatarImage }: PostProps) => {
 	const { colorScheme, toggleColorScheme } = useMantineColorScheme();
 	return (
-		<Group className="bg-zinc-700 rounded-md align p-2">
+		<Group className="align rounded-md bg-zinc-700 p-2">
 			<Avatar src={avatarImage} className="mb-16" color="green" radius="xl" />
 			<Stack spacing={7}>
 				<Text weight={700}>{username}</Text>
