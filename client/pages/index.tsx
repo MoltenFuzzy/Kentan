@@ -27,7 +27,7 @@ import useAuth from "../util/useAuth";
 export default function HomePage() {
 	const ref = useRef<HTMLTextAreaElement>(null);
 	const { data: session } = useSession();
-	const { data, refetch } = usePostsQuery<PostsQuery, Error>(gqlClient, {});
+	const { data: { posts } = {}, refetch } = usePostsQuery<PostsQuery, Error>(gqlClient, {});
 	const { mutate: createPost } = useCreatePostMutation<CreatePostMutation, Error>(gqlClient, {});
 	const status = useAuth();
 
@@ -58,8 +58,8 @@ export default function HomePage() {
 			};
 			// when we create post it does return a post we can use to update the state <-- THIS WILL BE SLOWER SINCE WE HAVE TO WAIT FOR THE MUTATION TO FINISH
 			createPost({ postInput: newPostInput });
-			//! Probably not the best thing to do? but it is typesafe
-			data?.posts?.push(newPostInput); // to render client side for user experience
+			//! Probably not the best thing to do? but it is typesafe because we are using different types?
+			posts?.push(newPostInput); // to render client side for user experience
 		}
 	};
 
@@ -72,8 +72,8 @@ export default function HomePage() {
 				<Grid>
 					<Col span={8}>
 						<Stack spacing={10}>
-							{data?.posts
-								.slice() // slicing to clone array so we can reverse it
+							{posts
+								?.slice() // slicing to clone array so we can reverse it
 								.reverse()
 								.map((post, index) => (
 									<Post

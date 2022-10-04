@@ -22,13 +22,10 @@ const queryClient = new QueryClient();
 
 export default function App(props: AppProps & { colorScheme: ColorScheme }) {
 	const { Component, session, ...pageProps } = props;
-	const [colorScheme, setColorScheme] = useState<ColorScheme>(
-		props.colorScheme
-	);
+	const [colorScheme, setColorScheme] = useState<ColorScheme>(props.colorScheme);
 
 	const toggleColorScheme = (value?: ColorScheme) => {
-		const nextColorScheme =
-			value || (colorScheme === "dark" ? "light" : "dark");
+		const nextColorScheme = value || (colorScheme === "dark" ? "light" : "dark");
 		setColorScheme(nextColorScheme);
 		setCookie("mantine-color-scheme", nextColorScheme, {
 			maxAge: 60 * 60 * 24 * 30,
@@ -49,27 +46,11 @@ export default function App(props: AppProps & { colorScheme: ColorScheme }) {
 							<link rel="shortcut icon" href="/favicon.svg" />
 						</Head>
 
-						<ColorSchemeProvider
-							colorScheme={colorScheme}
-							toggleColorScheme={toggleColorScheme}
-						>
+						<ColorSchemeProvider colorScheme={colorScheme} toggleColorScheme={toggleColorScheme}>
 							<MantineProvider
 								theme={{
 									colorScheme,
-									colors: {
-										milkTea: [
-											"#ffefe0",
-											"#f6d5ba",
-											"#ecbb92",
-											"#e3a068",
-											"#da853e",
-											"#c16b25",
-											"#97531c",
-											"#6d3c13",
-											"#432308",
-											"#1c0a00",
-										],
-									},
+									colors: {},
 								}}
 								withGlobalStyles
 								withNormalizeCSS

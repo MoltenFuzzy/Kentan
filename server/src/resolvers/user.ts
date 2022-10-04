@@ -1,21 +1,7 @@
 import argon2id from "argon2";
 import { sign } from "jsonwebtoken";
-import {
-	Arg,
-	Ctx,
-	Field,
-	ID,
-	Mutation,
-	ObjectType,
-	Query,
-	Resolver,
-} from "type-graphql";
-import {
-	User,
-	UserModel,
-	CreateUserInput,
-	AuthUserInput,
-} from "../entities/user";
+import { Arg, Ctx, Field, ID, Mutation, ObjectType, Query, Resolver } from "type-graphql";
+import { User, UserModel, CreateUserInput, AuthUserInput } from "../entities/user";
 import { Context } from "../types/context";
 import { ObjectId } from "mongodb";
 
@@ -81,13 +67,11 @@ export class UserResolver {
 		}
 		// not returning user id in jwt token because its an internal api
 		// https://stackoverflow.com/questions/65030095/should-i-return-user-data-in-an-authentication-endpoint-using-jwt
-		return user._id;
+		return user._id; // TODO: when we add more fields to user, we need to return the whole user object
 	}
 
 	@Mutation(() => User)
-	async createUser(
-		@Arg("UserInput") UserInput: CreateUserInput
-	): Promise<User | null> {
+	async createUser(@Arg("UserInput") UserInput: CreateUserInput): Promise<User | null> {
 		UserInput.password = await argon2id.hash(UserInput.password);
 		return await UserModel.create(UserInput);
 	}
