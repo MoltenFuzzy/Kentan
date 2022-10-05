@@ -18,21 +18,16 @@ import Link from "next/link";
 import { useSession, signIn } from "next-auth/react";
 import logo from "../images/logo.png";
 import { useRouter } from "next/router";
+import useAuth from "../util/useAuth";
 
 const useStyles = createStyles((theme) => ({
 	card: {
 		width: "26rem",
-		backgroundColor:
-			theme.colorScheme === "dark"
-				? theme.colors.dark[9]
-				: theme.colors.gray[4],
+		backgroundColor: theme.colorScheme === "dark" ? theme.colors.dark[9] : theme.colors.gray[4],
 	},
 
 	buttonText: {
-		color:
-			theme.colorScheme === "dark"
-				? theme.colors.dark[9]
-				: theme.colors.gray[0],
+		color: theme.colorScheme === "dark" ? theme.colors.dark[9] : theme.colors.gray[0],
 	},
 }));
 
@@ -48,61 +43,26 @@ export default function LoginPage() {
 	});
 
 	const { classes, cx } = useStyles();
-	const router = useRouter();
-	const { status } = useSession();
-
-	useEffect(() => {
-		if (status === "authenticated") {
-			void router.push("/");
-		}
-	}, [status]);
+	const status = useAuth();
 
 	return (
 		<Center style={{ height: "100vh" }}>
 			<Group className="items-center justify-center">
-				<div>
-					<Image height={500} width={500} src={logo.src} alt="logo"></Image>
-				</div>
-				<Space w={120} />
-				<Card
-					className={cx(classes.card)}
-					shadow="sm"
-					p="lg"
-					radius="md"
-					withBorder
-				>
+				<Card className={cx(classes.card)} shadow="sm" p="lg" radius="md" withBorder>
 					<form onSubmit={form.onSubmit((values) => console.log(values))}>
 						<Stack spacing="md">
-							<TextInput
-								size="lg"
-								placeholder="Email"
-								{...form.getInputProps("email")}
-							/>
+							<TextInput size="lg" placeholder="Email" {...form.getInputProps("email")} />
 
-							<PasswordInput
-								size="lg"
-								placeholder="Password"
-								{...form.getInputProps("password")}
-							/>
+							<PasswordInput size="lg" placeholder="Password" {...form.getInputProps("password")} />
 
-							<Button
-								type="submit"
-								size="lg"
-								color="milkTea.3"
-								fullWidth
-								radius="md"
-							>
+							<Button type="submit" size="lg" color="milkTea.3" fullWidth radius="md">
 								<Text weight={700} color="dark" size={26}>
 									Login
 								</Text>
 							</Button>
 						</Stack>
 					</form>
-					<Divider
-						my="sm"
-						label={<Text size={18}>or</Text>}
-						labelPosition="center"
-					/>
+					<Divider my="sm" label={<Text size={18}>or</Text>} labelPosition="center" />
 					<Stack>
 						<Link href="/register">
 							<Button size="lg" color="milkTea.3" fullWidth radius="md">

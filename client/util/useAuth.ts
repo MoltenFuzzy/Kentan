@@ -1,4 +1,4 @@
-import { useSession, signOut } from "next-auth/react";
+import { useSession, signOut, signIn } from "next-auth/react";
 import { useEffect } from "react";
 import { useRouter } from "next/router";
 
@@ -8,7 +8,8 @@ export default function useAuth(): string | null {
 
 	useEffect(() => {
 		if (status === "unauthenticated") {
-			void router.push("/login");
+		} else if (status === "authenticated") {
+			void router.push("/home");
 		}
 	}, [status]);
 

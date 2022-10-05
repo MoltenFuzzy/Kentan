@@ -39,9 +39,7 @@ export function NavBar() {
 				{link.label === "messages" && (
 					<IconMessageCircle size={35} strokeWidth={2} color={"#FFFFFF"} />
 				)}
-				{link.label === "notifications" && (
-					<IconBell size={35} strokeWidth={2} color={"#FFFFFF"} />
-				)}
+				{link.label === "notifications" && <IconBell size={35} strokeWidth={2} color={"#FFFFFF"} />}
 			</span>
 		</Link>
 	));
@@ -61,27 +59,16 @@ export function NavBar() {
 				<Group spacing={10} className={classes.links}>
 					{items}
 					<div className={cx(classes.link)}>
-						<Avatar
-							src={session?.user?.image}
-							color="green"
-							size={35}
-							radius="xl"
-						/>
+						<Link href="/profile">
+							<Avatar src={session?.user?.image} color="green" size={35} radius="xl" />
+						</Link>
 					</div>
 					<div className={cx(classes.link)}>
 						<ColorSchemeToggle />
 					</div>
 					<Button onClick={() => signOut()}> Log out</Button>
 				</Group>
-				<Burger
-					opened={opened}
-					onClick={toggle}
-					className={classes.burger}
-					size="sm"
-				/>
-				{/* <Box className={classes.toggle}>
-					<ColorSchemeToggle />
-				</Box> */}
+				<Burger opened={opened} onClick={toggle} className={classes.burger} size="sm" />
 			</Container>
 		</Header>
 	);

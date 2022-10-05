@@ -1,4 +1,4 @@
-import { GetServerSidePropsContext } from "next";
+import { GetServerSidePropsContext, NextPage } from "next";
 import { useState } from "react";
 import { AppProps } from "next/app";
 import { getCookie, setCookie } from "cookies-next";
@@ -19,6 +19,9 @@ import AuthWrapper from "../components/AuthWrapper/AuthWrapper";
 const queryClient = new QueryClient();
 
 // colors : https://mantine.dev/theming/colors/
+export type NextApplicationPage<P = any, IP = P> = NextPage<P, IP> & {
+	requireAuth?: boolean;
+};
 
 export default function App(props: AppProps & { colorScheme: ColorScheme }) {
 	const { Component, session, ...pageProps } = props;

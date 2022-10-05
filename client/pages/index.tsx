@@ -1,100 +1,65 @@
-import gqlClient from "../src/clients/gqlClient";
 import {
-	Grid,
-	Container,
-	Group,
-	MediaQuery,
-	Stack,
 	Button,
-	Col,
-	Textarea,
+	Group,
+	Card,
+	Image,
+	Text,
+	createStyles,
+	Divider,
+	Center,
 	Space,
+	PasswordInput,
+	TextInput,
+	Stack,
+	Header,
+	Container,
+	Title,
 } from "@mantine/core";
-import { useSession, signOut } from "next-auth/react";
-import { useEffect, useRef, useState } from "react";
-import { NavBar } from "../components/NavBar/NavBar";
-import { Post, PostProps } from "../components/Post/Post";
-import { useRouter } from "next/router";
-import {
-	useCreatePostMutation,
-	CreatePostMutation,
-	CreatePostInput,
-	usePostsQuery,
-	PostsQuery,
-} from "../src/generated/generates";
+import Link from "next/link";
+import logo from "../images/logo.png";
 import useAuth from "../util/useAuth";
 
-export default function HomePage() {
-	const ref = useRef<HTMLTextAreaElement>(null);
-	const { data: session } = useSession();
-	const { data: { posts } = {}, refetch } = usePostsQuery<PostsQuery, Error>(gqlClient, {});
-	const { mutate: createPost } = useCreatePostMutation<CreatePostMutation, Error>(gqlClient, {});
+export default function LandingPage() {
 	const status = useAuth();
-
-	// render user post on client
-	// send post to backend post document
-	// decide to fast reload page every minute???
-	// post state fetches like the 20 most recent posts for now
-	// TODO: later we can use categories for the post to determine which posts are displayed to the user
-	// TODO: how do we protect our api? api keys, tokens , etc
-
-	useEffect(() => {}, []);
-
-	// if im using graphql, i need to have a reason to use it
-	// https://stackoverflow.com/questions/54636363/how-to-generate-the-same-graphql-query-with-different-fields
-
-	const handleSubmit = (e: React.KeyboardEvent) => {
-		if (e.key === "Enter") {
-			// TODO: USE MORE PARTIALS TYPES
-			const newPostInput: CreatePostInput = {
-				author: {
-					_id: session?.user.id!,
-					name: session?.user.name!,
-					// !BUG: this is not working sometimes so we should have a default image or store user in context
-					avatarImage: session?.user.image,
-				},
-				body: ref.current?.value!,
-				likes: 0,
-			};
-			// when we create post it does return a post we can use to update the state <-- THIS WILL BE SLOWER SINCE WE HAVE TO WAIT FOR THE MUTATION TO FINISH
-			createPost({ postInput: newPostInput });
-			//! Probably not the best thing to do? but it is typesafe because we are using different types?
-			posts?.push(newPostInput); // to render client side for user experience
-		}
-	};
-
 	return (
-		<>
-			<NavBar />
-			<Container size="xl">
-				<Textarea label="Post Something noob" ref={ref} onKeyDown={handleSubmit}></Textarea>
-				<Space h="md" />
-				<Grid>
-					<Col span={8}>
-						<Stack spacing={10}>
-							{posts
-								?.slice() // slicing to clone array so we can reverse it
-								.reverse()
-								.map((post, index) => (
-									<Post
-										key={index}
-										avatarImage={post.author.avatarImage}
-										username={post.author.name} // ! CHANGE THIS TO USERNAME LATER
-										body={post.body}
-										likes={post.likes}
-									/>
-								))}
-						</Stack>
-					</Col>
-					<Col span={4}>
-						<MediaQuery query="(max-width: 1000px)" styles={{ display: "none" }}>
-							<Stack spacing={10}>
-								<div className="cen h-96 rounded-md bg-zinc-700"></div>
-							</Stack>
-						</MediaQuery>
-					</Col>
-				</Grid>
+		<div className="min-h-screen from-bgPrimary via-bgMiddle to-bgSecondary bg-gradient-[140deg]">
+			<Header height={56} className="flex items-center justify-between bg-bgNavBar">
+				<Title color="orange" weight={700} size={35} className="ml-14 font-libre">
+					KENTAN
+				</Title>
+				<Link href="/login">
+					<Button color="orange" radius={5} className="mr-14 shadow-lg">
+						<Text weight={700} size={18}>
+							Login
+						</Text>
+					</Button>
+				</Link>
+			</Header>
+			<Container fluid>
+				<Group position="apart" className="mt-36">
+					<div className="ml-20">
+						<Container size={800}>
+							<Title size={80} className="font-sora">
+								Touch Grass Together
+							</Title>
+							<Space h="lg"></Space>
+							<Text size={20} weight={200}>
+								A safe space for creating new relationships. Kentan provides hundreds of users a
+								cozy platform to meet new people and make new friends.
+							</Text>
+							<Space h={50}></Space>
+							<Link href="/register">
+								<Button color="orange" radius={5} size="lg" className="shadow-lg">
+									<Text weight={700} size={22}>
+										Register Now
+									</Text>
+								</Button>
+							</Link>
+						</Container>
+					</div>
+					<Image height={560} width={520} src={logo.src} alt="logo" className="mr-32"></Image>
+				</Group>
 			</Container>
-		</>
+		</div>
 	);
 }
