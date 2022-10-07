@@ -8,9 +8,11 @@ export default function useAuth(): string | null {
 
 	useEffect(() => {
 		if (status === "unauthenticated") {
+			console.log("unauthenticated");
 		} else if (status === "authenticated") {
 			void router.push("/home");
 		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [status]);
 
 	return status; // "authenticated" | "unauthenticated" | "loading"

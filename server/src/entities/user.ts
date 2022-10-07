@@ -30,8 +30,8 @@ export class User {
 	@Property({ nullable: true })
 	avatar?: string;
 
-	@Property()
-	refreshToken!: string;
+	// @Property()
+	// refreshToken!: string;
 }
 
 export const UserModel = getModelForClass(User, {

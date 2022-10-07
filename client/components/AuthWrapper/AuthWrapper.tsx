@@ -6,13 +6,10 @@ const AuthWrapper = ({ children }: { children: React.ReactNode }) => {
 	const { status } = useSession();
 	const router = useRouter();
 
-	if (status === "loading") {
-		return null;
-	}
-	// else if (status === "unauthenticated") {
-	// 	void router.push("/login");
-	// } else if (status === "authenticated") {
-	// 	void router.push("/home");
+	if (status === "loading") return null;
+	// } else if (status === "unauthenticated") {
+	// 	router.push("/login");
+	// 	return null;
 	// }
 
 	return <>{children}</>;

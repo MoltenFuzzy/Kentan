@@ -19,14 +19,27 @@ import {
 	CreatePostInput,
 	usePostsQuery,
 	PostsQuery,
+	useUserQuery,
+	UserQuery,
 } from "../src/generated/generates";
 import useAuth from "../util/useAuth";
+import { useEffect } from "react";
+import useUserStore from "../stores/user";
 
 export default function HomePage() {
 	const { data: session } = useSession();
+	// we have the user id from the session, we can use that to fetch the user data and store it in the user store
+	const { data: { user } = {} } = useUserQuery<UserQuery>(gqlClient, { userId: session?.user.id! });
 	const { data: { posts } = {}, refetch } = usePostsQuery<PostsQuery, Error>(gqlClient, {});
 	const { mutate: createPost } = useCreatePostMutation<CreatePostMutation, Error>(gqlClient, {});
+	const { setName, setEmail, setAvatar, avatar } = useUserStore();
 	const status = useAuth();
+
+	useEffect(() => {
+		setName(user?.name!);
+		setEmail(user?.email!);
+		setAvatar(user?.avatar!);
+	}, [setName, setEmail, setAvatar, user]);
 
 	// if im using graphql, i need to have a reason
 	// https://stackoverflow.com/questions/54636363/how-to-generate-the-same-graphql-query-with-different-fields
@@ -34,11 +47,8 @@ export default function HomePage() {
 	const handleSubmit = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
 		if (event.key === "Enter") {
 			// use event target value over refs
-			console.log(event.target.value);
 			const newPostInput: CreatePostInput = {
 				author: {
-					// TODO: USE MORE PARTIALS TYPES
-					// TODO: replace with context image link
 					_id: session?.user.id!,
 					name: session?.user.name!,
 					avatarImage: session?.user.image,
@@ -49,7 +59,7 @@ export default function HomePage() {
 			// when we create post it does return a post we can use to update the state
 			// ^ THIS WILL BE SLOWER SINCE WE HAVE TO WAIT FOR THE MUTATION TO FINISH
 			createPost({ postInput: newPostInput });
-			posts?.push(newPostInput); // to render client side for user experience
+			posts?.push(newPostInput); // to render client side for user experience - Optimistic Updates
 		}
 	};
 
