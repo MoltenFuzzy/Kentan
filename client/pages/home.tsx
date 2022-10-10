@@ -10,7 +10,7 @@ import {
 	Textarea,
 	Space,
 } from "@mantine/core";
-import { useSession, signOut } from "next-auth/react";
+import { useSession, signOut, getSession } from "next-auth/react";
 import { NavBar } from "../components/NavBar/NavBar";
 import { Post, PostProps } from "../components/Post/Post";
 import {
@@ -25,24 +25,38 @@ import {
 import useAuth from "../util/useAuth";
 import { useEffect } from "react";
 import useUserStore from "../stores/user";
+import { withAuth } from "../util/withAuth";
+import { GetServerSideProps, NextPage } from "next";
+import { getSdk } from "../src/graphql/sdk";
 
-export default function HomePage() {
+export const getServerSideProps: GetServerSideProps = async (ctx) => {
+	const sdk = getSdk(gqlClient);
+	const posts = (await sdk.Posts()).posts;
+	return { props: { posts } };
+};
+
+interface PageProps {
+	pageProps: {
+		posts: PostsQuery["posts"];
+	};
+}
+
+export const HomePage = ({ pageProps: { posts } }: PageProps) => {
 	const { data: session } = useSession();
 	// we have the user id from the session, we can use that to fetch the user data and store it in the user store
 	const { data: { user } = {} } = useUserQuery<UserQuery>(gqlClient, { userId: session?.user.id! });
-	const { data: { posts } = {}, refetch } = usePostsQuery<PostsQuery, Error>(gqlClient, {});
 	const { mutate: createPost } = useCreatePostMutation<CreatePostMutation, Error>(gqlClient, {});
 	const { setName, setEmail, setAvatar, avatar } = useUserStore();
-	const status = useAuth();
+
+	// useEffect(() => {
+	// 	console.log(posts);
+	// });
 
 	useEffect(() => {
 		setName(user?.name!);
 		setEmail(user?.email!);
 		setAvatar(user?.avatar!);
 	}, [setName, setEmail, setAvatar, user]);
-
-	// if im using graphql, i need to have a reason
-	// https://stackoverflow.com/questions/54636363/how-to-generate-the-same-graphql-query-with-different-fields
 
 	const handleSubmit = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
 		if (event.key === "Enter") {
@@ -97,4 +111,6 @@ export default function HomePage() {
 			</Container>
 		</>
 	);
-}
+};
+
+export default HomePage;
