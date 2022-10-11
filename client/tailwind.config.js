@@ -27,11 +27,12 @@ module.exports = {
 				bgMiddle: "#271E24",
 				bgSecondary: "#622525",
 				bgNavBar: "#333333",
+				bgPost: "#181515",
 			},
 		},
 	},
 	plugins: [
-		plugin(function ({ matchUtilities, theme }) {
+		function ({ matchUtilities, theme }) {
 			matchUtilities(
 				{
 					"bg-gradient": (angle) => ({
@@ -53,6 +54,10 @@ module.exports = {
 					}),
 				}
 			);
-		}),
+		},
+		function ({ addVariant }) {
+			addVariant("child", "& > *");
+			addVariant("child-hover", "& > *:hover");
+		},
 	],
 };

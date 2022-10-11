@@ -28,7 +28,7 @@ const links = [
 	{ link: "notifications", label: "notifications" },
 ];
 
-export function NavBar() {
+export function NavBar({ marginBottom }: { marginBottom: number }) {
 	const [opened, { toggle }] = useDisclosure(false);
 	const { classes, cx } = useStyles();
 	const { data: session, status } = useSession();
@@ -45,7 +45,7 @@ export function NavBar() {
 	));
 
 	return (
-		<Header className={classes.head} height={56} mb={30}>
+		<Header className={classes.head} height={56} mb={marginBottom}>
 			<Container size="xl" className={classes.header}>
 				<Link href="/">
 					<Image width={45} src={logo.src} alt="logo" />
@@ -66,7 +66,10 @@ export function NavBar() {
 					<div className={cx(classes.link)}>
 						<ColorSchemeToggle />
 					</div>
-					<Button onClick={() => signOut()}> Log out</Button>
+					<Button color="orange" onClick={() => signOut()}>
+						{" "}
+						Log out
+					</Button>
 				</Group>
 				<Burger opened={opened} onClick={toggle} className={classes.burger} size="sm" />
 			</Container>

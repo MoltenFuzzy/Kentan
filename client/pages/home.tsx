@@ -5,6 +5,7 @@ import {
 	Group,
 	MediaQuery,
 	Stack,
+	Text,
 	Button,
 	Col,
 	Textarea,
@@ -23,11 +24,12 @@ import {
 	UserQuery,
 } from "../src/generated/generates";
 import useAuth from "../util/useAuth";
-import { useEffect } from "react";
+import { MouseEventHandler, useEffect, useState } from "react";
 import useUserStore from "../stores/user";
 import { withAuth } from "../util/withAuth";
 import { GetServerSideProps, NextPage } from "next";
 import { getSdk } from "../src/graphql/sdk";
+import { PostForm } from "../components/PostForm/PostForm";
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
 	const sdk = getSdk(gqlClient);
@@ -45,47 +47,26 @@ export const HomePage = ({ pageProps: { posts } }: PageProps) => {
 	const { data: session } = useSession();
 	// we have the user id from the session, we can use that to fetch the user data and store it in the user store
 	const { data: { user } = {} } = useUserQuery<UserQuery>(gqlClient, { userId: session?.user.id! });
-	const { mutate: createPost } = useCreatePostMutation<CreatePostMutation, Error>(gqlClient, {});
-	const { setName, setEmail, setAvatar, avatar } = useUserStore();
-
-	// useEffect(() => {
-	// 	console.log(posts);
-	// });
+	const { setId, setName, setEmail, setAvatar, avatar } = useUserStore();
 
 	useEffect(() => {
+		setId(user?._id!);
 		setName(user?.name!);
 		setEmail(user?.email!);
 		setAvatar(user?.avatar!);
 	}, [setName, setEmail, setAvatar, user]);
 
-	const handleSubmit = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
-		if (event.key === "Enter") {
-			// use event target value over refs
-			const newPostInput: CreatePostInput = {
-				author: {
-					_id: session?.user.id!,
-					name: session?.user.name!,
-					avatarImage: session?.user.image,
-				},
-				body: event.target.value,
-				likes: 0,
-			};
-			// when we create post it does return a post we can use to update the state
-			// ^ THIS WILL BE SLOWER SINCE WE HAVE TO WAIT FOR THE MUTATION TO FINISH
-			createPost({ postInput: newPostInput });
-			posts?.push(newPostInput); // to render client side for user experience - Optimistic Updates
-		}
-	};
-
 	return (
 		<>
-			<NavBar />
+			<NavBar marginBottom={20} />
 			<Container size="xl">
-				<Textarea label="Post Something noob" onKeyDown={handleSubmit}></Textarea>
-				<Space h="md" />
-				<Grid>
-					<Col span={8}>
+				<Grid grow>
+					<MediaQuery query="(max-width: 900px)" styles={{ display: "none" }}>
+						<Col span={2} />
+					</MediaQuery>
+					<Col span={7} className="flex justify-center">
 						<Stack spacing={10}>
+							<PostForm posts={posts} />
 							{posts
 								?.slice() // slicing to clone array so we can reverse it
 								.reverse()
@@ -100,13 +81,13 @@ export const HomePage = ({ pageProps: { posts } }: PageProps) => {
 								))}
 						</Stack>
 					</Col>
-					<Col span={4}>
-						<MediaQuery query="(max-width: 1000px)" styles={{ display: "none" }}>
+					<MediaQuery query="(max-width: 900px)" styles={{ display: "none" }}>
+						<Col span={3}>
 							<Stack spacing={10}>
 								<div className="h-96 rounded-md bg-zinc-700"></div>
 							</Stack>
-						</MediaQuery>
-					</Col>
+						</Col>
+					</MediaQuery>
 				</Grid>
 			</Container>
 		</>

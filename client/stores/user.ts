@@ -2,6 +2,8 @@ import create from "zustand";
 import { devtools } from "zustand/middleware";
 
 interface UserState {
+	id: string;
+	setId: (id: string) => void;
 	name: string;
 	setName: (name: string) => void;
 	username: string;
@@ -14,6 +16,13 @@ interface UserState {
 
 const useUserStore = create<UserState, [["zustand/devtools", UserState]]>(
 	devtools((set) => ({
+		id: "",
+		setId: (id) =>
+			set((state) => ({
+				...state,
+				id,
+			})),
+
 		name: "",
 		setName: (name) =>
 			set((state) => ({
