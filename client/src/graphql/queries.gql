@@ -1,5 +1,5 @@
-query Posts {
-  posts {
+query Posts($limit: Float!) {
+  posts(limit: $limit) {
     body
     likes
     author {

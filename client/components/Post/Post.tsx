@@ -17,14 +17,14 @@ const Post = ({ body, username, avatarImage }: PostProps) => {
 				<Avatar src={avatarImage} radius="xl" />
 				<Text weight={700}>{username}</Text>
 			</div> */}
-			<Link href="/hello" passHref>
-				<Group>
-					<Avatar src={avatarImage} radius="xl" />
+			<Group>
+				<Avatar src={avatarImage} radius="xl" />
+				<Link href={`${username}`} passHref>
 					<Text className="hover:underline" weight={700}>
 						{username}
 					</Text>
-				</Group>
-			</Link>
+				</Link>
+			</Group>
 			<Text size="sm" className="my-3 break-all">
 				{body}
 			</Text>

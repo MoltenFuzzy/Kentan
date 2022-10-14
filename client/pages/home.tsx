@@ -32,8 +32,8 @@ import { getSdk } from "../src/graphql/sdk";
 import { PostForm } from "../components/PostForm/PostForm";
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
-	const sdk = getSdk(gqlClient);
-	const posts = (await sdk.Posts()).posts;
+	const { Posts } = getSdk(gqlClient);
+	const posts = (await Posts({ limit: 1 })).posts;
 	return { props: { posts } };
 };
 
@@ -67,24 +67,21 @@ export const HomePage = ({ pageProps: { posts } }: PageProps) => {
 					<Col span={7} className="flex justify-center">
 						<Stack spacing={10}>
 							<PostForm posts={posts} />
-							{posts
-								?.slice() // slicing to clone array so we can reverse it
-								.reverse()
-								.map((post, index) => (
-									<Post
-										key={index}
-										avatarImage={post.author.avatarImage}
-										username={post.author.name} // ! CHANGE THIS TO USERNAME LATER
-										body={post.body}
-										likes={post.likes}
-									/>
-								))}
+							{posts.map((post, index) => (
+								<Post
+									key={index}
+									avatarImage={post.author.avatarImage}
+									username={post.author.name} // ! CHANGE THIS TO USERNAME LATER
+									body={post.body}
+									likes={post.likes}
+								/>
+							))}
 						</Stack>
 					</Col>
 					<MediaQuery query="(max-width: 900px)" styles={{ display: "none" }}>
 						<Col span={3}>
 							<Stack spacing={10}>
-								<div className="h-96 rounded-md bg-zinc-700"></div>
+								<div className="h-96 rounded-md bg-bgPost"></div>
 							</Stack>
 						</Col>
 					</MediaQuery>

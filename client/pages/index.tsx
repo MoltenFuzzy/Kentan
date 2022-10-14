@@ -17,10 +17,8 @@ import {
 } from "@mantine/core";
 import Link from "next/link";
 import logo from "../images/logo.png";
-import useAuth from "../util/useAuth";
 
 export default function LandingPage() {
-	const status = useAuth();
 	return (
 		<div className="min-h-screen from-bgPrimary via-bgMiddle to-bgSecondary bg-gradient-[140deg]">
 			<Header height={56} className="flex items-center justify-between bg-bgNavBar">

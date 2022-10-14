@@ -117,6 +117,11 @@ export type QueryPostByAuthorIdArgs = {
 };
 
 
+export type QueryPostsArgs = {
+  limit?: InputMaybe<Scalars['Float']>;
+};
+
+
 export type QueryUserArgs = {
   id: Scalars['String'];
 };
@@ -158,7 +163,9 @@ export type ProviderAuthUserMutationVariables = Exact<{
 
 export type ProviderAuthUserMutation = { __typename?: 'Mutation', providerAuthUser: string };
 
-export type PostsQueryVariables = Exact<{ [key: string]: never; }>;
+export type PostsQueryVariables = Exact<{
+  limit: Scalars['Float'];
+}>;
 
 
 export type PostsQuery = { __typename?: 'Query', posts: Array<{ __typename?: 'Post', body: string, likes: number, author: { __typename?: 'Author', _id: string, avatarImage?: string | null, name: string } }> };
@@ -267,8 +274,8 @@ export const useProviderAuthUserMutation = <
       options
     );
 export const PostsDocument = `
-    query Posts {
-  posts {
+    query Posts($limit: Float!) {
+  posts(limit: $limit) {
     body
     likes
     author {
@@ -284,12 +291,12 @@ export const usePostsQuery = <
       TError = unknown
     >(
       client: GraphQLClient,
-      variables?: PostsQueryVariables,
+      variables: PostsQueryVariables,
       options?: UseQueryOptions<PostsQuery, TError, TData>,
       headers?: RequestInit['headers']
     ) =>
     useQuery<PostsQuery, TError, TData>(
-      variables === undefined ? ['Posts'] : ['Posts', variables],
+      ['Posts', variables],
       fetcher<PostsQuery, PostsQueryVariables>(client, PostsDocument, variables, headers),
       options
     );

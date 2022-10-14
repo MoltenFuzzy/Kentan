@@ -113,6 +113,11 @@ export type QueryPostByAuthorIdArgs = {
 };
 
 
+export type QueryPostsArgs = {
+  limit?: InputMaybe<Scalars['Float']>;
+};
+
+
 export type QueryUserArgs = {
   id: Scalars['String'];
 };
@@ -154,7 +159,9 @@ export type ProviderAuthUserMutationVariables = Exact<{
 
 export type ProviderAuthUserMutation = { __typename?: 'Mutation', providerAuthUser: string };
 
-export type PostsQueryVariables = Exact<{ [key: string]: never; }>;
+export type PostsQueryVariables = Exact<{
+  limit: Scalars['Float'];
+}>;
 
 
 export type PostsQuery = { __typename?: 'Query', posts: Array<{ __typename?: 'Post', body: string, likes: number, author: { __typename?: 'Author', _id: string, avatarImage?: string | null, name: string } }> };
@@ -211,8 +218,8 @@ export const ProviderAuthUserDocument = gql`
 }
     `;
 export const PostsDocument = gql`
-    query Posts {
-  posts {
+    query Posts($limit: Float!) {
+  posts(limit: $limit) {
     body
     likes
     author {
@@ -280,7 +287,7 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
     ProviderAuthUser(variables: ProviderAuthUserMutationVariables, requestHeaders?: Dom.RequestInit["headers"]): Promise<ProviderAuthUserMutation> {
       return withWrapper((wrappedRequestHeaders) => client.request<ProviderAuthUserMutation>(ProviderAuthUserDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'ProviderAuthUser', 'mutation');
     },
-    Posts(variables?: PostsQueryVariables, requestHeaders?: Dom.RequestInit["headers"]): Promise<PostsQuery> {
+    Posts(variables: PostsQueryVariables, requestHeaders?: Dom.RequestInit["headers"]): Promise<PostsQuery> {
       return withWrapper((wrappedRequestHeaders) => client.request<PostsQuery>(PostsDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'Posts', 'query');
     },
     PostsAll(variables?: PostsAllQueryVariables, requestHeaders?: Dom.RequestInit["headers"]): Promise<PostsAllQuery> {

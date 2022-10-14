@@ -1,8 +1,8 @@
 import NextAuth from "next-auth/next";
 import GoogleProvider from "next-auth/providers/google";
-import gqlClient from "../../../src/clients/gqlClient";
+import gqlClient from "@gqlSDK/clients/gqlClient";
 import { Account, User } from "next-auth";
-import { getSdk } from "../../../src/graphql/sdk"; // THIS FILE IS THE GENERATED FILE
+import { getSdk } from "@gqlSDK/graphql/sdk"; // THIS FILE IS THE GENERATED FILE
 
 export default NextAuth({
 	providers: [

@@ -31,7 +31,7 @@ const links = [
 export function NavBar({ marginBottom }: { marginBottom: number }) {
 	const [opened, { toggle }] = useDisclosure(false);
 	const { classes, cx } = useStyles();
-	const { data: session, status } = useSession();
+	const { data: session } = useSession();
 
 	const items = links.map((link, index) => (
 		<Link key={index} href={link.link}>
@@ -59,15 +59,12 @@ export function NavBar({ marginBottom }: { marginBottom: number }) {
 				<Group spacing={10} className={classes.links}>
 					{items}
 					<div className={cx(classes.link)}>
-						<Link href="/profile">
+						<Link href={`${session?.user?.name}`}>
 							<Avatar src={session?.user?.image} color="green" size={35} radius="xl" />
 						</Link>
 					</div>
-					<div className={cx(classes.link)}>
-						<ColorSchemeToggle />
-					</div>
+
 					<Button color="orange" onClick={() => signOut()}>
-						{" "}
 						Log out
 					</Button>
 				</Group>
