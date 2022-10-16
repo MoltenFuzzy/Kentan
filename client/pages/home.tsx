@@ -23,10 +23,8 @@ import {
 	useUserQuery,
 	UserQuery,
 } from "../src/generated/generates";
-import useAuth from "../util/useAuth";
 import { MouseEventHandler, useEffect, useState } from "react";
 import useUserStore from "../stores/user";
-import { withAuth } from "../util/withAuth";
 import { GetServerSideProps, NextPage } from "next";
 import { getSdk } from "../src/graphql/sdk";
 import { PostForm } from "../components/PostForm/PostForm";

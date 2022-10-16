@@ -18,7 +18,6 @@ import Link from "next/link";
 import { useSession, signIn } from "next-auth/react";
 import logo from "../images/logo.png";
 import { useRouter } from "next/router";
-import useAuth from "../util/useAuth";
 
 const useStyles = createStyles((theme) => ({
 	card: {
@@ -43,7 +42,6 @@ export default function LoginPage() {
 	});
 
 	const { classes, cx } = useStyles();
-	const status = useAuth();
 
 	return (
 		<Center style={{ height: "100vh" }}>

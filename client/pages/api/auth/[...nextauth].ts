@@ -5,13 +5,14 @@ import { Account, User } from "next-auth";
 import { getSdk } from "@gqlSDK/graphql/sdk"; // THIS FILE IS THE GENERATED FILE
 
 export default NextAuth({
+	secret: process.env.JWT_SECRET!,
 	providers: [
 		GoogleProvider({
 			clientId: process.env.GOOGLE_CLIENT_ID!,
 			clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+			checks: "state",
 		}),
 	],
-	secret: process.env.JWT_SECRET,
 	pages: { signIn: "/login" },
 	session: {
 		strategy: "jwt",
@@ -19,7 +20,7 @@ export default NextAuth({
 	},
 	callbacks: {
 		async redirect({ url, baseUrl }) {
-			return baseUrl;
+			return baseUrl + "/home";
 		},
 
 		async signIn({ user, account, profile, email, credentials }) {
@@ -59,7 +60,7 @@ export default NextAuth({
 		},
 	},
 	// Enable debug messages in the console if you are having problems
-	debug: process.env.NODE_ENV === "development",
+	// debug: process.env.NODE_ENV === "development",
 });
 
 function AuthUser(user: User, account: Account) {
