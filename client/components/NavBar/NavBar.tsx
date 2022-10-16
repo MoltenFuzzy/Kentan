@@ -37,9 +37,9 @@ export function NavBar({ marginBottom }: { marginBottom: number }) {
 		<Link key={index} href={link.link}>
 			<span className={cx(classes.link)}>
 				{link.label === "messages" && (
-					<IconMessageCircle size={35} strokeWidth={2} color={"#FFFFFF"} />
+					<IconMessageCircle size={30} strokeWidth={2} color={"#FFFFFF"} />
 				)}
-				{link.label === "notifications" && <IconBell size={35} strokeWidth={2} color={"#FFFFFF"} />}
+				{link.label === "notifications" && <IconBell size={30} strokeWidth={2} color={"#FFFFFF"} />}
 			</span>
 		</Link>
 	));

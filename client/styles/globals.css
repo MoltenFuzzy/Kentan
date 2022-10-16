@@ -1,2 +1,10 @@
 @tailwind components;
 @tailwind utilities;
+
+.background {
+	background-color: #131c24;
+	background-image: url("../images/logo.png"), url("../images/bg.png");
+	background-position: top 15px left 20px, top left;
+	background-repeat: no-repeat;
+	background-size: 92px 100px, cover;
+}

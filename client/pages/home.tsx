@@ -33,7 +33,7 @@ import { PostForm } from "../components/PostForm/PostForm";
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
 	const { Posts } = getSdk(gqlClient);
-	const posts = (await Posts({ limit: 1 })).posts;
+	const posts = (await Posts({ limit: 10 })).posts;
 	return { props: { posts } };
 };
 
@@ -65,7 +65,7 @@ export const HomePage = ({ pageProps: { posts } }: PageProps) => {
 						<Col span={2} />
 					</MediaQuery>
 					<Col span={7} className="flex justify-center">
-						<Stack spacing={10}>
+						<Stack className="w-full" spacing={10}>
 							<PostForm posts={posts} />
 							{posts.map((post, index) => (
 								<Post

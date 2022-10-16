@@ -1,7 +1,15 @@
 import React from "react";
-import { useMantineColorScheme, Button, Text, Group, Avatar, Stack } from "@mantine/core";
+import {
+	useMantineColorScheme,
+	Button,
+	Text,
+	Group,
+	Avatar,
+	Stack,
+	ActionIcon,
+} from "@mantine/core";
 import Link from "next/link";
-
+import { IconFlame, IconMessage } from "@tabler/icons";
 export interface PostProps {
 	username: string;
 	avatarImage: string | undefined | null;
@@ -13,10 +21,6 @@ const Post = ({ body, username, avatarImage }: PostProps) => {
 	const { colorScheme, toggleColorScheme } = useMantineColorScheme();
 	return (
 		<Stack className="rounded-md bg-bgPost p-6" spacing={7}>
-			{/* <div className="flex items-center child:mr-4">
-				<Avatar src={avatarImage} radius="xl" />
-				<Text weight={700}>{username}</Text>
-			</div> */}
 			<Group>
 				<Avatar src={avatarImage} radius="xl" />
 				<Link href={`${username}`} passHref>
@@ -29,8 +33,12 @@ const Post = ({ body, username, avatarImage }: PostProps) => {
 				{body}
 			</Text>
 			<Group className="mt-2">
-				<Button size="xs">Like</Button>
-				<Button size="xs">Reply</Button>
+				<ActionIcon color="dark" size="lg">
+					<IconFlame size={100} strokeWidth={2} color={"orange"} />
+				</ActionIcon>
+				<ActionIcon color="dark" size="lg">
+					<IconMessage size={100} strokeWidth={2} color={"orange"} />
+				</ActionIcon>
 			</Group>
 		</Stack>
 	);
