@@ -17,7 +17,7 @@ export interface PostProps {
 	likes: number;
 }
 
-const Post = ({ body, username, avatarImage }: PostProps) => {
+export const Post = ({ body, username, avatarImage }: PostProps) => {
 	const { colorScheme, toggleColorScheme } = useMantineColorScheme();
 	return (
 		<Stack className="rounded-md bg-bgPost p-6" spacing={7}>
@@ -43,5 +43,3 @@ const Post = ({ body, username, avatarImage }: PostProps) => {
 		</Stack>
 	);
 };
-
-export { Post };
