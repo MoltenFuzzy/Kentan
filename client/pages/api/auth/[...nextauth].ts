@@ -13,15 +13,15 @@ export default NextAuth({
 			checks: "state",
 		}),
 	],
-	pages: { signIn: "/login" },
+	pages: { signIn: "/login", signOut: "/" },
 	session: {
 		strategy: "jwt",
 		maxAge: 60 * 60 * 24 * 7, // 7 days
 	},
 	callbacks: {
-		async redirect({ url, baseUrl }) {
-			return baseUrl + "/home";
-		},
+		// async redirect({ url, baseUrl }) {
+		// 	return baseUrl;
+		// },
 
 		async signIn({ user, account, profile, email, credentials }) {
 			// if signin provider gives us access token, and etc tokens, then we dont need to generate one in the backend

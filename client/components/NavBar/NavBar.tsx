@@ -39,7 +39,9 @@ export function NavBar({ marginBottom }: { marginBottom: number }) {
 				{link.label === "messages" && (
 					<IconMessageCircle size={30} strokeWidth={2} color={"#FFFFFF"} />
 				)}
-				{link.label === "notifications" && <IconBell size={30} strokeWidth={2} color={"#FFFFFF"} />}
+				{link.label === "notifications" && (
+					<IconBell size={30} strokeWidth={2} color={"#FFFFFF"} />
+				)}
 			</span>
 		</Link>
 	));
@@ -60,15 +62,32 @@ export function NavBar({ marginBottom }: { marginBottom: number }) {
 					{items}
 					<div className={cx(classes.link)}>
 						<Link href={`${session?.user?.name}`}>
-							<Avatar src={session?.user?.image} color="green" size={35} radius="xl" />
+							<Avatar
+								src={session?.user?.image}
+								color="green"
+								size={35}
+								radius="xl"
+							/>
 						</Link>
 					</div>
 
-					<Button color="orange" onClick={() => signOut()}>
+					<Button
+						color="orange"
+						onClick={() =>
+							signOut({
+								callbackUrl: `${window.location.origin}`,
+							})
+						}
+					>
 						Log out
 					</Button>
 				</Group>
-				<Burger opened={opened} onClick={toggle} className={classes.burger} size="sm" />
+				<Burger
+					opened={opened}
+					onClick={toggle}
+					className={classes.burger}
+					size="sm"
+				/>
 			</Container>
 		</Header>
 	);
