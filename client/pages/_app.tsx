@@ -25,10 +25,13 @@ export type NextApplicationPage<P = any, IP = P> = NextPage<P, IP> & {
 
 export default function App(props: AppProps & { colorScheme: ColorScheme }) {
 	const { Component, session, ...pageProps } = props;
-	const [colorScheme, setColorScheme] = useState<ColorScheme>(props.colorScheme);
+	const [colorScheme, setColorScheme] = useState<ColorScheme>(
+		props.colorScheme
+	);
 
 	const toggleColorScheme = (value?: ColorScheme) => {
-		const nextColorScheme = value || (colorScheme === "dark" ? "light" : "dark");
+		const nextColorScheme =
+			value || (colorScheme === "dark" ? "light" : "dark");
 		setColorScheme(nextColorScheme);
 		setCookie("mantine-color-scheme", nextColorScheme, {
 			maxAge: 60 * 60 * 24 * 30,
@@ -49,7 +52,10 @@ export default function App(props: AppProps & { colorScheme: ColorScheme }) {
 							<link rel="shortcut icon" href="/favicon.svg" />
 						</Head>
 
-						<ColorSchemeProvider colorScheme={colorScheme} toggleColorScheme={toggleColorScheme}>
+						<ColorSchemeProvider
+							colorScheme={colorScheme}
+							toggleColorScheme={toggleColorScheme}
+						>
 							<MantineProvider
 								theme={{
 									colorScheme,

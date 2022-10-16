@@ -15,10 +15,41 @@ import {
 	Container,
 	Title,
 } from "@mantine/core";
+import { GetServerSidePropsContext } from "next";
+import { Session } from "next-auth";
+import { getSession } from "next-auth/react";
 import Link from "next/link";
+import { useEffect } from "react";
 import logo from "../images/logo.png";
 
-export default function LandingPage() {
+export async function getServerSideProps(context: GetServerSidePropsContext) {
+	const session = await getSession(context);
+
+	if (session) {
+		return {
+			redirect: {
+				destination: "/home",
+				permanent: false,
+			},
+		};
+	}
+
+	return {
+		props: { session },
+	};
+}
+
+interface PageProps {
+	pageProps: {
+		session: Session;
+	};
+}
+
+export default function LandingPage({ pageProps: { session } }: PageProps) {
+	useEffect(() => {
+		console.log(session);
+	});
+
 	return (
 		<div className="min-h-screen from-bgPrimary via-bgMiddle to-bgSecondary bg-gradient-[140deg]">
 			<Header height={56} className="flex items-center justify-between bg-bgNavBar">

@@ -26,7 +26,7 @@ export default NextAuth({
 		async signIn({ user, account, profile, email, credentials }) {
 			// if signin provider gives us access token, and etc tokens, then we dont need to generate one in the backend
 			// if not then we have to do it for all providers
-			if (account.provider === "google") {
+			if (account?.provider === "google") {
 				user.id = (await AuthUser(user, account)).providerAuthUser;
 				return true;
 			}

@@ -12,25 +12,56 @@ import {
 	PasswordInput,
 	TextInput,
 	Stack,
+	Container,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import Link from "next/link";
-import { useSession, signIn } from "next-auth/react";
-import logo from "../images/logo.png";
-import { useRouter } from "next/router";
+import { signIn, getSession } from "next-auth/react";
+import { GetServerSidePropsContext } from "next";
+import { Session } from "next-auth";
 
 const useStyles = createStyles((theme) => ({
 	card: {
 		width: "26rem",
-		backgroundColor: theme.colorScheme === "dark" ? theme.colors.dark[9] : theme.colors.gray[4],
+		backgroundColor:
+			theme.colorScheme === "dark"
+				? theme.colors.dark[9]
+				: theme.colors.gray[4],
 	},
 
 	buttonText: {
-		color: theme.colorScheme === "dark" ? theme.colors.dark[9] : theme.colors.gray[0],
+		color:
+			theme.colorScheme === "dark"
+				? theme.colors.dark[9]
+				: theme.colors.gray[0],
 	},
 }));
 
-export default function LoginPage() {
+export async function getServerSideProps(context: GetServerSidePropsContext) {
+	const session = await getSession(context);
+
+	if (session) {
+		return {
+			redirect: {
+				destination: "/home",
+				permanent: false,
+			},
+		};
+	}
+
+	return {
+		props: { session },
+	};
+}
+
+interface PageProps {
+	pageProps: {
+		session: Session;
+	};
+}
+
+export default function LoginPage({ pageProps: { session } }: PageProps) {
+	const { classes, cx } = useStyles();
 	const form = useForm({
 		initialValues: {
 			email: "",
@@ -41,48 +72,75 @@ export default function LoginPage() {
 		},
 	});
 
-	const { classes, cx } = useStyles();
-
 	return (
-		<Center style={{ height: "100vh" }}>
-			<Group className="items-center justify-center">
-				<Card className={cx(classes.card)} shadow="sm" p="lg" radius="md" withBorder>
-					<form onSubmit={form.onSubmit((values) => console.log(values))}>
-						<Stack spacing="md">
-							<TextInput size="lg" placeholder="Email" {...form.getInputProps("email")} />
-
-							<PasswordInput size="lg" placeholder="Password" {...form.getInputProps("password")} />
-
-							<Button type="submit" size="lg" color="milkTea.3" fullWidth radius="md">
-								<Text weight={700} color="dark" size={26}>
-									Login
-								</Text>
-							</Button>
-						</Stack>
-					</form>
-					<Divider my="sm" label={<Text size={18}>or</Text>} labelPosition="center" />
-					<Stack>
-						<Link href="/register">
-							<Button size="lg" color="milkTea.3" fullWidth radius="md">
-								<Text weight={700} color="dark" size={26}>
-									Register
-								</Text>
-							</Button>
-						</Link>
-						<Button
+		//TODO: FIX RESPONSIVENESS
+		<div className="background h-screen p-12">
+			<Container className="mt-18">
+				<h1 className="text-center font-libre text-5xl text-orange">KENTAN</h1>
+				<Space h="lg"></Space>
+				<Text size={30} color="white" className="p-5 text-center">
+					Login
+				</Text>
+				<form onSubmit={form.onSubmit((values) => console.log(values))}>
+					<Stack spacing="lg">
+						<TextInput
+							styles={{
+								input: { borderColor: "#d0d4d9ab", background: "#333333" },
+							}}
 							size="lg"
-							color="milkTea.3"
-							fullWidth
 							radius="md"
-							onClick={() => signIn("google")}
+							placeholder="Email"
+							{...form.getInputProps("email")}
+						/>
+						<PasswordInput
+							styles={{
+								input: { borderColor: "#d0d4d9ab", background: "#333333" },
+							}}
+							size="lg"
+							radius="md"
+							placeholder="Password"
+						/>
+
+						<Button
+							type="submit"
+							color="orange"
+							radius={5}
+							size="lg"
+							className="shadow-lg"
 						>
-							<Text weight={700} color="dark" size={26}>
-								Sign in with Google
+							<Text weight={700} size={20}>
+								Login
 							</Text>
 						</Button>
 					</Stack>
-				</Card>
-			</Group>
-		</Center>
+				</form>
+				<Divider
+					my="sm"
+					label={<Text size={18}>or</Text>}
+					labelPosition="center"
+				/>
+				<Stack>
+					<Link href="/register">
+						<Button color="orange" radius={5} size="lg" className="shadow-lg">
+							<Text weight={700} size={20}>
+								Register
+							</Text>
+						</Button>
+					</Link>
+					<Button
+						type="submit"
+						color="orange"
+						radius={5}
+						size="lg"
+						className="mb-10 shadow-lg"
+						onClick={() => signIn("google")}
+					>
+						<Text weight={700} size={20}>
+							Login With Google
+						</Text>
+					</Button>
+				</Stack>
+			</Container>
+		</div>
 	);
 }
