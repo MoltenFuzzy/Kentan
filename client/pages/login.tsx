@@ -23,17 +23,11 @@ import { Session } from "next-auth";
 const useStyles = createStyles((theme) => ({
 	card: {
 		width: "26rem",
-		backgroundColor:
-			theme.colorScheme === "dark"
-				? theme.colors.dark[9]
-				: theme.colors.gray[4],
+		backgroundColor: theme.colorScheme === "dark" ? theme.colors.dark[9] : theme.colors.gray[4],
 	},
 
 	buttonText: {
-		color:
-			theme.colorScheme === "dark"
-				? theme.colors.dark[9]
-				: theme.colors.gray[0],
+		color: theme.colorScheme === "dark" ? theme.colors.dark[9] : theme.colors.gray[0],
 	},
 }));
 
@@ -101,24 +95,14 @@ export default function LoginPage({ pageProps: { session } }: PageProps) {
 							placeholder="Password"
 						/>
 
-						<Button
-							type="submit"
-							color="orange"
-							radius={5}
-							size="lg"
-							className="shadow-lg"
-						>
+						<Button type="submit" color="orange" radius={5} size="lg" className="shadow-lg">
 							<Text weight={700} size={20}>
 								Login
 							</Text>
 						</Button>
 					</Stack>
 				</form>
-				<Divider
-					my="sm"
-					label={<Text size={18}>or</Text>}
-					labelPosition="center"
-				/>
+				<Divider my="sm" label={<Text size={18}>or</Text>} labelPosition="center" />
 				<Stack>
 					<Link href="/register">
 						<Button color="orange" radius={5} size="lg" className="shadow-lg">

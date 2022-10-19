@@ -15,10 +15,7 @@ import { GetServerSidePropsContext } from "next";
 import { Session } from "next-auth";
 import { getSession } from "next-auth/react";
 import gqlClient from "../src/clients/gqlClient";
-import {
-	CreateUserMutation,
-	useCreateUserMutation,
-} from "../src/generated/generates";
+import { CreateUserMutation, useCreateUserMutation } from "../src/generated/generates";
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
 	const session = await getSession(context);
@@ -53,19 +50,14 @@ export default function RegisterPage() {
 
 		validate: {
 			username: (value) =>
-				/^[a-zA-Z0-9](_(?!(\.|_))|\.(?!(_|\.))|[a-zA-Z0-9]){6,18}[a-zA-Z0-9]$/.test(
-					value
-				)
+				/^[a-zA-Z0-9](_(?!(\.|_))|\.(?!(_|\.))|[a-zA-Z0-9]){6,18}[a-zA-Z0-9]$/.test(value)
 					? null
 					: "Invalid username",
 			email: (value) => (/^\S+@\S+$/.test(value) ? null : "Invalid email"),
 		},
 	});
 
-	const { mutate } = useCreateUserMutation<CreateUserMutation, Error>(
-		gqlClient,
-		{}
-	);
+	const { mutate } = useCreateUserMutation<CreateUserMutation, Error>(gqlClient, {});
 
 	return (
 		//TODO: FIX RESPONSIVENESS
@@ -113,12 +105,7 @@ export default function RegisterPage() {
 							placeholder="Verify Password"
 						/>
 
-						<Button
-							color="orange"
-							radius={5}
-							size="lg"
-							className="mb-10 shadow-lg"
-						>
+						<Button color="orange" radius={5} size="lg" className="mb-10 shadow-lg">
 							<Text weight={700} size={20}>
 								Register Now
 							</Text>
