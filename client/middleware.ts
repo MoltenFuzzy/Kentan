@@ -7,7 +7,7 @@ import { NextResponse } from "next/server";
 export default withAuth(
 	// `withAuth` augments your `Request` with the user's token.
 	function middleware(req) {
-		console.log(req.nextauth.token);
+		// console.log(req.nextauth.token);
 		return NextResponse.next();
 		// return NextResponse.rewrite(new URL("/home", req.url));
 	}
