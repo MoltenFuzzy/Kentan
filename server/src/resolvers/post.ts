@@ -18,4 +18,11 @@ export class PostResolver {
 	async createPost(@Arg("PostInput") PostInput: CreatePostInput): Promise<Post | null> {
 		return await PostModel.create(PostInput);
 	}
+
+	@Mutation(() => Boolean)
+	async deletePost(@Arg("id", () => String) id: string): Promise<boolean> {
+		const post = await PostModel.deleteOne({ _id: id });
+		if (post) return true;
+		else return false;
+	}
 }

@@ -49,9 +49,9 @@ export class Post {
 	categories: string[];
 
 	// add comments object
-	// @Field()
-	// @Property()
-	// comments: number;
+	@Field((type) => [String])
+	@Property({ type: String, required: true, default: [] })
+	comments: string[];
 
 	@Field()
 	@Property()
