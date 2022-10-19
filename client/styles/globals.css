@@ -1,3 +1,4 @@
+/* @tailwind base; */
 @tailwind components;
 @tailwind utilities;
 
@@ -7,4 +8,13 @@
 	background-position: top 15px left 20px, top left;
 	background-repeat: no-repeat;
 	background-size: 92px 100px, cover;
+}
+
+.post-border {
+	border-radius: 10px;
+	border: 1px solid #2d3748;
+}
+
+.post-border:hover {
+	border: 1px solid #3f4c63;
 }
