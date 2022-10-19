@@ -1,19 +1,26 @@
 import { createStyles } from "@mantine/core";
 
 export default createStyles((theme) => ({
-	head: {
+	header: {
 		boxShadow: "0 2px 4px 0 rgba(0,0,0,.3)",
-		backgroundColor:
-			theme.colorScheme === "dark"
-				? theme.colors.dark[9]
-				: theme.colors.gray[0],
+		backgroundColor: theme.colorScheme === "dark" ? "#333333" : theme.colors.gray[0],
 	},
 
-	header: {
-		display: "flex",
-		justifyContent: "space-evenly",
-		alignItems: "center",
+	container: {
 		height: "100%",
+		alignItems: "center",
+		display: "grid",
+		gridTemplateColumns: "1fr auto 1fr",
+		"& > *:last-child": {
+			display: "flex",
+			justifyContent: "center",
+			alignItems: "center",
+			whiteSpace: "nowrap",
+		},
+	},
+
+	center: {
+		minWidth: 500, // 1000px
 	},
 
 	links: {
@@ -23,7 +30,13 @@ export default createStyles((theme) => ({
 	},
 
 	search: {
-		width: "45%",
+		minWidth: 600,
+		[theme.fn.smallerThan("md")]: {
+			minWidth: 550,
+		},
+		[theme.fn.smallerThan("sm")]: {
+			minWidth: 400,
+		},
 		[theme.fn.smallerThan("xs")]: {
 			display: "none",
 		},
@@ -48,34 +61,16 @@ export default createStyles((theme) => ({
 	},
 
 	link: {
-		display: "block",
 		lineHeight: 1,
 		padding: "8px 12px",
 		borderRadius: theme.radius.sm,
 		textDecoration: "none",
-		color:
-			theme.colorScheme === "dark"
-				? theme.colors.dark[0]
-				: theme.colors.gray[7],
+		color: theme.colorScheme === "dark" ? theme.colors.dark[0] : theme.colors.gray[7],
 		fontSize: theme.fontSizes.lg,
 		fontWeight: 500,
 
 		"&:hover": {
-			backgroundColor:
-				theme.colorScheme === "dark"
-					? theme.colors.dark[6]
-					: theme.colors.gray[0],
-		},
-	},
-
-	linkActive: {
-		"&, &:hover": {
-			backgroundColor: theme.fn.variant({
-				variant: "light",
-				color: theme.primaryColor,
-			}).background,
-			color: theme.fn.variant({ variant: "light", color: theme.primaryColor })
-				.color,
+			backgroundColor: theme.colorScheme === "dark" ? theme.colors.dark[8] : theme.colors.gray[0],
 		},
 	},
 }));
