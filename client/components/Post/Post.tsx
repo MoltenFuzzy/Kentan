@@ -20,64 +20,75 @@ export interface PostProps {
 	avatarImage: string | undefined | null;
 	body: string;
 	likes: number;
-	comments: string[];
+	comments?: string[];
 }
 
 // TODO: add ... icon to the right of the post w/ a dropdown menu that has a delete option
 export const Post = ({ id, body, username, avatarImage, likes, comments }: PostProps) => {
 	const { colorScheme, toggleColorScheme } = useMantineColorScheme();
-	const router = useRouter();
 	//! might be a bad idea to put mutations in the component
 	const { mutate: DeletePost } = useDeletePostMutation<DeletePostMutation, Error>(gqlClient);
+	const router = useRouter();
+	const [likeValue, setLikeValue] = React.useState(likes);
+	const [isLiked, setIsLiked] = React.useState(false);
 
 	const handleDelete = () => {
 		console.log("delete");
 		DeletePost({ deletePostId: id });
-		router.replace(router.asPath); // TODO: find a better way to update the page
+		router.replace(router.asPath);
 	};
 
 	return (
-		<div className="post-border bg-bgPost p-6 cursor-pointer">
-			<Stack className="" spacing={7}>
-				<Group className="justify-between">
-					<Group>
-						<Avatar src={avatarImage} radius="xl" />
-						<Link href={`${username}`} passHref>
-							<Text className="hover:underline" weight={700}>
-								{username}
-							</Text>
-						</Link>
-					</Group>
-					<Group className="self-start">
-						<Menu shadow="md" width={100}>
-							<Menu.Target>
-								<ActionIcon>
-									<IconDots />
-								</ActionIcon>
-							</Menu.Target>
-							<Menu.Dropdown>
-								<Menu.Item color="red" onClick={handleDelete}>
-									Delete
-								</Menu.Item>
-							</Menu.Dropdown>
-						</Menu>
-					</Group>
+		<Stack className="post-border bg-bgPost p-6 cursor-pointer" spacing={7}>
+			<Group className="justify-between">
+				<Group>
+					<Avatar src={avatarImage} radius="xl" />
+					<Link href={`${username}`} passHref>
+						<Text className="hover:underline" weight={700}>
+							{username}
+						</Text>
+					</Link>
 				</Group>
-				<Text size="sm" className="my-3 break-all">
-					{body}
-				</Text>
-				<Group className="mt-2">
-					<ActionIcon size="lg">
-						<IconFlame size={100} strokeWidth={2} color={"orange"} />
-						<Text>{likes}</Text>
-					</ActionIcon>
-					<ActionIcon size="lg">
-						<IconMessage size={100} strokeWidth={2} color={"orange"} />
-						<Text>{likes}</Text>
-					</ActionIcon>
+				<Group className="self-start">
+					<Menu shadow="md" width={100}>
+						<Menu.Target>
+							<ActionIcon>
+								<IconDots />
+							</ActionIcon>
+						</Menu.Target>
+						<Menu.Dropdown>
+							<Menu.Item color="red" onClick={handleDelete}>
+								Delete
+							</Menu.Item>
+						</Menu.Dropdown>
+					</Menu>
 				</Group>
-				{/* <Group>{comments?.map((comment) => comment)}</Group> */}
-			</Stack>
-		</div>
+			</Group>
+			<Text size="sm" className="my-3 break-all">
+				{body}
+			</Text>
+			<Group className="mt-1">
+				<ActionIcon
+					size="lg"
+					onClick={() => {
+						if (!isLiked) {
+							setLikeValue(likeValue + 1);
+							setIsLiked(true);
+						} else {
+							setLikeValue(likeValue - 1);
+							setIsLiked(false);
+						}
+					}}
+				>
+					<IconFlame size={100} strokeWidth={2} color={"orange"} />
+					<Text>{likeValue}</Text>
+				</ActionIcon>
+				<ActionIcon size="lg">
+					<IconMessage size={100} strokeWidth={2} color={"orange"} />
+					<Text>{comments?.length}</Text>
+				</ActionIcon>
+			</Group>
+			{/* <Group>{comments?.map((comment) => comment)}</Group> */}
+		</Stack>
 	);
 };

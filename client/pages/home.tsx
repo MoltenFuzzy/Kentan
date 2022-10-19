@@ -68,6 +68,7 @@ export const HomePage = ({ pageProps: { posts } }: PageProps) => {
 					<Col span={10} className="flex justify-center">
 						<Stack className="w-full" spacing={10}>
 							<PostForm posts={posts} />
+							{/* there will be issue when adding infinite scroll because we ssr the posts */}
 							{posts.map((post, index) => (
 								<Post
 									key={index}
