@@ -1,7 +1,9 @@
 query Posts($limit: Float!) {
   posts(limit: $limit) {
+    _id
     body
     likes
+    comments
     author {
       _id
       avatarImage

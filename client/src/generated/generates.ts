@@ -62,6 +62,7 @@ export type Mutation = {
   __typename?: 'Mutation';
   createPost: Post;
   createUser: User;
+  deletePost: Scalars['Boolean'];
   deleteUser: Scalars['Boolean'];
   loginUser: LoginResponse;
   providerAuthUser: Scalars['ID'];
@@ -75,6 +76,11 @@ export type MutationCreatePostArgs = {
 
 export type MutationCreateUserArgs = {
   UserInput: CreateUserInput;
+};
+
+
+export type MutationDeletePostArgs = {
+  id: Scalars['String'];
 };
 
 
@@ -99,6 +105,7 @@ export type Post = {
   author: Author;
   body: Scalars['String'];
   categories: Array<Scalars['String']>;
+  comments: Array<Scalars['String']>;
   likes: Scalars['Float'];
 };
 
@@ -142,6 +149,13 @@ export type CreatePostMutationVariables = Exact<{
 
 export type CreatePostMutation = { __typename?: 'Mutation', createPost: { __typename?: 'Post', body: string, likes: number, _id: string, categories: Array<string>, author: { __typename?: 'Author', _id: string, name: string, avatarImage?: string | null } } };
 
+export type DeletePostMutationVariables = Exact<{
+  deletePostId: Scalars['String'];
+}>;
+
+
+export type DeletePostMutation = { __typename?: 'Mutation', deletePost: boolean };
+
 export type CreateUserMutationVariables = Exact<{
   userInput: CreateUserInput;
 }>;
@@ -168,7 +182,7 @@ export type PostsQueryVariables = Exact<{
 }>;
 
 
-export type PostsQuery = { __typename?: 'Query', posts: Array<{ __typename?: 'Post', body: string, likes: number, author: { __typename?: 'Author', _id: string, avatarImage?: string | null, name: string } }> };
+export type PostsQuery = { __typename?: 'Query', posts: Array<{ __typename?: 'Post', _id: string, body: string, likes: number, comments: Array<string>, author: { __typename?: 'Author', _id: string, avatarImage?: string | null, name: string } }> };
 
 export type PostsAllQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -214,6 +228,24 @@ export const useCreatePostMutation = <
     useMutation<CreatePostMutation, TError, CreatePostMutationVariables, TContext>(
       ['CreatePost'],
       (variables?: CreatePostMutationVariables) => fetcher<CreatePostMutation, CreatePostMutationVariables>(client, CreatePostDocument, variables, headers)(),
+      options
+    );
+export const DeletePostDocument = `
+    mutation DeletePost($deletePostId: String!) {
+  deletePost(id: $deletePostId)
+}
+    `;
+export const useDeletePostMutation = <
+      TError = unknown,
+      TContext = unknown
+    >(
+      client: GraphQLClient,
+      options?: UseMutationOptions<DeletePostMutation, TError, DeletePostMutationVariables, TContext>,
+      headers?: RequestInit['headers']
+    ) =>
+    useMutation<DeletePostMutation, TError, DeletePostMutationVariables, TContext>(
+      ['DeletePost'],
+      (variables?: DeletePostMutationVariables) => fetcher<DeletePostMutation, DeletePostMutationVariables>(client, DeletePostDocument, variables, headers)(),
       options
     );
 export const CreateUserDocument = `
@@ -276,8 +308,10 @@ export const useProviderAuthUserMutation = <
 export const PostsDocument = `
     query Posts($limit: Float!) {
   posts(limit: $limit) {
+    _id
     body
     likes
+    comments
     author {
       _id
       avatarImage

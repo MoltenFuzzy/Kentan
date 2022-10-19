@@ -12,6 +12,10 @@ mutation CreatePost($postInput: CreatePostInput!) {
   }
 }
 
+mutation DeletePost($deletePostId: String!) {
+  deletePost(id: $deletePostId) 
+}
+
 mutation CreateUser($userInput: CreateUserInput!) {
   createUser(UserInput: $userInput) {
     username
