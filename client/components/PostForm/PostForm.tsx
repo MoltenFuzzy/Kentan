@@ -45,29 +45,27 @@ export const PostForm = ({ posts }: { posts: PostsQuery["posts"] }) => {
 	};
 
 	return (
-		<div className="rounded-md bg-bgPost">
-			<Stack spacing="xs" className="p-2">
-				<Textarea
-					placeholder="Your Post"
-					size="lg"
-					minRows={4}
-					error={error}
-					value={value}
-					onChange={(event) => setValue(event.currentTarget.value)}
-				/>
-				<div className="flex justify-end">
-					<Button
-						onClick={handlePost}
-						disabled={value.length === 0}
-						color="orange"
-						radius={5}
-						size="sm"
-						className="shadow-lg"
-					>
-						Post
-					</Button>
-				</div>
-			</Stack>
-		</div>
+		<Stack spacing="xs" className="rounded-md bg-bgPost p-2">
+			<Textarea
+				placeholder="Your Post"
+				size="lg"
+				minRows={4}
+				error={error}
+				value={value}
+				onChange={(event) => setValue(event.currentTarget.value)}
+			/>
+			<div className="flex justify-end">
+				<Button
+					onClick={handlePost}
+					disabled={value.length === 0}
+					color="orange"
+					radius={5}
+					size="sm"
+					className="shadow-lg"
+				>
+					Post
+				</Button>
+			</div>
+		</Stack>
 	);
 };
