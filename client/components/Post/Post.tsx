@@ -58,7 +58,7 @@ export const Post = ({
 	React.useEffect(() => {
 		setLikesValue(likesCount);
 		setIsLiked(isLikedByThisUser);
-	}, [likesCount, isLikedByThisUser]);
+	}, [likesCount, isLikedByThisUser]); // when the props change, set the state to the props
 
 	const handleDelete = () => {
 		console.log("delete");
