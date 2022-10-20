@@ -32,7 +32,7 @@ import Link from "next/link";
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
 	const { Posts } = getSdk(gqlClient);
-	const posts = (await Posts({ limit: 10 })).posts;
+	const posts = (await Posts({ limit: 100 })).posts;
 	return { props: { posts } };
 };
 
@@ -86,9 +86,9 @@ export const HomePage = ({ pageProps: { posts } }: PageProps) => {
 					</Col>
 					<MediaQuery query="(max-width: 900px)" styles={{ display: "none" }}>
 						<Col span={3}>
-							<Stack spacing={10}>
+							{/* <Stack spacing={10}>
 								<div className="h-96 rounded-md bg-bgPost tw-border-solid  border-rose-500"></div>
-							</Stack>
+							</Stack> */}
 						</Col>
 					</MediaQuery>
 				</Grid>
