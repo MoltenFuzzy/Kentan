@@ -71,7 +71,7 @@ export function NavBar({ marginBottom }: { marginBottom: number }) {
 				</div>
 				<div className={classes.center}>
 					<Autocomplete
-						size="md"
+						size="sm"
 						placeholder="Search"
 						data={[]} // put cached search history here
 					/>
