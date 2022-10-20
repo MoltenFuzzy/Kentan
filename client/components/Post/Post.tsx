@@ -53,6 +53,8 @@ export const Post = ({
 	const { id: userId } = useUserStore();
 	const router = useRouter();
 
+	// https://stackoverflow.com/questions/54865764/react-usestate-does-not-reload-state-from-props
+	// essentially sync state with props
 	// WEIRD BUG THAT I DON'T UNDERSTAND BUT THIS FIXES IT BY SETTING STATE BACK TO THE VALUE IT SHOULD BE
 	// BUG: when you like a post and then refresh the page the like count will be of the previous post under it
 	React.useEffect(() => {
