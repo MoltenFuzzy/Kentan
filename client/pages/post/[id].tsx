@@ -11,7 +11,9 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
 };
 
 const FullPost = () => {
-	return <Post id={""} username={""} avatarImage={undefined} body={""} likes={0} comments={[]} />;
+	return (
+		<Post id={""} username={""} avatarImage={undefined} body={""} likesCount={0} comments={[]} />
+	);
 };
 
 export default FullPost;

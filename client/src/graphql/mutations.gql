@@ -6,7 +6,7 @@ mutation CreatePost($postInput: CreatePostInput!) {
       avatarImage
     }
     body
-    likes
+    likesCount
     _id
     categories
   }
@@ -29,4 +29,18 @@ mutation DeleteUser($deleteUserId: String!) {
 
 mutation ProviderAuthUser($userInput: AuthUserInput!) {
   providerAuthUser(UserInput: $userInput)
+}
+
+mutation LikePost($userId: String!, $postId: String!) {
+  likePost(userId: $userId, id: $postId) {
+    likedByUsers
+    likesCount
+  }
+}
+
+mutation UnlikePost($userId: String!, $postId: String!) {
+  unlikePost(userId: $userId, id: $postId) {
+    likesCount
+    likedByUsers
+  }
 }

@@ -44,7 +44,6 @@ export type CreateAuthorInput = {
 export type CreatePostInput = {
   author: CreateAuthorInput;
   body: Scalars['String'];
-  likes: Scalars['Float'];
 };
 
 export type CreateUserInput = {
@@ -64,8 +63,11 @@ export type Mutation = {
   createUser: User;
   deletePost: Scalars['Boolean'];
   deleteUser: Scalars['Boolean'];
+  likePost: Post;
   loginUser: LoginResponse;
   providerAuthUser: Scalars['ID'];
+  unlikePost: Post;
+  updatePost: Scalars['Boolean'];
 };
 
 
@@ -89,6 +91,12 @@ export type MutationDeleteUserArgs = {
 };
 
 
+export type MutationLikePostArgs = {
+  id: Scalars['String'];
+  userId: Scalars['String'];
+};
+
+
 export type MutationLoginUserArgs = {
   password: Scalars['String'];
   username: Scalars['String'];
@@ -99,6 +107,18 @@ export type MutationProviderAuthUserArgs = {
   UserInput: AuthUserInput;
 };
 
+
+export type MutationUnlikePostArgs = {
+  id: Scalars['String'];
+  userId: Scalars['String'];
+};
+
+
+export type MutationUpdatePostArgs = {
+  PostInput: CreatePostInput;
+  id: Scalars['String'];
+};
+
 export type Post = {
   __typename?: 'Post';
   _id: Scalars['ID'];
@@ -106,7 +126,8 @@ export type Post = {
   body: Scalars['String'];
   categories: Array<Scalars['String']>;
   comments: Array<Scalars['String']>;
-  likes: Scalars['Float'];
+  likedByUsers?: Maybe<Array<Scalars['ID']>>;
+  likesCount: Scalars['Float'];
 };
 
 export type Query = {
@@ -147,7 +168,7 @@ export type CreatePostMutationVariables = Exact<{
 }>;
 
 
-export type CreatePostMutation = { __typename?: 'Mutation', createPost: { __typename?: 'Post', body: string, likes: number, _id: string, categories: Array<string>, author: { __typename?: 'Author', _id: string, name: string, avatarImage?: string | null } } };
+export type CreatePostMutation = { __typename?: 'Mutation', createPost: { __typename?: 'Post', body: string, likesCount: number, _id: string, categories: Array<string>, author: { __typename?: 'Author', _id: string, name: string, avatarImage?: string | null } } };
 
 export type DeletePostMutationVariables = Exact<{
   deletePostId: Scalars['String'];
@@ -177,17 +198,33 @@ export type ProviderAuthUserMutationVariables = Exact<{
 
 export type ProviderAuthUserMutation = { __typename?: 'Mutation', providerAuthUser: string };
 
+export type LikePostMutationVariables = Exact<{
+  userId: Scalars['String'];
+  postId: Scalars['String'];
+}>;
+
+
+export type LikePostMutation = { __typename?: 'Mutation', likePost: { __typename?: 'Post', likedByUsers?: Array<string> | null, likesCount: number } };
+
+export type UnlikePostMutationVariables = Exact<{
+  userId: Scalars['String'];
+  postId: Scalars['String'];
+}>;
+
+
+export type UnlikePostMutation = { __typename?: 'Mutation', unlikePost: { __typename?: 'Post', likesCount: number, likedByUsers?: Array<string> | null } };
+
 export type PostsQueryVariables = Exact<{
   limit: Scalars['Float'];
 }>;
 
 
-export type PostsQuery = { __typename?: 'Query', posts: Array<{ __typename?: 'Post', _id: string, body: string, likes: number, comments: Array<string>, author: { __typename?: 'Author', _id: string, avatarImage?: string | null, name: string } }> };
+export type PostsQuery = { __typename?: 'Query', posts: Array<{ __typename?: 'Post', _id: string, body: string, likesCount: number, likedByUsers?: Array<string> | null, comments: Array<string>, author: { __typename?: 'Author', _id: string, avatarImage?: string | null, name: string } }> };
 
 export type PostsAllQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type PostsAllQuery = { __typename?: 'Query', posts: Array<{ __typename?: 'Post', _id: string, categories: Array<string>, body: string, likes: number, author: { __typename?: 'Author', _id: string, avatarImage?: string | null, name: string } }> };
+export type PostsAllQuery = { __typename?: 'Query', posts: Array<{ __typename?: 'Post', _id: string, categories: Array<string>, body: string, likesCount: number, author: { __typename?: 'Author', _id: string, avatarImage?: string | null, name: string } }> };
 
 export type UserQueryVariables = Exact<{
   userId: Scalars['String'];
@@ -211,7 +248,7 @@ export const CreatePostDocument = `
       avatarImage
     }
     body
-    likes
+    likesCount
     _id
     categories
   }
@@ -305,12 +342,55 @@ export const useProviderAuthUserMutation = <
       (variables?: ProviderAuthUserMutationVariables) => fetcher<ProviderAuthUserMutation, ProviderAuthUserMutationVariables>(client, ProviderAuthUserDocument, variables, headers)(),
       options
     );
+export const LikePostDocument = `
+    mutation LikePost($userId: String!, $postId: String!) {
+  likePost(userId: $userId, id: $postId) {
+    likedByUsers
+    likesCount
+  }
+}
+    `;
+export const useLikePostMutation = <
+      TError = unknown,
+      TContext = unknown
+    >(
+      client: GraphQLClient,
+      options?: UseMutationOptions<LikePostMutation, TError, LikePostMutationVariables, TContext>,
+      headers?: RequestInit['headers']
+    ) =>
+    useMutation<LikePostMutation, TError, LikePostMutationVariables, TContext>(
+      ['LikePost'],
+      (variables?: LikePostMutationVariables) => fetcher<LikePostMutation, LikePostMutationVariables>(client, LikePostDocument, variables, headers)(),
+      options
+    );
+export const UnlikePostDocument = `
+    mutation UnlikePost($userId: String!, $postId: String!) {
+  unlikePost(userId: $userId, id: $postId) {
+    likesCount
+    likedByUsers
+  }
+}
+    `;
+export const useUnlikePostMutation = <
+      TError = unknown,
+      TContext = unknown
+    >(
+      client: GraphQLClient,
+      options?: UseMutationOptions<UnlikePostMutation, TError, UnlikePostMutationVariables, TContext>,
+      headers?: RequestInit['headers']
+    ) =>
+    useMutation<UnlikePostMutation, TError, UnlikePostMutationVariables, TContext>(
+      ['UnlikePost'],
+      (variables?: UnlikePostMutationVariables) => fetcher<UnlikePostMutation, UnlikePostMutationVariables>(client, UnlikePostDocument, variables, headers)(),
+      options
+    );
 export const PostsDocument = `
     query Posts($limit: Float!) {
   posts(limit: $limit) {
     _id
     body
-    likes
+    likesCount
+    likedByUsers
     comments
     author {
       _id
@@ -340,7 +420,7 @@ export const PostsAllDocument = `
     _id
     categories
     body
-    likes
+    likesCount
     author {
       _id
       avatarImage

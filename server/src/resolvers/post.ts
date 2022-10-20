@@ -1,5 +1,6 @@
 import { Arg, Mutation, Query, Resolver } from "type-graphql";
 import { Post, PostModel, CreatePostInput } from "../entities/post";
+import mongoose from "mongoose";
 
 @Resolver()
 export class PostResolver {
@@ -24,5 +25,39 @@ export class PostResolver {
 		const post = await PostModel.deleteOne({ _id: id });
 		if (post) return true;
 		else return false;
+	}
+
+	@Mutation(() => Boolean)
+	async updatePost(
+		@Arg("id", () => String) id: string,
+		@Arg("PostInput") PostInput: CreatePostInput
+	): Promise<boolean> {
+		const post = await PostModel.updateOne({ _id: id }, PostInput);
+		if (post) return true;
+		else return false;
+	}
+
+	@Mutation(() => Post)
+	async likePost(
+		@Arg("id", () => String) id: string,
+		@Arg("userId", () => String) userId: string
+	): Promise<Post | null> {
+		const query = { _id: id, likedByUsers: { $ne: userId } };
+		const update = { $inc: { likesCount: 1 }, $push: { likedByUsers: userId } };
+		const options = { new: true };
+
+		return await PostModel.findOneAndUpdate(query, update, options);
+	}
+
+	@Mutation(() => Post)
+	async unlikePost(
+		@Arg("id", () => String) id: string,
+		@Arg("userId", () => String) userId: string
+	): Promise<Post | null> {
+		const query = { _id: id, likedByUsers: userId };
+		const update = { $inc: { likesCount: -1 }, $pull: { likedByUsers: userId } };
+		const options = { new: true };
+
+		return await PostModel.findOneAndUpdate(query, update, options);
 	}
 }

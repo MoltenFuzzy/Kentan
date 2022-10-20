@@ -2,16 +2,11 @@ import { MouseEventHandler, useState } from "react";
 import { Stack, Textarea, Button } from "@mantine/core";
 import { CreatePostInput } from "../../src/graphql/sdk";
 import useUserStore from "../../stores/user";
-import {
-	CreatePostMutation,
-	useCreatePostMutation,
-	PostsQuery,
-} from "../../src/generated/generates";
+import { CreatePostMutation, useCreatePostMutation } from "../../src/generated/generates";
 import gqlClient from "@gqlSDK/clients/gqlClient";
 import { useRouter } from "next/router";
 
-// 	TODO: disable post button if there is no text in the textarea
-export const PostForm = ({ posts }: { posts: PostsQuery["posts"] }) => {
+export const PostForm = () => {
 	const router = useRouter();
 	const [value, setValue] = useState("");
 	const [error, setError] = useState("");
@@ -28,7 +23,6 @@ export const PostForm = ({ posts }: { posts: PostsQuery["posts"] }) => {
 				avatarImage: avatar,
 			},
 			body: value,
-			likes: 0,
 		};
 		// dont allow empty posts
 		if (newPostInput.body.length === 0) {
@@ -36,6 +30,7 @@ export const PostForm = ({ posts }: { posts: PostsQuery["posts"] }) => {
 			return;
 		}
 
+		// TODO: Add post fail handling
 		// when we create post it does return a post we can use to update the state
 		// ^ THIS WILL BE SLOWER SINCE WE HAVE TO WAIT FOR THE MUTATION TO FINISH
 		createPost({ postInput: newPostInput });

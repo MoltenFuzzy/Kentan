@@ -48,7 +48,7 @@ export const HomePage = ({ pageProps: { posts } }: PageProps) => {
 	const { data: { user } = {} } = useUserQuery<UserQuery>(gqlClient, {
 		userId: session?.user.id!,
 	});
-	const { setId, setName, setEmail, setAvatar, avatar } = useUserStore();
+	const { setId, setName, setEmail, setAvatar } = useUserStore();
 
 	useEffect(() => {
 		setId(user?._id!);
@@ -67,7 +67,7 @@ export const HomePage = ({ pageProps: { posts } }: PageProps) => {
 					</MediaQuery>
 					<Col span={10} className="flex justify-center">
 						<Stack className="w-full" spacing={10}>
-							<PostForm posts={posts} />
+							<PostForm />
 							{/* there will be issue when adding infinite scroll because we ssr the posts */}
 							{posts.map((post, index) => (
 								<Post
@@ -76,7 +76,9 @@ export const HomePage = ({ pageProps: { posts } }: PageProps) => {
 									avatarImage={post.author.avatarImage}
 									username={post.author.name} // ! CHANGE THIS TO USERNAME LATER
 									body={post.body}
-									likes={post.likes}
+									likesCount={post.likesCount}
+									// TODO: CHANGE ARRAY TO SET IN GRAPHQL TO REMOVE DUPLICATES & CONSTANT TIME LOOKUP?
+									isLikedByThisUser={post.likedByUsers?.includes(session?.user.id!)!}
 									comments={post.comments}
 								/>
 							))}

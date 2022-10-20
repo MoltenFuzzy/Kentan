@@ -11,30 +11,51 @@ import {
 } from "@mantine/core";
 import Link from "next/link";
 import { IconFlame, IconMessage, IconDots, IconTrash } from "@tabler/icons";
-import { DeletePostMutation, useDeletePostMutation } from "@gqlSDK/generated/generates";
+import {
+	DeletePostMutation,
+	useDeletePostMutation,
+	LikePostMutation,
+	useLikePostMutation,
+	UnlikePostMutation,
+	useUnlikePostMutation,
+} from "@gqlSDK/generated/generates";
 import gqlClient from "@gqlSDK/clients/gqlClient";
 import { useRouter } from "next/router";
+import useUserStore from "stores/user";
 export interface PostProps {
 	id: string;
 	username: string;
 	avatarImage: string | undefined | null;
 	body: string;
-	likes: number;
+	likesCount: number;
+	isLikedByThisUser: boolean;
 	comments?: string[];
 }
 
 // TODO: add ... icon to the right of the post w/ a dropdown menu that has a delete option
-export const Post = ({ id, body, username, avatarImage, likes, comments }: PostProps) => {
+export const Post = ({
+	id: postId,
+	body,
+	username,
+	avatarImage,
+	likesCount,
+	isLikedByThisUser,
+	comments,
+}: PostProps) => {
 	const { colorScheme, toggleColorScheme } = useMantineColorScheme();
 	//! might be a bad idea to put mutations in the component
 	const { mutate: DeletePost } = useDeletePostMutation<DeletePostMutation, Error>(gqlClient);
+	const { mutate: LikePost } = useLikePostMutation<LikePostMutation, Error>(gqlClient);
+	const { mutate: UnlikePost } = useUnlikePostMutation<UnlikePostMutation, Error>(gqlClient);
+	const [likesValue, setLikesValue] = React.useState(likesCount);
+	// const [isLiked, setIsLiked] = React.useState(data?.likePost.likedByUsers?.includes(userId!));
+	const [isLiked, setIsLiked] = React.useState(isLikedByThisUser); //! NOTE: STATE NOT PERSISTED
+	const { id: userId } = useUserStore();
 	const router = useRouter();
-	const [likeValue, setLikeValue] = React.useState(likes);
-	const [isLiked, setIsLiked] = React.useState(false);
 
 	const handleDelete = () => {
 		console.log("delete");
-		DeletePost({ deletePostId: id });
+		DeletePost({ deletePostId: postId });
 		router.replace(router.asPath);
 	};
 
@@ -72,16 +93,18 @@ export const Post = ({ id, body, username, avatarImage, likes, comments }: PostP
 					size="lg"
 					onClick={() => {
 						if (!isLiked) {
-							setLikeValue(likeValue + 1);
+							LikePost({ userId, postId });
+							setLikesValue(likesValue + 1);
 							setIsLiked(true);
 						} else {
-							setLikeValue(likeValue - 1);
+							UnlikePost({ userId, postId });
+							setLikesValue(likesValue - 1);
 							setIsLiked(false);
 						}
 					}}
 				>
 					<IconFlame size={100} strokeWidth={2} color={"orange"} />
-					<Text>{likeValue}</Text>
+					<Text>{likesValue}</Text>
 				</ActionIcon>
 				<ActionIcon size="lg">
 					<IconMessage size={100} strokeWidth={2} color={"orange"} />

@@ -1,5 +1,5 @@
 import { prop as Property, getModelForClass } from "@typegoose/typegoose";
-import { Field, ObjectType, InputType, ID } from "type-graphql";
+import { Field, ObjectType, InputType, ID, createUnionType } from "type-graphql";
 import { ObjectId } from "mongodb";
 import { Ref } from "../types/types";
 import { User } from "./user";
@@ -48,14 +48,22 @@ export class Post {
 	@Property({ type: String, required: true, default: [] })
 	categories: string[];
 
-	// add comments object
+	// TODO: add comment object
 	@Field((type) => [String])
 	@Property({ type: String, required: true, default: [] })
 	comments: string[];
 
+	// @Field((type) => [User], { nullable: true })
+	// @Property({ ref: User, required: true, nullable: true })
+	// likedByUsers: Ref<User>[]; // array of user ids
+
+	@Field((type) => [ID], { nullable: true })
+	@Property({ type: ObjectId, required: true })
+	likedByUsers: ObjectId[]; // array of user ids
+
 	@Field()
-	@Property()
-	likes: number;
+	@Property({ default: 0 })
+	likesCount: number;
 }
 
 export const PostModel = getModelForClass(Post, {
@@ -81,7 +89,4 @@ export class CreatePostInput {
 
 	@Field(() => String)
 	body: string;
-
-	@Field(() => Number)
-	likes: number;
 }

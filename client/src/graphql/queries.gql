@@ -2,7 +2,8 @@ query Posts($limit: Float!) {
   posts(limit: $limit) {
     _id
     body
-    likes
+    likesCount
+    likedByUsers
     comments
     author {
       _id
@@ -17,7 +18,7 @@ query PostsAll {
     _id
     categories
     body
-    likes
+    likesCount
     author {
       _id
       avatarImage
