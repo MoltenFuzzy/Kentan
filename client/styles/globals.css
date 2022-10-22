@@ -2,6 +2,15 @@
 @tailwind components;
 @tailwind utilities;
 
+a,
+a:link,
+a:visited,
+a:hover,
+a:active {
+	color: inherit;
+	text-decoration: none;
+}
+
 .background {
 	background-color: #131c24;
 	background-image: url("../images/logo.png"), url("../images/bg.png");
@@ -11,6 +20,11 @@
 }
 
 .post-border {
+	border-radius: 10px;
+	border: 1px solid #2d3748;
+}
+
+.post-border-plain {
 	border-radius: 10px;
 	border: 1px solid #2d3748;
 }
