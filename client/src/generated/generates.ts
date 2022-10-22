@@ -35,6 +35,14 @@ export type Author = {
   name: Scalars['String'];
 };
 
+export type Comment = {
+  __typename?: 'Comment';
+  _id: Scalars['ID'];
+  author: Author;
+  body: Scalars['String'];
+  test: Scalars['ID'];
+};
+
 export type CreateAuthorInput = {
   _id: Scalars['ID'];
   avatarImage?: InputMaybe<Scalars['String']>;
@@ -125,14 +133,16 @@ export type Post = {
   author: Author;
   body: Scalars['String'];
   categories: Array<Scalars['String']>;
-  comments: Array<Scalars['String']>;
+  comments: Array<Comment>;
+  commentsCount: Scalars['Float'];
   likedByUsers?: Maybe<Array<Scalars['ID']>>;
   likesCount: Scalars['Float'];
 };
 
 export type Query = {
   __typename?: 'Query';
-  postByAuthorId?: Maybe<Post>;
+  postByPostId?: Maybe<Post>;
+  postByUserId?: Maybe<Post>;
   posts: Array<Post>;
   /** get user by object id */
   user?: Maybe<User>;
@@ -140,8 +150,13 @@ export type Query = {
 };
 
 
-export type QueryPostByAuthorIdArgs = {
-  id: Scalars['String'];
+export type QueryPostByPostIdArgs = {
+  postId: Scalars['String'];
+};
+
+
+export type QueryPostByUserIdArgs = {
+  userId: Scalars['String'];
 };
 
 
@@ -214,12 +229,26 @@ export type UnlikePostMutationVariables = Exact<{
 
 export type UnlikePostMutation = { __typename?: 'Mutation', unlikePost: { __typename?: 'Post', likesCount: number, likedByUsers?: Array<string> | null } };
 
+export type PostByPostIdQueryVariables = Exact<{
+  postId: Scalars['String'];
+}>;
+
+
+export type PostByPostIdQuery = { __typename?: 'Query', postByPostId?: { __typename?: 'Post', _id: string, body: string, likedByUsers?: Array<string> | null, likesCount: number, commentsCount: number, author: { __typename?: 'Author', _id: string, name: string, avatarImage?: string | null }, comments: Array<{ __typename?: 'Comment', _id: string, body: string, test: string, author: { __typename?: 'Author', _id: string, name: string, avatarImage?: string | null } }> } | null };
+
+export type PostByUserIdQueryVariables = Exact<{
+  userId: Scalars['String'];
+}>;
+
+
+export type PostByUserIdQuery = { __typename?: 'Query', postByUserId?: { __typename?: 'Post', _id: string, body: string, author: { __typename?: 'Author', _id: string, name: string, avatarImage?: string | null } } | null };
+
 export type PostsQueryVariables = Exact<{
   limit: Scalars['Float'];
 }>;
 
 
-export type PostsQuery = { __typename?: 'Query', posts: Array<{ __typename?: 'Post', _id: string, body: string, likesCount: number, likedByUsers?: Array<string> | null, comments: Array<string>, author: { __typename?: 'Author', _id: string, avatarImage?: string | null, name: string } }> };
+export type PostsQuery = { __typename?: 'Query', posts: Array<{ __typename?: 'Post', _id: string, body: string, likesCount: number, likedByUsers?: Array<string> | null, commentsCount: number, author: { __typename?: 'Author', _id: string, avatarImage?: string | null, name: string } }> };
 
 export type PostsAllQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -384,6 +413,73 @@ export const useUnlikePostMutation = <
       (variables?: UnlikePostMutationVariables) => fetcher<UnlikePostMutation, UnlikePostMutationVariables>(client, UnlikePostDocument, variables, headers)(),
       options
     );
+export const PostByPostIdDocument = `
+    query PostByPostId($postId: String!) {
+  postByPostId(postId: $postId) {
+    _id
+    body
+    likedByUsers
+    likesCount
+    author {
+      _id
+      name
+      avatarImage
+    }
+    commentsCount
+    comments {
+      _id
+      body
+      test
+      author {
+        _id
+        name
+        avatarImage
+      }
+    }
+  }
+}
+    `;
+export const usePostByPostIdQuery = <
+      TData = PostByPostIdQuery,
+      TError = unknown
+    >(
+      client: GraphQLClient,
+      variables: PostByPostIdQueryVariables,
+      options?: UseQueryOptions<PostByPostIdQuery, TError, TData>,
+      headers?: RequestInit['headers']
+    ) =>
+    useQuery<PostByPostIdQuery, TError, TData>(
+      ['PostByPostId', variables],
+      fetcher<PostByPostIdQuery, PostByPostIdQueryVariables>(client, PostByPostIdDocument, variables, headers),
+      options
+    );
+export const PostByUserIdDocument = `
+    query PostByUserId($userId: String!) {
+  postByUserId(userId: $userId) {
+    _id
+    body
+    author {
+      _id
+      name
+      avatarImage
+    }
+  }
+}
+    `;
+export const usePostByUserIdQuery = <
+      TData = PostByUserIdQuery,
+      TError = unknown
+    >(
+      client: GraphQLClient,
+      variables: PostByUserIdQueryVariables,
+      options?: UseQueryOptions<PostByUserIdQuery, TError, TData>,
+      headers?: RequestInit['headers']
+    ) =>
+    useQuery<PostByUserIdQuery, TError, TData>(
+      ['PostByUserId', variables],
+      fetcher<PostByUserIdQuery, PostByUserIdQueryVariables>(client, PostByUserIdDocument, variables, headers),
+      options
+    );
 export const PostsDocument = `
     query Posts($limit: Float!) {
   posts(limit: $limit) {
@@ -391,7 +487,7 @@ export const PostsDocument = `
     body
     likesCount
     likedByUsers
-    comments
+    commentsCount
     author {
       _id
       avatarImage
