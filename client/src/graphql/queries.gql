@@ -1,10 +1,47 @@
+query PostByPostId($postId: String!) {
+  postByPostId(postId: $postId) {
+    _id
+    body
+    likedByUsers
+    likesCount
+    author {
+      _id
+      name
+      avatarImage
+    }
+    commentsCount
+    comments {
+      _id
+      body
+      test
+      author {
+        _id
+        name
+        avatarImage
+      }
+    }
+  }
+}
+
+query PostByUserId($userId: String!) {
+  postByUserId(userId: $userId) {
+    _id
+    body
+    author {
+      _id
+      name
+      avatarImage
+    }
+  }
+}
+
 query Posts($limit: Float!) {
   posts(limit: $limit) {
     _id
     body
     likesCount
     likedByUsers
-    comments
+    commentsCount
     author {
       _id
       avatarImage
