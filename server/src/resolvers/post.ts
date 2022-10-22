@@ -1,12 +1,16 @@
 import { Arg, Mutation, Query, Resolver } from "type-graphql";
 import { Post, PostModel, CreatePostInput } from "../entities/post";
-import mongoose from "mongoose";
 
 @Resolver()
 export class PostResolver {
 	@Query(() => Post, { nullable: true })
-	async postByAuthorId(@Arg("id") userId: string): Promise<Post | null> {
-		return await PostModel.findOne({ author: userId });
+	async postByPostId(@Arg("postId") postId: string): Promise<Post | null> {
+		return await PostModel.findOne({ _id: postId });
+	}
+
+	@Query(() => Post, { nullable: true })
+	async postByUserId(@Arg("userId") userId: string): Promise<Post | null> {
+		return await PostModel.findOne({ "author._id": userId });
 	}
 
 	@Query(() => [Post])
