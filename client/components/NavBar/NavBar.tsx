@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
 	Header,
 	Autocomplete,
@@ -79,7 +79,7 @@ export function NavBar({ marginBottom }: { marginBottom: number }) {
 				<div>
 					{items}
 					<div className={cx(classes.link)}>
-						<Link href={`${session?.user?.name}`}>
+						<Link href={`/${session?.user?.name}`}>
 							<Avatar src={session?.user?.image} size={35} radius="xl" />
 						</Link>
 					</div>

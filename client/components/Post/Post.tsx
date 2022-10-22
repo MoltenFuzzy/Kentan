@@ -1,4 +1,4 @@
-import React from "react";
+import React, { SyntheticEvent } from "react";
 import {
 	useMantineColorScheme,
 	Button,
@@ -29,7 +29,8 @@ export interface PostProps {
 	body: string;
 	likesCount: number;
 	isLikedByThisUser: boolean;
-	comments?: string[];
+	commentsCount: number;
+	isOnClick?: boolean;
 }
 
 // TODO: add ... icon to the right of the post w/ a dropdown menu that has a delete option
@@ -40,7 +41,8 @@ export const Post = ({
 	avatarImage,
 	likesCount,
 	isLikedByThisUser,
-	comments,
+	commentsCount,
+	isOnClick = true,
 }: PostProps) => {
 	const { colorScheme, toggleColorScheme } = useMantineColorScheme();
 	//! might be a bad idea to put mutations in the component
@@ -62,25 +64,39 @@ export const Post = ({
 		setIsLiked(isLikedByThisUser);
 	}, [likesCount, isLikedByThisUser]); // when the props change, set the state to the props
 
-	const handleDelete = () => {
-		console.log("delete");
+	const handleDelete = (e: SyntheticEvent) => {
+		console.log("delete post");
 		DeletePost({ deletePostId: postId });
 		router.replace(router.asPath);
 	};
 
 	return (
-		<Stack className="post-border bg-bgPost p-6 cursor-pointer" spacing={7}>
+		<Stack
+			className={`bg-bgPost p-6 ${isOnClick ? "post-border cursor-pointer" : "post-border-plain"}`}
+			spacing={7}
+			onClick={() => {
+				// prevents pushing to undefined route on the post page
+				if (isOnClick) {
+					router.push(`post/${postId}`);
+				}
+			}}
+		>
 			<Group className="justify-between">
 				<Group>
 					<Avatar src={avatarImage} radius="xl" />
-					<Link href={`${username}`} passHref>
-						<Text className="hover:underline" weight={700}>
-							{username}
-						</Text>
-					</Link>
+					<Text
+						onClick={(e) => {
+							e.stopPropagation();
+							router.push(username);
+						}}
+						className="hover:underline"
+						weight={700}
+					>
+						{username}
+					</Text>
 				</Group>
-				<Group className="self-start">
-					<Menu shadow="md" width={100}>
+				<Group className="self-start" onClick={(e) => e.stopPropagation()}>
+					<Menu shadow="md" width={100} closeOnClickOutside>
 						<Menu.Target>
 							<ActionIcon>
 								<IconDots />
@@ -94,13 +110,15 @@ export const Post = ({
 					</Menu>
 				</Group>
 			</Group>
-			<Text size="sm" className="my-3 break-all">
+			<Text size="sm" className="my-3 whitespace-pre-line">
 				{body}
 			</Text>
 			<Group className="mt-1">
 				<ActionIcon
 					size="lg"
-					onClick={() => {
+					onClick={(e) => {
+						// https://stackoverflow.com/questions/13966734/child-element-click-event-trigger-the-parent-click-event
+						e.stopPropagation();
 						if (!isLiked) {
 							LikePost({ userId, postId });
 							setLikesValue(likesValue + 1);
@@ -117,10 +135,9 @@ export const Post = ({
 				</ActionIcon>
 				<ActionIcon size="lg">
 					<IconMessage size={100} strokeWidth={2} color={"orange"} />
-					<Text>{comments?.length}</Text>
+					<Text>{commentsCount}</Text>
 				</ActionIcon>
 			</Group>
-			{/* <Group>{comments?.map((comment) => comment)}</Group> */}
 		</Stack>
 	);
 };

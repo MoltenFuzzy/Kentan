@@ -14,21 +14,13 @@ import {
 import { useSession, signOut, getSession } from "next-auth/react";
 import { NavBar } from "../components/NavBar/NavBar";
 import { Post, PostProps } from "../components/Post/Post";
-import {
-	useCreatePostMutation,
-	CreatePostMutation,
-	CreatePostInput,
-	usePostsQuery,
-	PostsQuery,
-	useUserQuery,
-	UserQuery,
-} from "../src/generated/generates";
+import { PostsQuery, useUserQuery, UserQuery } from "@gqlSDK/generated/generates";
 import { MouseEventHandler, useEffect, useState } from "react";
-import useUserStore from "../stores/user";
 import { GetServerSideProps, NextPage } from "next";
-import { getSdk } from "../src/graphql/sdk";
-import { PostForm } from "../components/PostForm/PostForm";
-import Link from "next/link";
+import { PostForm } from "components/PostForm/PostForm";
+import { ProfileCard } from "components/ProfileCard/ProfileCard";
+import { getSdk } from "@gqlSDK/graphql/sdk";
+import useUserStore from "stores/user";
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
 	const { Posts } = getSdk(gqlClient);
@@ -62,10 +54,11 @@ export const HomePage = ({ pageProps: { posts } }: PageProps) => {
 			<NavBar marginBottom={20} />
 			<Container size={1400}>
 				<Grid columns={18} grow>
-					<MediaQuery query="(max-width: 900px)" styles={{ display: "none" }}>
-						<Col span={3}></Col>
-					</MediaQuery>
-					<Col span={10} className="flex justify-center">
+					<Col sm={18} md={3}>
+						{/* if profile has been selected, then render else do not render */}
+						<ProfileCard image={""} avatar={""} name={""} job={""} stats={[]} />
+					</Col>
+					<Col sm={18} md={10} className="flex justify-center">
 						<Stack className="w-full" spacing={10}>
 							<PostForm />
 							{/* there will be issue when adding infinite scroll because we ssr the posts */}
@@ -79,18 +72,16 @@ export const HomePage = ({ pageProps: { posts } }: PageProps) => {
 									likesCount={post.likesCount}
 									// TODO: CHANGE ARRAY TO SET IN GRAPHQL TO REMOVE DUPLICATES & CONSTANT TIME LOOKUP?
 									isLikedByThisUser={post.likedByUsers?.includes(session?.user.id!)!}
-									comments={post.comments}
+									commentsCount={post.commentsCount}
 								/>
 							))}
 						</Stack>
 					</Col>
-					<MediaQuery query="(max-width: 900px)" styles={{ display: "none" }}>
-						<Col span={3}>
-							{/* <Stack spacing={10}>
-								<div className="h-96 rounded-md bg-bgPost tw-border-solid  border-rose-500"></div>
-							</Stack> */}
-						</Col>
-					</MediaQuery>
+					<Col sm={18} md={3}>
+						<Stack spacing={10}>
+							<div className="h-96 rounded-md bg-bgPost tw-border-solid  border-rose-500"></div>
+						</Stack>
+					</Col>
 				</Grid>
 			</Container>
 		</>
