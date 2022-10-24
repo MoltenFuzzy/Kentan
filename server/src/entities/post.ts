@@ -1,10 +1,9 @@
 import { prop as Property, getModelForClass } from "@typegoose/typegoose";
-import { Field, ObjectType, InputType, ID, createUnionType } from "type-graphql";
+import { Field, ObjectType, InputType, ID } from "type-graphql";
 import { ObjectId } from "mongodb";
-import { Ref } from "../types/types";
-import { User } from "./user";
 import { Author, CreateAuthorInput } from "./author";
 import { Comment } from "./comment";
+import { CommentUnion } from "../types/unions";
 
 @ObjectType()
 export class Post {
@@ -15,7 +14,7 @@ export class Post {
 	@Property()
 	author: Author;
 
-	@Field()
+	@Field((type) => ID)
 	@Property()
 	body: string;
 
@@ -23,10 +22,15 @@ export class Post {
 	@Property({ type: String, required: true, default: [] })
 	categories: string[];
 
-	// TODO: add comment object
-	@Field((type) => [Comment])
-	@Property({ type: Comment, required: true, default: [] })
-	comments: Comment[];
+	// @Field((type) => [ID])
+	// @Property({ type: ObjectId, required: true, default: [] })
+	// comments: ObjectId[];
+
+	// CIRCULAR DEPENDENCY FIX
+	// https://typegoose.github.io/typegoose/docs/guides/advanced/reference-other-classes/#circular-dependencies
+	@Field((type) => [CommentUnion], { nullable: true })
+	@Property({ ref: () => Comment, required: true, default: [] })
+	comments: typeof CommentUnion[];
 
 	@Field()
 	@Property({ default: 0 })
@@ -43,11 +47,13 @@ export class Post {
 	@Field()
 	@Property({ default: 0 })
 	likesCount: number;
-}
 
-export const PostModel = getModelForClass(Post, {
-	schemaOptions: { timestamps: true },
-});
+	@Field((type) => Date)
+	readonly createdAt: Date;
+
+	@Field((type) => Date)
+	readonly updatedAt: Date;
+}
 
 @InputType()
 export class CreatePostInput {

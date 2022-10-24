@@ -1,10 +1,15 @@
 import { Arg, Mutation, Query, Resolver } from "type-graphql";
-import { Post, PostModel, CreatePostInput } from "../entities/post";
+import { Post, CreatePostInput } from "../entities/post";
+import { PostModel } from "../entities/models";
 
 @Resolver()
 export class PostResolver {
 	@Query(() => Post, { nullable: true })
-	async postByPostId(@Arg("postId") postId: string): Promise<Post | null> {
+	async postByPostId(
+		@Arg("postId") postId: string,
+		@Arg("populateComments") populate: boolean
+	): Promise<Post | null> {
+		if (populate) return await PostModel.findById(postId).populate("comments");
 		return await PostModel.findOne({ _id: postId });
 	}
 

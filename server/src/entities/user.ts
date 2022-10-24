@@ -32,6 +32,12 @@ export class User {
 
 	// @Property()
 	// refreshToken!: string;
+
+	@Field((type) => Date)
+	readonly createdAt: Date;
+
+	@Field((type) => Date)
+	readonly updatedAt: Date;
 }
 
 export const UserModel = getModelForClass(User, {
