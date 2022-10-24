@@ -13,7 +13,12 @@ import useUserStore from "stores/user";
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
 	// fetch the post and comments from server
 	const { PostByPostId } = getSdk(gqlClient);
-	const post = (await PostByPostId({ postId: ctx.params?.postId as string })).postByPostId;
+	const post = (
+		await PostByPostId({
+			postId: ctx.params?.postId as string,
+			populateComments: true,
+		})
+	).postByPostId;
 	return { props: { post } };
 };
 
@@ -37,27 +42,20 @@ const FullPost = ({ pageProps: { post } }: PageProps) => {
 						<Stack className="w-full" spacing={10}>
 							<Stack>
 								<Post
-									// post needs optional chaining because in the backend schema it is nullable
+									// post needs optional chaining because  backend schema is nullable
 									// it is nulllable because the querying a post by id can return null if it doesn't exist
 									id={post?._id!}
 									username={post?.author.name!}
 									avatarImage={post?.author.avatarImage!}
 									body={post?.body!}
 									likesCount={post?.likesCount!}
-									isLikedByThisUser={post?.likedByUsers?.includes(session?.user.id!)!}
-									commentsCount={post?.commentsCount!}
+									isLikedByThisUser={
+										post?.likedByUsers?.includes(session?.user.id!)!
+									}
+									commentsCount={post?.comments?.length!}
 									isOnClick={false}
 								/>
-								<CommentSection
-									id={""}
-									username={""}
-									avatarImage={undefined}
-									body={""}
-									likesCount={0}
-									isLikedByThisUser={false}
-									commentsCount={0}
-									comments={post?.comments!}
-								></CommentSection>
+								<CommentSection comments={post?.comments!}></CommentSection>
 							</Stack>
 						</Stack>
 					</Col>
