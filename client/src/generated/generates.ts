@@ -17,6 +17,7 @@ export type Scalars = {
   Boolean: boolean;
   Int: number;
   Float: number;
+  DateTime: any;
 };
 
 export type AuthUserInput = {
@@ -40,13 +41,35 @@ export type Comment = {
   _id: Scalars['ID'];
   author: Author;
   body: Scalars['String'];
-  test: Scalars['ID'];
+  commentsCount: Scalars['Float'];
+  createdAt: Scalars['DateTime'];
+  likedByUsers?: Maybe<Array<Scalars['ID']>>;
+  likesCount: Scalars['Float'];
+  postId?: Maybe<PostUnion>;
+  updatedAt: Scalars['DateTime'];
 };
+
+export type CommentId = {
+  __typename?: 'CommentId';
+  _id: Scalars['ID'];
+};
+
+export type CommentUnion = Comment | CommentId;
 
 export type CreateAuthorInput = {
   _id: Scalars['ID'];
   avatarImage?: InputMaybe<Scalars['String']>;
   name: Scalars['String'];
+};
+
+export type CreateCommentInput = {
+  author: CreateAuthorInput;
+  body: Scalars['String'];
+  postId: CreatePostIdInput;
+};
+
+export type CreatePostIdInput = {
+  _id: Scalars['ID'];
 };
 
 export type CreatePostInput = {
@@ -67,15 +90,24 @@ export type LoginResponse = {
 
 export type Mutation = {
   __typename?: 'Mutation';
+  createComment: Comment;
   createPost: Post;
   createUser: User;
+  deleteComment: Scalars['Boolean'];
   deletePost: Scalars['Boolean'];
   deleteUser: Scalars['Boolean'];
   likePost: Post;
   loginUser: LoginResponse;
   providerAuthUser: Scalars['ID'];
   unlikePost: Post;
+  updateComment: Comment;
   updatePost: Scalars['Boolean'];
+};
+
+
+export type MutationCreateCommentArgs = {
+  CommentInput: CreateCommentInput;
+  populate?: InputMaybe<Scalars['Boolean']>;
 };
 
 
@@ -86,6 +118,11 @@ export type MutationCreatePostArgs = {
 
 export type MutationCreateUserArgs = {
   UserInput: CreateUserInput;
+};
+
+
+export type MutationDeleteCommentArgs = {
+  id: Scalars['String'];
 };
 
 
@@ -122,6 +159,11 @@ export type MutationUnlikePostArgs = {
 };
 
 
+export type MutationUpdateCommentArgs = {
+  id: Scalars['String'];
+};
+
+
 export type MutationUpdatePostArgs = {
   PostInput: CreatePostInput;
   id: Scalars['String'];
@@ -131,16 +173,28 @@ export type Post = {
   __typename?: 'Post';
   _id: Scalars['ID'];
   author: Author;
-  body: Scalars['String'];
+  body: Scalars['ID'];
   categories: Array<Scalars['String']>;
-  comments: Array<Comment>;
+  comments?: Maybe<Array<CommentUnion>>;
   commentsCount: Scalars['Float'];
+  createdAt: Scalars['DateTime'];
   likedByUsers?: Maybe<Array<Scalars['ID']>>;
   likesCount: Scalars['Float'];
+  updatedAt: Scalars['DateTime'];
 };
+
+export type PostId = {
+  __typename?: 'PostId';
+  _id: Scalars['ID'];
+};
+
+export type PostUnion = Post | PostId;
 
 export type Query = {
   __typename?: 'Query';
+  commentById: Comment;
+  commentsByPostId: Array<Comment>;
+  commentsByUserId: Array<Comment>;
   postByPostId?: Maybe<Post>;
   postByUserId?: Maybe<Post>;
   posts: Array<Post>;
@@ -150,7 +204,24 @@ export type Query = {
 };
 
 
+export type QueryCommentByIdArgs = {
+  id: Scalars['String'];
+  populate?: InputMaybe<Scalars['Boolean']>;
+};
+
+
+export type QueryCommentsByPostIdArgs = {
+  postId: Scalars['String'];
+};
+
+
+export type QueryCommentsByUserIdArgs = {
+  userId: Scalars['String'];
+};
+
+
 export type QueryPostByPostIdArgs = {
+  populateComments: Scalars['Boolean'];
   postId: Scalars['String'];
 };
 
@@ -173,8 +244,10 @@ export type User = {
   __typename?: 'User';
   _id: Scalars['ID'];
   avatar: Scalars['String'];
+  createdAt: Scalars['DateTime'];
   email: Scalars['String'];
   name: Scalars['String'];
+  updatedAt: Scalars['DateTime'];
   username?: Maybe<Scalars['String']>;
 };
 
@@ -229,12 +302,21 @@ export type UnlikePostMutationVariables = Exact<{
 
 export type UnlikePostMutation = { __typename?: 'Mutation', unlikePost: { __typename?: 'Post', likesCount: number, likedByUsers?: Array<string> | null } };
 
-export type PostByPostIdQueryVariables = Exact<{
-  postId: Scalars['String'];
+export type CreateCommentMutationVariables = Exact<{
+  commentInput: CreateCommentInput;
+  populate?: InputMaybe<Scalars['Boolean']>;
 }>;
 
 
-export type PostByPostIdQuery = { __typename?: 'Query', postByPostId?: { __typename?: 'Post', _id: string, body: string, likedByUsers?: Array<string> | null, likesCount: number, commentsCount: number, author: { __typename?: 'Author', _id: string, name: string, avatarImage?: string | null }, comments: Array<{ __typename?: 'Comment', _id: string, body: string, test: string, author: { __typename?: 'Author', _id: string, name: string, avatarImage?: string | null } }> } | null };
+export type CreateCommentMutation = { __typename?: 'Mutation', createComment: { __typename?: 'Comment', _id: string, body: string, createdAt: any, updatedAt: any, author: { __typename?: 'Author', _id: string, name: string, avatarImage?: string | null }, postId?: { __typename?: 'Post', _id: string, body: string } | { __typename?: 'PostId', _id: string } | null } };
+
+export type PostByPostIdQueryVariables = Exact<{
+  postId: Scalars['String'];
+  populateComments: Scalars['Boolean'];
+}>;
+
+
+export type PostByPostIdQuery = { __typename?: 'Query', postByPostId?: { __typename?: 'Post', body: string, _id: string, categories: Array<string>, commentsCount: number, likedByUsers?: Array<string> | null, likesCount: number, createdAt: any, updatedAt: any, author: { __typename?: 'Author', _id: string, name: string, avatarImage?: string | null }, comments?: Array<{ __typename?: 'Comment', _id: string, body: string, createdAt: any, updatedAt: any, author: { __typename?: 'Author', _id: string, name: string, avatarImage?: string | null } } | { __typename?: 'CommentId', _id: string }> | null } | null };
 
 export type PostByUserIdQueryVariables = Exact<{
   userId: Scalars['String'];
@@ -248,7 +330,7 @@ export type PostsQueryVariables = Exact<{
 }>;
 
 
-export type PostsQuery = { __typename?: 'Query', posts: Array<{ __typename?: 'Post', _id: string, body: string, likesCount: number, likedByUsers?: Array<string> | null, commentsCount: number, author: { __typename?: 'Author', _id: string, avatarImage?: string | null, name: string } }> };
+export type PostsQuery = { __typename?: 'Query', posts: Array<{ __typename?: 'Post', _id: string, body: string, likesCount: number, likedByUsers?: Array<string> | null, commentsCount: number, author: { __typename?: 'Author', _id: string, avatarImage?: string | null, name: string }, comments?: Array<{ __typename?: 'Comment' } | { __typename?: 'CommentId', _id: string }> | null }> };
 
 export type PostsAllQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -413,29 +495,75 @@ export const useUnlikePostMutation = <
       (variables?: UnlikePostMutationVariables) => fetcher<UnlikePostMutation, UnlikePostMutationVariables>(client, UnlikePostDocument, variables, headers)(),
       options
     );
-export const PostByPostIdDocument = `
-    query PostByPostId($postId: String!) {
-  postByPostId(postId: $postId) {
+export const CreateCommentDocument = `
+    mutation CreateComment($commentInput: CreateCommentInput!, $populate: Boolean) {
+  createComment(CommentInput: $commentInput, populate: $populate) {
     _id
-    body
-    likedByUsers
-    likesCount
     author {
       _id
       name
       avatarImage
     }
-    commentsCount
-    comments {
-      _id
-      body
-      test
-      author {
+    postId {
+      ... on Post {
         _id
-        name
-        avatarImage
+        body
+      }
+      ... on PostId {
+        _id
       }
     }
+    body
+    createdAt
+    updatedAt
+  }
+}
+    `;
+export const useCreateCommentMutation = <
+      TError = unknown,
+      TContext = unknown
+    >(
+      client: GraphQLClient,
+      options?: UseMutationOptions<CreateCommentMutation, TError, CreateCommentMutationVariables, TContext>,
+      headers?: RequestInit['headers']
+    ) =>
+    useMutation<CreateCommentMutation, TError, CreateCommentMutationVariables, TContext>(
+      ['CreateComment'],
+      (variables?: CreateCommentMutationVariables) => fetcher<CreateCommentMutation, CreateCommentMutationVariables>(client, CreateCommentDocument, variables, headers)(),
+      options
+    );
+export const PostByPostIdDocument = `
+    query PostByPostId($postId: String!, $populateComments: Boolean!) {
+  postByPostId(postId: $postId, populateComments: $populateComments) {
+    body
+    _id
+    author {
+      _id
+      name
+      avatarImage
+    }
+    categories
+    comments {
+      ... on Comment {
+        _id
+        author {
+          _id
+          name
+          avatarImage
+        }
+        body
+        createdAt
+        updatedAt
+      }
+      ... on CommentId {
+        _id
+      }
+    }
+    commentsCount
+    likedByUsers
+    likesCount
+    createdAt
+    updatedAt
   }
 }
     `;
@@ -492,6 +620,11 @@ export const PostsDocument = `
       _id
       avatarImage
       name
+    }
+    comments {
+      ... on CommentId {
+        _id
+      }
     }
   }
 }

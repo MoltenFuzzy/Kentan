@@ -1,25 +1,34 @@
-query PostByPostId($postId: String!) {
-  postByPostId(postId: $postId) {
-    _id
+query PostByPostId($postId: String!, $populateComments: Boolean!) {
+  postByPostId(postId: $postId,  populateComments: $populateComments) {
     body
-    likedByUsers
-    likesCount
+    _id
     author {
       _id
       name
       avatarImage
     }
-    commentsCount
+    categories
     comments {
-      _id
-      body
-      test
-      author {
+      ... on Comment {
         _id
-        name
-        avatarImage
+        author {
+          _id
+          name
+          avatarImage
+        }
+        body
+        createdAt
+        updatedAt
+      }
+      ... on CommentId {
+        _id
       }
     }
+    commentsCount
+    likedByUsers
+    likesCount
+    createdAt
+    updatedAt
   }
 }
 
@@ -46,6 +55,11 @@ query Posts($limit: Float!) {
       _id
       avatarImage
       name
+    }
+    comments {
+      ... on CommentId {
+        _id
+      }
     }
   }
 }

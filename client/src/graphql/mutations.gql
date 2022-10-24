@@ -44,3 +44,26 @@ mutation UnlikePost($userId: String!, $postId: String!) {
     likedByUsers
   }
 }
+
+mutation CreateComment($commentInput: CreateCommentInput!, $populate: Boolean) {
+  createComment(CommentInput: $commentInput, populate: $populate) {
+    _id
+    author {
+      _id
+      name
+      avatarImage
+    }
+    postId {
+      ... on Post {
+        _id
+        body
+      }
+      ... on PostId {
+        _id
+      }
+    }
+    body
+    createdAt
+    updatedAt
+  }
+}
