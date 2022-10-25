@@ -14,11 +14,7 @@ import {
 import { useSession, signOut, getSession } from "next-auth/react";
 import { NavBar } from "../components/NavBar/NavBar";
 import { Post, PostProps } from "../components/Post/Post";
-import {
-	PostsQuery,
-	useUserQuery,
-	UserQuery,
-} from "@gqlSDK/generated/generates";
+import { PostsQuery, useUserQuery, UserQuery } from "@gqlSDK/generated/generates";
 import { MouseEventHandler, useEffect, useState } from "react";
 import { GetServerSideProps, NextPage } from "next";
 import { PostForm } from "components/PostForm/PostForm";
@@ -45,6 +41,10 @@ export const HomePage = ({ pageProps: { posts } }: PageProps) => {
 		userId: session?.user.id!,
 	});
 	const { setId, setName, setEmail, setAvatar } = useUserStore();
+
+	useEffect(() => {
+		console.log(posts);
+	}, [posts]);
 
 	useEffect(() => {
 		setId(user?._id!);
@@ -75,9 +75,7 @@ export const HomePage = ({ pageProps: { posts } }: PageProps) => {
 									body={post.body}
 									likesCount={post.likesCount}
 									// TODO: CHANGE ARRAY TO SET IN GRAPHQL TO REMOVE DUPLICATES & CONSTANT TIME LOOKUP?
-									isLikedByThisUser={
-										post.likedByUsers?.includes(session?.user.id!)!
-									}
+									isLikedByThisUser={post.likedByUsers?.includes(session?.user.id!)!}
 									commentsCount={post?.comments?.length!}
 								/>
 							))}

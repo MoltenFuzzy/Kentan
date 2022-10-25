@@ -175,7 +175,7 @@ export type Post = {
   author: Author;
   body: Scalars['ID'];
   categories: Array<Scalars['String']>;
-  comments?: Maybe<Array<CommentUnion>>;
+  comments: Array<CommentUnion>;
   commentsCount: Scalars['Float'];
   createdAt: Scalars['DateTime'];
   likedByUsers?: Maybe<Array<Scalars['ID']>>;
@@ -308,7 +308,14 @@ export type CreateCommentMutationVariables = Exact<{
 }>;
 
 
-export type CreateCommentMutation = { __typename?: 'Mutation', createComment: { __typename?: 'Comment', _id: string, body: string, createdAt: any, updatedAt: any, author: { __typename?: 'Author', _id: string, name: string, avatarImage?: string | null }, postId?: { __typename?: 'Post', _id: string, body: string } | { __typename?: 'PostId', _id: string } | null } };
+export type CreateCommentMutation = { __typename?: 'Mutation', createComment: { __typename?: 'Comment', _id: string, body: string, author: { __typename?: 'Author', _id: string, name: string, avatarImage?: string | null } } };
+
+export type DeleteCommentMutationVariables = Exact<{
+  deleteCommentId: Scalars['String'];
+}>;
+
+
+export type DeleteCommentMutation = { __typename?: 'Mutation', deleteComment: boolean };
 
 export type PostByPostIdQueryVariables = Exact<{
   postId: Scalars['String'];
@@ -316,7 +323,7 @@ export type PostByPostIdQueryVariables = Exact<{
 }>;
 
 
-export type PostByPostIdQuery = { __typename?: 'Query', postByPostId?: { __typename?: 'Post', body: string, _id: string, categories: Array<string>, commentsCount: number, likedByUsers?: Array<string> | null, likesCount: number, createdAt: any, updatedAt: any, author: { __typename?: 'Author', _id: string, name: string, avatarImage?: string | null }, comments?: Array<{ __typename?: 'Comment', _id: string, body: string, createdAt: any, updatedAt: any, author: { __typename?: 'Author', _id: string, name: string, avatarImage?: string | null } } | { __typename?: 'CommentId', _id: string }> | null } | null };
+export type PostByPostIdQuery = { __typename?: 'Query', postByPostId?: { __typename?: 'Post', body: string, _id: string, categories: Array<string>, commentsCount: number, likedByUsers?: Array<string> | null, likesCount: number, author: { __typename?: 'Author', _id: string, name: string, avatarImage?: string | null }, comments: Array<{ __typename?: 'Comment', _id: string, body: string, likesCount: number, likedByUsers?: Array<string> | null, author: { __typename?: 'Author', _id: string, name: string, avatarImage?: string | null } } | { __typename?: 'CommentId', _id: string }> } | null };
 
 export type PostByUserIdQueryVariables = Exact<{
   userId: Scalars['String'];
@@ -330,7 +337,7 @@ export type PostsQueryVariables = Exact<{
 }>;
 
 
-export type PostsQuery = { __typename?: 'Query', posts: Array<{ __typename?: 'Post', _id: string, body: string, likesCount: number, likedByUsers?: Array<string> | null, commentsCount: number, author: { __typename?: 'Author', _id: string, avatarImage?: string | null, name: string }, comments?: Array<{ __typename?: 'Comment' } | { __typename?: 'CommentId', _id: string }> | null }> };
+export type PostsQuery = { __typename?: 'Query', posts: Array<{ __typename?: 'Post', _id: string, body: string, likesCount: number, likedByUsers?: Array<string> | null, commentsCount: number, author: { __typename?: 'Author', _id: string, avatarImage?: string | null, name: string }, comments: Array<{ __typename?: 'Comment' } | { __typename?: 'CommentId', _id: string }> }> };
 
 export type PostsAllQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -348,6 +355,21 @@ export type UsersQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type UsersQuery = { __typename?: 'Query', users: Array<{ __typename?: 'User', _id: string, name: string, username?: string | null, email: string, avatar: string }> };
+
+export type CommentByIdQueryVariables = Exact<{
+  commentByIdId2: Scalars['String'];
+  commentByIdPopulate2?: InputMaybe<Scalars['Boolean']>;
+}>;
+
+
+export type CommentByIdQuery = { __typename?: 'Query', commentById: { __typename?: 'Comment', _id: string, body: string, commentsCount: number, likedByUsers?: Array<string> | null, likesCount: number, author: { __typename?: 'Author', _id: string, name: string, avatarImage?: string | null }, postId?: { __typename?: 'Post', _id: string, body: string, categories: Array<string>, commentsCount: number, likedByUsers?: Array<string> | null, likesCount: number } | { __typename?: 'PostId', _id: string } | null } };
+
+export type CommentsByPostIdQueryVariables = Exact<{
+  postId: Scalars['String'];
+}>;
+
+
+export type CommentsByPostIdQuery = { __typename?: 'Query', commentsByPostId: Array<{ __typename?: 'Comment', _id: string, body: string, author: { __typename?: 'Author', _id: string, name: string, avatarImage?: string | null } }> };
 
 
 export const CreatePostDocument = `
@@ -499,23 +521,12 @@ export const CreateCommentDocument = `
     mutation CreateComment($commentInput: CreateCommentInput!, $populate: Boolean) {
   createComment(CommentInput: $commentInput, populate: $populate) {
     _id
+    body
     author {
       _id
       name
       avatarImage
     }
-    postId {
-      ... on Post {
-        _id
-        body
-      }
-      ... on PostId {
-        _id
-      }
-    }
-    body
-    createdAt
-    updatedAt
   }
 }
     `;
@@ -532,6 +543,24 @@ export const useCreateCommentMutation = <
       (variables?: CreateCommentMutationVariables) => fetcher<CreateCommentMutation, CreateCommentMutationVariables>(client, CreateCommentDocument, variables, headers)(),
       options
     );
+export const DeleteCommentDocument = `
+    mutation DeleteComment($deleteCommentId: String!) {
+  deleteComment(id: $deleteCommentId)
+}
+    `;
+export const useDeleteCommentMutation = <
+      TError = unknown,
+      TContext = unknown
+    >(
+      client: GraphQLClient,
+      options?: UseMutationOptions<DeleteCommentMutation, TError, DeleteCommentMutationVariables, TContext>,
+      headers?: RequestInit['headers']
+    ) =>
+    useMutation<DeleteCommentMutation, TError, DeleteCommentMutationVariables, TContext>(
+      ['DeleteComment'],
+      (variables?: DeleteCommentMutationVariables) => fetcher<DeleteCommentMutation, DeleteCommentMutationVariables>(client, DeleteCommentDocument, variables, headers)(),
+      options
+    );
 export const PostByPostIdDocument = `
     query PostByPostId($postId: String!, $populateComments: Boolean!) {
   postByPostId(postId: $postId, populateComments: $populateComments) {
@@ -546,14 +575,14 @@ export const PostByPostIdDocument = `
     comments {
       ... on Comment {
         _id
+        body
         author {
           _id
           name
           avatarImage
         }
-        body
-        createdAt
-        updatedAt
+        likesCount
+        likedByUsers
       }
       ... on CommentId {
         _id
@@ -562,8 +591,6 @@ export const PostByPostIdDocument = `
     commentsCount
     likedByUsers
     likesCount
-    createdAt
-    updatedAt
   }
 }
     `;
@@ -720,5 +747,75 @@ export const useUsersQuery = <
     useQuery<UsersQuery, TError, TData>(
       variables === undefined ? ['Users'] : ['Users', variables],
       fetcher<UsersQuery, UsersQueryVariables>(client, UsersDocument, variables, headers),
+      options
+    );
+export const CommentByIdDocument = `
+    query CommentById($commentByIdId2: String!, $commentByIdPopulate2: Boolean) {
+  commentById(id: $commentByIdId2, populate: $commentByIdPopulate2) {
+    _id
+    author {
+      _id
+      name
+      avatarImage
+    }
+    postId {
+      ... on PostId {
+        _id
+      }
+      ... on Post {
+        _id
+        body
+        categories
+        commentsCount
+        likedByUsers
+        likesCount
+      }
+    }
+    body
+    commentsCount
+    likedByUsers
+    likesCount
+  }
+}
+    `;
+export const useCommentByIdQuery = <
+      TData = CommentByIdQuery,
+      TError = unknown
+    >(
+      client: GraphQLClient,
+      variables: CommentByIdQueryVariables,
+      options?: UseQueryOptions<CommentByIdQuery, TError, TData>,
+      headers?: RequestInit['headers']
+    ) =>
+    useQuery<CommentByIdQuery, TError, TData>(
+      ['CommentById', variables],
+      fetcher<CommentByIdQuery, CommentByIdQueryVariables>(client, CommentByIdDocument, variables, headers),
+      options
+    );
+export const CommentsByPostIdDocument = `
+    query CommentsByPostId($postId: String!) {
+  commentsByPostId(postId: $postId) {
+    _id
+    body
+    author {
+      _id
+      name
+      avatarImage
+    }
+  }
+}
+    `;
+export const useCommentsByPostIdQuery = <
+      TData = CommentsByPostIdQuery,
+      TError = unknown
+    >(
+      client: GraphQLClient,
+      variables: CommentsByPostIdQueryVariables,
+      options?: UseQueryOptions<CommentsByPostIdQuery, TError, TData>,
+      headers?: RequestInit['headers']
+    ) =>
+    useQuery<CommentsByPostIdQuery, TError, TData>(
+      ['CommentsByPostId', variables],
+      fetcher<CommentsByPostIdQuery, CommentsByPostIdQueryVariables>(client, CommentsByPostIdDocument, variables, headers),
       options
     );

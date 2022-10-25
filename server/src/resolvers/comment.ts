@@ -21,7 +21,7 @@ export class CommentResolver {
 	@Query(() => Comment)
 	async commentById(
 		@Arg("id") id: string,
-		@Arg("populate", { nullable: true }) populate: boolean
+		@Arg("populate", { nullable: true, defaultValue: false }) populate: boolean
 		// @Info() info: GraphQLResolveInfo
 	): Promise<Comment | null> {
 		//! https://stackoverflow.com/questions/65720312/type-graphql-how-to-know-which-fields-are-returned-by-resolver
@@ -47,15 +47,19 @@ export class CommentResolver {
 	@Mutation(() => Comment)
 	async createComment(
 		@Arg("CommentInput") CommentInput: CreateCommentInput,
-		@Arg("populate", { nullable: true }) populate: boolean
+		@Arg("populate", { nullable: true, defaultValue: false }) populate: boolean
 	): Promise<Comment | null> {
-		const comment = await CommentModel.create(CommentInput); // create a comment
-		const post = await PostModel.findOneAndUpdate(
-			{ _id: CommentInput.postId },
-			{ $push: { comments: comment._id } }, //! CHECK IF CORRECT COMMENT ID IS ADDED
-			{ new: true }
-		); // add comment to post
+		// find post and see if post exists
+		const post = await PostModel.findOne({ _id: CommentInput.postId._id });
+		if (!post) return null;
 		console.log(post);
+		const comment = await CommentModel.create(CommentInput); // create a comment on db document
+		console.log(comment);
+
+		// add comment to post's comments ref array
+		await post.updateOne(
+			{ $push: { comments: comment._id } } //! CHECK IF CORRECT COMMENT ID IS ADDED
+		); // add comment to post
 		if (populate) {
 			await comment.populate("postId");
 		}
@@ -69,6 +73,16 @@ export class CommentResolver {
 
 	@Mutation(() => Boolean)
 	async deleteComment(@Arg("id", () => String) id: string) {
-		return await CommentModel.deleteOne({ _id: id });
+		const comment = await CommentModel.findOneAndDelete({ _id: id });
+		// if comment is found, delete it and delete the comment from the post's comments ref array
+		if (comment) {
+			await PostModel.findOneAndUpdate(
+				{ _id: comment?.postId },
+				{ $pull: { comments: comment?._id } },
+				{ new: true }
+			);
+			return true;
+		}
+		return false;
 	}
 }

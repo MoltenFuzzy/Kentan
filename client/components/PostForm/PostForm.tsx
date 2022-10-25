@@ -36,6 +36,7 @@ export const PostForm = () => {
 		createPost({ postInput: newPostInput });
 		setError(""); // reset error state
 		setValue(""); // set value to empty string after posting
+		console.log(router.asPath);
 		router.replace(router.asPath);
 	};
 

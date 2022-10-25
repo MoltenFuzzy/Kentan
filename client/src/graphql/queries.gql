@@ -11,14 +11,14 @@ query PostByPostId($postId: String!, $populateComments: Boolean!) {
     comments {
       ... on Comment {
         _id
+        body
         author {
           _id
           name
           avatarImage
         }
-        body
-        createdAt
-        updatedAt
+        likesCount
+        likedByUsers
       }
       ... on CommentId {
         _id
@@ -27,8 +27,6 @@ query PostByPostId($postId: String!, $populateComments: Boolean!) {
     commentsCount
     likedByUsers
     likesCount
-    createdAt
-    updatedAt
   }
 }
 
@@ -98,3 +96,44 @@ query Users {
     avatar
   }
 }
+
+query CommentById($commentByIdId2: String!, $commentByIdPopulate2: Boolean) {
+  commentById(id: $commentByIdId2, populate: $commentByIdPopulate2) {
+    _id
+    author {
+      _id
+      name
+      avatarImage
+    }
+    postId {
+      ... on PostId {
+        _id
+      }
+      ... on Post {
+        _id
+        body
+        categories
+        commentsCount
+        likedByUsers
+        likesCount
+      }
+    }
+    body
+    commentsCount
+    likedByUsers
+    likesCount
+  }
+}
+
+query CommentsByPostId($postId: String!) {
+  commentsByPostId(postId: $postId) {
+    _id
+    body
+    author {
+      _id
+      name
+      avatarImage
+    }
+  }
+}
+

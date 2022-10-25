@@ -28,7 +28,7 @@ export class Post {
 
 	// CIRCULAR DEPENDENCY FIX
 	// https://typegoose.github.io/typegoose/docs/guides/advanced/reference-other-classes/#circular-dependencies
-	@Field((type) => [CommentUnion], { nullable: true })
+	@Field((type) => [CommentUnion])
 	@Property({ ref: () => Comment, required: true, default: [] })
 	comments: typeof CommentUnion[];
 

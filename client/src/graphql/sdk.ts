@@ -171,7 +171,7 @@ export type Post = {
   author: Author;
   body: Scalars['ID'];
   categories: Array<Scalars['String']>;
-  comments?: Maybe<Array<CommentUnion>>;
+  comments: Array<CommentUnion>;
   commentsCount: Scalars['Float'];
   createdAt: Scalars['DateTime'];
   likedByUsers?: Maybe<Array<Scalars['ID']>>;
@@ -304,7 +304,14 @@ export type CreateCommentMutationVariables = Exact<{
 }>;
 
 
-export type CreateCommentMutation = { __typename?: 'Mutation', createComment: { __typename?: 'Comment', _id: string, body: string, createdAt: any, updatedAt: any, author: { __typename?: 'Author', _id: string, name: string, avatarImage?: string | null }, postId?: { __typename?: 'Post', _id: string, body: string } | { __typename?: 'PostId', _id: string } | null } };
+export type CreateCommentMutation = { __typename?: 'Mutation', createComment: { __typename?: 'Comment', _id: string, body: string, author: { __typename?: 'Author', _id: string, name: string, avatarImage?: string | null } } };
+
+export type DeleteCommentMutationVariables = Exact<{
+  deleteCommentId: Scalars['String'];
+}>;
+
+
+export type DeleteCommentMutation = { __typename?: 'Mutation', deleteComment: boolean };
 
 export type PostByPostIdQueryVariables = Exact<{
   postId: Scalars['String'];
@@ -312,7 +319,7 @@ export type PostByPostIdQueryVariables = Exact<{
 }>;
 
 
-export type PostByPostIdQuery = { __typename?: 'Query', postByPostId?: { __typename?: 'Post', body: string, _id: string, categories: Array<string>, commentsCount: number, likedByUsers?: Array<string> | null, likesCount: number, createdAt: any, updatedAt: any, author: { __typename?: 'Author', _id: string, name: string, avatarImage?: string | null }, comments?: Array<{ __typename?: 'Comment', _id: string, body: string, createdAt: any, updatedAt: any, author: { __typename?: 'Author', _id: string, name: string, avatarImage?: string | null } } | { __typename?: 'CommentId', _id: string }> | null } | null };
+export type PostByPostIdQuery = { __typename?: 'Query', postByPostId?: { __typename?: 'Post', body: string, _id: string, categories: Array<string>, commentsCount: number, likedByUsers?: Array<string> | null, likesCount: number, author: { __typename?: 'Author', _id: string, name: string, avatarImage?: string | null }, comments: Array<{ __typename?: 'Comment', _id: string, body: string, likesCount: number, likedByUsers?: Array<string> | null, author: { __typename?: 'Author', _id: string, name: string, avatarImage?: string | null } } | { __typename?: 'CommentId', _id: string }> } | null };
 
 export type PostByUserIdQueryVariables = Exact<{
   userId: Scalars['String'];
@@ -326,7 +333,7 @@ export type PostsQueryVariables = Exact<{
 }>;
 
 
-export type PostsQuery = { __typename?: 'Query', posts: Array<{ __typename?: 'Post', _id: string, body: string, likesCount: number, likedByUsers?: Array<string> | null, commentsCount: number, author: { __typename?: 'Author', _id: string, avatarImage?: string | null, name: string }, comments?: Array<{ __typename?: 'Comment' } | { __typename?: 'CommentId', _id: string }> | null }> };
+export type PostsQuery = { __typename?: 'Query', posts: Array<{ __typename?: 'Post', _id: string, body: string, likesCount: number, likedByUsers?: Array<string> | null, commentsCount: number, author: { __typename?: 'Author', _id: string, avatarImage?: string | null, name: string }, comments: Array<{ __typename?: 'Comment' } | { __typename?: 'CommentId', _id: string }> }> };
 
 export type PostsAllQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -344,6 +351,21 @@ export type UsersQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type UsersQuery = { __typename?: 'Query', users: Array<{ __typename?: 'User', _id: string, name: string, username?: string | null, email: string, avatar: string }> };
+
+export type CommentByIdQueryVariables = Exact<{
+  commentByIdId2: Scalars['String'];
+  commentByIdPopulate2?: InputMaybe<Scalars['Boolean']>;
+}>;
+
+
+export type CommentByIdQuery = { __typename?: 'Query', commentById: { __typename?: 'Comment', _id: string, body: string, commentsCount: number, likedByUsers?: Array<string> | null, likesCount: number, author: { __typename?: 'Author', _id: string, name: string, avatarImage?: string | null }, postId?: { __typename?: 'Post', _id: string, body: string, categories: Array<string>, commentsCount: number, likedByUsers?: Array<string> | null, likesCount: number } | { __typename?: 'PostId', _id: string } | null } };
+
+export type CommentsByPostIdQueryVariables = Exact<{
+  postId: Scalars['String'];
+}>;
+
+
+export type CommentsByPostIdQuery = { __typename?: 'Query', commentsByPostId: Array<{ __typename?: 'Comment', _id: string, body: string, author: { __typename?: 'Author', _id: string, name: string, avatarImage?: string | null } }> };
 
 
 export const CreatePostDocument = gql`
@@ -404,24 +426,18 @@ export const CreateCommentDocument = gql`
     mutation CreateComment($commentInput: CreateCommentInput!, $populate: Boolean) {
   createComment(CommentInput: $commentInput, populate: $populate) {
     _id
+    body
     author {
       _id
       name
       avatarImage
     }
-    postId {
-      ... on Post {
-        _id
-        body
-      }
-      ... on PostId {
-        _id
-      }
-    }
-    body
-    createdAt
-    updatedAt
   }
+}
+    `;
+export const DeleteCommentDocument = gql`
+    mutation DeleteComment($deleteCommentId: String!) {
+  deleteComment(id: $deleteCommentId)
 }
     `;
 export const PostByPostIdDocument = gql`
@@ -438,14 +454,14 @@ export const PostByPostIdDocument = gql`
     comments {
       ... on Comment {
         _id
+        body
         author {
           _id
           name
           avatarImage
         }
-        body
-        createdAt
-        updatedAt
+        likesCount
+        likedByUsers
       }
       ... on CommentId {
         _id
@@ -454,8 +470,6 @@ export const PostByPostIdDocument = gql`
     commentsCount
     likedByUsers
     likesCount
-    createdAt
-    updatedAt
   }
 }
     `;
@@ -530,6 +544,48 @@ export const UsersDocument = gql`
   }
 }
     `;
+export const CommentByIdDocument = gql`
+    query CommentById($commentByIdId2: String!, $commentByIdPopulate2: Boolean) {
+  commentById(id: $commentByIdId2, populate: $commentByIdPopulate2) {
+    _id
+    author {
+      _id
+      name
+      avatarImage
+    }
+    postId {
+      ... on PostId {
+        _id
+      }
+      ... on Post {
+        _id
+        body
+        categories
+        commentsCount
+        likedByUsers
+        likesCount
+      }
+    }
+    body
+    commentsCount
+    likedByUsers
+    likesCount
+  }
+}
+    `;
+export const CommentsByPostIdDocument = gql`
+    query CommentsByPostId($postId: String!) {
+  commentsByPostId(postId: $postId) {
+    _id
+    body
+    author {
+      _id
+      name
+      avatarImage
+    }
+  }
+}
+    `;
 
 export type SdkFunctionWrapper = <T>(action: (requestHeaders?:Record<string, string>) => Promise<T>, operationName: string, operationType?: string) => Promise<T>;
 
@@ -562,6 +618,9 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
     CreateComment(variables: CreateCommentMutationVariables, requestHeaders?: Dom.RequestInit["headers"]): Promise<CreateCommentMutation> {
       return withWrapper((wrappedRequestHeaders) => client.request<CreateCommentMutation>(CreateCommentDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'CreateComment', 'mutation');
     },
+    DeleteComment(variables: DeleteCommentMutationVariables, requestHeaders?: Dom.RequestInit["headers"]): Promise<DeleteCommentMutation> {
+      return withWrapper((wrappedRequestHeaders) => client.request<DeleteCommentMutation>(DeleteCommentDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'DeleteComment', 'mutation');
+    },
     PostByPostId(variables: PostByPostIdQueryVariables, requestHeaders?: Dom.RequestInit["headers"]): Promise<PostByPostIdQuery> {
       return withWrapper((wrappedRequestHeaders) => client.request<PostByPostIdQuery>(PostByPostIdDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'PostByPostId', 'query');
     },
@@ -579,6 +638,12 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
     },
     Users(variables?: UsersQueryVariables, requestHeaders?: Dom.RequestInit["headers"]): Promise<UsersQuery> {
       return withWrapper((wrappedRequestHeaders) => client.request<UsersQuery>(UsersDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'Users', 'query');
+    },
+    CommentById(variables: CommentByIdQueryVariables, requestHeaders?: Dom.RequestInit["headers"]): Promise<CommentByIdQuery> {
+      return withWrapper((wrappedRequestHeaders) => client.request<CommentByIdQuery>(CommentByIdDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'CommentById', 'query');
+    },
+    CommentsByPostId(variables: CommentsByPostIdQueryVariables, requestHeaders?: Dom.RequestInit["headers"]): Promise<CommentsByPostIdQuery> {
+      return withWrapper((wrappedRequestHeaders) => client.request<CommentsByPostIdQuery>(CommentsByPostIdDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'CommentsByPostId', 'query');
     }
   };
 }

@@ -1,6 +1,5 @@
 import create from "zustand";
-import { devtools } from "zustand/middleware";
-
+import { devtools, persist } from "zustand/middleware";
 interface UserState {
 	id: string;
 	setId: (id: string) => void;
@@ -14,43 +13,83 @@ interface UserState {
 	setAvatar: (avatar: string) => void;
 }
 
-const useUserStore = create<UserState, [["zustand/devtools", UserState]]>(
-	devtools((set) => ({
-		id: "",
-		setId: (id) =>
-			set((state) => ({
-				...state,
-				id,
-			})),
+const useUserStore = create<UserState>()(
+	devtools(
+		persist((set) => ({
+			id: "",
+			setId: (id) =>
+				set((state) => ({
+					...state,
+					id,
+				})),
+			name: "",
+			setName: (name) =>
+				set((state) => ({
+					...state,
+					name,
+				})),
 
-		name: "",
-		setName: (name) =>
-			set((state) => ({
-				...state,
-				name,
-			})),
+			username: "",
+			setUsername: (name) =>
+				set((state) => ({
+					...state,
+					name,
+				})),
 
-		username: "",
-		setUsername: (name) =>
-			set((state) => ({
-				...state,
-				name,
-			})),
+			email: "",
+			setEmail: (email) =>
+				set((state) => ({
+					...state,
+					email,
+				})),
 
-		email: "",
-		setEmail: (email) =>
-			set((state) => ({
-				...state,
-				email,
-			})),
-
-		avatar: "",
-		setAvatar: (avatar) =>
-			set((state) => ({
-				...state,
-				avatar,
-			})),
-	}))
+			avatar: "",
+			setAvatar: (avatar) =>
+				set((state) => ({
+					...state,
+					avatar,
+				})),
+		}))
+	)
 );
+
+// const useUserStore = create<UserState, [["zustand/devtools", UserState]]>(
+// 	devtools((set) => ({
+// 		id: "",
+// 		setId: (id) =>
+// 			set((state) => ({
+// 				...state,
+// 				id,
+// 			})),
+
+// 		name: "",
+// 		setName: (name) =>
+// 			set((state) => ({
+// 				...state,
+// 				name,
+// 			})),
+
+// 		username: "",
+// 		setUsername: (name) =>
+// 			set((state) => ({
+// 				...state,
+// 				name,
+// 			})),
+
+// 		email: "",
+// 		setEmail: (email) =>
+// 			set((state) => ({
+// 				...state,
+// 				email,
+// 			})),
+
+// 		avatar: "",
+// 		setAvatar: (avatar) =>
+// 			set((state) => ({
+// 				...state,
+// 				avatar,
+// 			})),
+// 	}))
+// );
 
 export default useUserStore;
