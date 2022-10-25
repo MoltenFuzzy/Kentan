@@ -12,12 +12,16 @@ import React, { useEffect } from "react";
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
 	// fetch the post and comments from server
 	const { PostByPostId, CommentsByPostId } = getSdk(gqlClient); //! POPULATING COMMENTS AND REFRESHING IS ALWAYS LATE?
-	const post = (
-		await PostByPostId({
-			postId: ctx.params?.postId as string,
-			populateComments: false, // dont work right >:(
-		})
-	).postByPostId;
+
+	const post = await PostByPostId({
+		postId: ctx.params?.postId as string,
+		populateComments: false, // dont work right >:(
+	})
+		.catch((error) => console.error(error)) // not sure if this is needed but whatever
+		.then((res) => res?.postByPostId);
+
+	if (!post) return { notFound: true }; // backend will return null if post id not found
+
 	//! directly fetching comments from given post accurately reflects the comments
 	const comments = (await CommentsByPostId({ postId: ctx.params?.postId as string }))
 		.commentsByPostId;

@@ -1,6 +1,7 @@
 import { Arg, Mutation, Query, Resolver } from "type-graphql";
 import { Post, CreatePostInput } from "../entities/post";
 import { PostModel } from "../entities/models";
+import mongoose from "mongoose";
 
 @Resolver()
 export class PostResolver {
@@ -9,6 +10,7 @@ export class PostResolver {
 		@Arg("postId") postId: string,
 		@Arg("populateComments") populate: boolean
 	): Promise<Post | null> {
+		if (!mongoose.Types.ObjectId.isValid(postId)) return null; // TODO: FIGURE OUT ERROR HANDLING INVALID IDs
 		if (populate) return await PostModel.findById(postId).populate("comments");
 		return await PostModel.findOne({ _id: postId });
 	}
