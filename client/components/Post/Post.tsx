@@ -18,6 +18,7 @@ import {
 	useLikePostMutation,
 	UnlikePostMutation,
 	useUnlikePostMutation,
+	PostByPostIdQuery,
 } from "@gqlSDK/generated/generates";
 import gqlClient from "@gqlSDK/clients/gqlClient";
 import { useRouter } from "next/router";
@@ -26,6 +27,7 @@ import useDebounce from "hooks/useDebounce";
 import { Body } from "components/Body/Body";
 export interface PostProps {
 	id: string;
+	author?: NonNullable<PostByPostIdQuery["postByPostId"]>["author"];
 	username: string;
 	avatarImage: string | undefined | null;
 	body: string;
@@ -39,6 +41,7 @@ export interface PostProps {
 export const Post = ({
 	id: postId,
 	body,
+	author,
 	username,
 	avatarImage,
 	likesCount,
@@ -47,10 +50,7 @@ export const Post = ({
 	isOnClick = true,
 }: PostProps) => {
 	const { colorScheme, toggleColorScheme } = useMantineColorScheme();
-	const { mutate: DeletePost } = useDeletePostMutation<
-		DeletePostMutation,
-		Error
-	>(gqlClient);
+	const { mutate: DeletePost } = useDeletePostMutation<DeletePostMutation, Error>(gqlClient);
 	const router = useRouter();
 
 	const handleDelete = () => {
@@ -61,25 +61,25 @@ export const Post = ({
 
 	return (
 		<Stack
-			className={`bg-bgPost p-6 ${
-				isOnClick ? "post-border cursor-pointer" : "post-border-plain"
-			}`}
+			className={`bg-bgPost p-6 ${isOnClick ? "post-border" : "post-border-plain"}`}
 			spacing={7}
-			onClick={() => {
-				// prevents pushing to undefined route on the post page
-				if (isOnClick) {
-					router.push(`post/${postId}`);
-				}
-			}}
+			// onClick={() => {
+			// 	// prevents pushing to undefined route on the post page
+			// 	if (isOnClick) {
+			// 		router.push(`post/${postId}`);
+			// 	}
+			// }}
 		>
 			<Body
 				id={postId}
+				author={author}
 				username={username}
 				avatarImage={avatarImage}
 				body={body}
 				likesCount={likesCount}
 				isLikedByThisUser={isLikedByThisUser}
 				commentsCount={commentsCount}
+				isOnClick={isOnClick}
 				handleDelete={handleDelete}
 			/>
 		</Stack>

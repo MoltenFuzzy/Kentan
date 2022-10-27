@@ -2,6 +2,7 @@ import gqlClient from "@gqlSDK/clients/gqlClient";
 import {
 	DeletePostMutation,
 	LikePostMutation,
+	PostByPostIdQuery,
 	UnlikePostMutation,
 	useDeletePostMutation,
 	useLikePostMutation,
@@ -16,32 +17,31 @@ import useUserStore from "stores/user";
 
 export interface BodyProps {
 	id: string;
+	author?: NonNullable<PostByPostIdQuery["postByPostId"]>["author"];
 	username: string;
 	avatarImage: string | undefined | null;
 	body: string;
 	likesCount: number;
 	isLikedByThisUser: boolean;
 	commentsCount: number;
+	isOnClick?: boolean;
 	handleDelete: (e?: SyntheticEvent) => void;
 }
 
 export const Body = ({
 	id: postId,
 	body,
+	author,
 	username,
 	avatarImage,
 	likesCount,
 	isLikedByThisUser,
 	commentsCount,
+	isOnClick,
 	handleDelete,
 }: BodyProps) => {
-	const { mutate: LikePost } = useLikePostMutation<LikePostMutation, Error>(
-		gqlClient
-	);
-	const { mutate: UnlikePost } = useUnlikePostMutation<
-		UnlikePostMutation,
-		Error
-	>(gqlClient);
+	const { mutate: LikePost } = useLikePostMutation<LikePostMutation, Error>(gqlClient);
+	const { mutate: UnlikePost } = useUnlikePostMutation<UnlikePostMutation, Error>(gqlClient);
 	const [likesValue, setLikesValue] = React.useState(likesCount);
 	const [isLiked, setIsLiked] = React.useState(isLikedByThisUser); //! NOTE: STATE NOT PERSISTED
 	const { id: userId } = useUserStore();
@@ -65,7 +65,7 @@ export const Body = ({
 					<Text
 						onClick={(e) => {
 							e.stopPropagation();
-							router.push(username);
+							router.push(`/user/${username}`);
 						}}
 						className="hover:underline"
 						weight={700}
@@ -81,9 +81,12 @@ export const Body = ({
 							</ActionIcon>
 						</Menu.Target>
 						<Menu.Dropdown>
-							<Menu.Item color="red" onClick={handleDelete}>
-								Delete
-							</Menu.Item>
+							{userId === author?._id ? (
+								<Menu.Item color="red" onClick={handleDelete}>
+									Delete
+								</Menu.Item>
+							) : null}
+							<Menu.Item color="orange">Report</Menu.Item>
 						</Menu.Dropdown>
 					</Menu>
 				</Group>
@@ -97,23 +100,29 @@ export const Body = ({
 					onClick={(e) => {
 						// https://stackoverflow.com/questions/13966734/child-element-click-event-trigger-the-parent-click-event
 						e.stopPropagation();
-						{
-							if (!isLiked) {
-								LikePost({ userId, postId });
-								setLikesValue(likesValue + 1);
-								setIsLiked(true);
-							} else {
-								UnlikePost({ userId, postId });
-								setLikesValue(likesValue - 1);
-								setIsLiked(false);
-							}
+						if (!isLiked) {
+							LikePost({ userId, postId });
+							setLikesValue(likesValue + 1);
+							setIsLiked(true);
+						} else {
+							UnlikePost({ userId, postId });
+							setLikesValue(likesValue - 1);
+							setIsLiked(false);
 						}
 					}}
 				>
 					<IconFlame size={100} strokeWidth={2} color={"orange"} />
 					<Text>{likesValue}</Text>
 				</ActionIcon>
-				<ActionIcon size="lg">
+				<ActionIcon
+					size="lg"
+					onClick={() => {
+						// prevents pushing to undefined route on the post page
+						if (isOnClick) {
+							router.push(`post/${postId}`);
+						}
+					}}
+				>
 					<IconMessage size={100} strokeWidth={2} color={"orange"} />
 					<Text>{commentsCount}</Text>
 				</ActionIcon>
