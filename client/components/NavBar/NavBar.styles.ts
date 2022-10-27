@@ -30,15 +30,15 @@ export default createStyles((theme) => ({
 	},
 
 	search: {
-		minWidth: 600,
+		minWidth: 500,
 		[theme.fn.smallerThan("md")]: {
-			minWidth: 550,
-		},
-		[theme.fn.smallerThan("sm")]: {
 			minWidth: 400,
 		},
+		[theme.fn.smallerThan("sm")]: {
+			minWidth: 300,
+		},
 		[theme.fn.smallerThan("xs")]: {
-			display: "none",
+			minWidth: 200,
 		},
 	},
 
