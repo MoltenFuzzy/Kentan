@@ -59,6 +59,7 @@ const FullPost = ({ pageProps: { post, comments } }: PageProps) => {
 									// post needs optional chaining because backend schema is nullable
 									// it is nulllable because the querying a post by id can return null if it doesn't exist
 									id={post?._id!}
+									author={post?.author!}
 									username={post?.author.name!}
 									avatarImage={post?.author.avatarImage!}
 									body={post?.body!}

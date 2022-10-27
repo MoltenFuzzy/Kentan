@@ -70,6 +70,7 @@ export const HomePage = ({ pageProps: { posts } }: PageProps) => {
 								<Post
 									key={index}
 									id={post._id}
+									author={post.author}
 									avatarImage={post.author.avatarImage}
 									username={post.author.name} // ! CHANGE THIS TO USERNAME LATER
 									body={post.body}
