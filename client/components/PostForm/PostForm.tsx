@@ -30,6 +30,12 @@ export const PostForm = () => {
 			return;
 		}
 
+		// TODO: ADD CHAR LIMIT CONSTANT
+		if (newPostInput.body.length > 500) {
+			setError("Post cannot be longer than 500 characters");
+			return;
+		}
+
 		// TODO: Add post fail handling
 		// when we create post it does return a post we can use to update the state
 		// ^ THIS WILL BE SLOWER SINCE WE HAVE TO WAIT FOR THE MUTATION TO FINISH
