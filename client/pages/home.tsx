@@ -43,16 +43,13 @@ export const HomePage = ({ pageProps: { posts } }: PageProps) => {
 	const { setId, setName, setEmail, setAvatar } = useUserStore((state) => state);
 	const [userId, setUserId] = useState(session?.user.id);
 	// we have the user id from the session, we can use that to fetch the user data and store it in the user store
-	const { data: { user: sessionUser } = {} } = useUserQuery<UserQuery>(gqlClient, {
+	const { data: { user: sessionUser } = {}, refetch } = useUserQuery<UserQuery>(gqlClient, {
 		userId: userId!,
 	});
 
 	useEffect(() => {
 		queryClient.invalidateQueries(["User"]);
 		setUserId(selectedUser);
-		console.log(session?.user.id);
-		console.log(sessionUser);
-		console.log(sessionUser?.followers?.includes(session?.user.id!)!);
 	}, [selectedUser]);
 
 	useEffect(() => {

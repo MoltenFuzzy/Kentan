@@ -44,13 +44,16 @@ export function ProfileCard({
 	const { id: currentUserId } = useUserStore((state) => state);
 	const { mutate: FollowUser } = useFollowUserMutation<FollowUserMutation, Error>(gqlClient);
 	const { mutate: UnfollowUser } = useUnfollowUserMutation<UnfollowUserMutation, Error>(gqlClient);
-	// const [isFollowing, setIsFollowing] = useState(isFollowingUser);
+	const [isFollowing, setIsFollowing] = useState(isFollowingUser);
 	const { classes, theme } = useStyles();
-	const router = useRouter();
 
-	// useEffect(() => {
-	// 	setIsFollowing(isFollowingUser);
-	// }, [isFollowingUser]);
+	useEffect(() => {
+		// update the isFollowing state to the isFollowingUser prop always
+		console.log("isFollowingUser", isFollowingUser);
+		// if current follow state is not equal to the follow state from the prop
+		// component state should always be equal to the prop
+		setIsFollowing(isFollowingUser);
+	}, [userId, isFollowingUser]); // if new userId is passed in, update the state
 
 	// const stats = [
 	// 	{ label: "Posts", value: "1" },
@@ -92,19 +95,16 @@ export function ProfileCard({
 					onClick={(e) => {
 						// https://stackoverflow.com/questions/13966734/child-element-click-event-trigger-the-parent-click-event
 						// e.stopPropagation();
-						console.log(currentUserId);
-						console.log(userId);
-						if (!isFollowingUser) {
+						if (!isFollowing) {
 							FollowUser({ userId: userId, followerId: currentUserId });
-							// setIsFollowing(true);
+							setIsFollowing(true);
 						} else {
 							UnfollowUser({ userId: userId, followerId: currentUserId });
-							// setIsFollowing(false);
+							setIsFollowing(false);
 						}
-						router.replace(router.asPath);
 					}}
 				>
-					{isFollowingUser ? "Unfollow" : "Follow"}
+					{isFollowing ? "Unfollow" : "Follow"}
 				</Button>
 			)}
 		</Card>

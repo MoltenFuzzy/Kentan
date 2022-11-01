@@ -36,6 +36,7 @@ export interface PostProps {
 	isLikedByThisUser: boolean;
 	commentsCount: number;
 	isOnClick?: boolean;
+	onClick?: () => void;
 }
 
 // TODO: add ... icon to the right of the post w/ a dropdown menu that has a delete option
@@ -49,6 +50,7 @@ export const Post = ({
 	isLikedByThisUser,
 	commentsCount,
 	isOnClick = true,
+	onClick,
 }: PostProps) => {
 	const { colorScheme, toggleColorScheme } = useMantineColorScheme();
 	const { mutate: DeletePost } = useDeletePostMutation<DeletePostMutation, Error>(gqlClient);
@@ -69,6 +71,7 @@ export const Post = ({
 				if (isOnClick) {
 					setSelectedPost(postId);
 					setSelectedUser(author?._id!);
+					onClick?.();
 				}
 			}}
 		>
