@@ -58,7 +58,7 @@ export class CommentResolver {
 
 		// add comment to post's comments ref array
 		await post.updateOne(
-			{ $push: { comments: comment._id } } //! CHECK IF CORRECT COMMENT ID IS ADDED
+			{ $inc: { commentsCount: 1 }, $push: { comments: comment._id } } //! CHECK IF CORRECT COMMENT ID IS ADDED
 		); // add comment to post
 		if (populate) {
 			await comment.populate("postId");
@@ -73,12 +73,13 @@ export class CommentResolver {
 
 	@Mutation(() => Boolean)
 	async deleteComment(@Arg("id", () => String) id: string) {
+		// TODO: Delete add comment references from comment when we add replies to comments
 		const comment = await CommentModel.findOneAndDelete({ _id: id });
 		// if comment is found, delete it and delete the comment from the post's comments ref array
 		if (comment) {
 			await PostModel.findOneAndUpdate(
 				{ _id: comment?.postId },
-				{ $pull: { comments: comment?._id } },
+				{ $inc: { commentsCount: -1 }, $pull: { comments: comment?._id } },
 				{ new: true }
 			);
 			return true;

@@ -64,7 +64,7 @@ export default NextAuth({
 });
 
 function AuthUser(user: User, account: Account) {
-	const sdk = getSdk(gqlClient);
+	const { ProviderAuthUser } = getSdk(gqlClient);
 	const variables = {
 		userInput: {
 			name: user.name!,
@@ -74,5 +74,5 @@ function AuthUser(user: User, account: Account) {
 			refreshToken: account.refresh_token,
 		},
 	};
-	return sdk.ProviderAuthUser(variables);
+	return ProviderAuthUser(variables);
 }

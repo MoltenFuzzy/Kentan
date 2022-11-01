@@ -46,7 +46,7 @@ export const Body = ({
 	const [isLiked, setIsLiked] = React.useState(isLikedByThisUser); //! NOTE: STATE NOT PERSISTED
 	const { id: userId } = useUserStore();
 	const router = useRouter();
-	const debouncedLike = useDebounce(isLiked, 500);
+	// const debouncedLike = useDebounce(isLiked, 500);
 
 	// https://stackoverflow.com/questions/54865764/react-usestate-does-not-reload-state-from-props
 	// essentially sync state with props

@@ -1,10 +1,13 @@
 import { Arg, Mutation, Query, Resolver } from "type-graphql";
 import { Post, CreatePostInput } from "../entities/post";
-import { PostModel } from "../entities/models";
+import { CommentModel, PostModel } from "../entities/models";
 import mongoose from "mongoose";
+import { UserModel } from "../entities/models";
 
 @Resolver()
 export class PostResolver {
+	// --------------------- QUERIES --------------------- //
+
 	@Query(() => Post, { nullable: true })
 	async postByPostId(
 		@Arg("postId") postId: string,
@@ -26,16 +29,29 @@ export class PostResolver {
 		// return await PostModel.find().populate("author._id");
 	}
 
+	// --------------------- MUTATIONS --------------------- //
+
 	@Mutation(() => Post)
 	async createPost(@Arg("PostInput") PostInput: CreatePostInput): Promise<Post | null> {
-		return await PostModel.create(PostInput);
+		const post = await PostModel.create(PostInput);
+		const update = { $inc: { postsCount: 1 }, $push: { posts: post._id } };
+		await UserModel.findById(PostInput.author._id, update);
+		return post;
 	}
 
 	@Mutation(() => Boolean)
 	async deletePost(@Arg("id", () => String) id: string): Promise<boolean> {
-		const post = await PostModel.deleteOne({ _id: id });
-		if (post) return true;
-		else return false;
+		const post = await PostModel.findByIdAndDelete(id);
+		// if post is not found, return false and throw an error
+		// if (!post) return { errors: [fieldError("post", "Post not found")] };
+		// update user's postsCount and post reference array
+		const update = { $inc: { postsCount: -1 }, $pull: { posts: post?._id } };
+		await UserModel.findById(post?.author._id, update);
+		// delete all comments associated with post
+		post?.comments.forEach(async (commentId) => {
+			await CommentModel.findByIdAndDelete(commentId);
+		});
+		return post ? true : false;
 	}
 
 	@Mutation(() => Boolean)
@@ -44,8 +60,7 @@ export class PostResolver {
 		@Arg("PostInput") PostInput: CreatePostInput
 	): Promise<boolean> {
 		const post = await PostModel.updateOne({ _id: id }, PostInput);
-		if (post) return true;
-		else return false;
+		return post ? true : false;
 	}
 
 	@Mutation(() => Post)

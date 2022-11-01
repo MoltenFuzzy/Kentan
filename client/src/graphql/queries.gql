@@ -84,6 +84,8 @@ query User($userId: String!) {
     username
     avatar
     email
+    followers
+    followersCount
   }
 }
 

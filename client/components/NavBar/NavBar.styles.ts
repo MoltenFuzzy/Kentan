@@ -3,7 +3,7 @@ import { createStyles } from "@mantine/core";
 export default createStyles((theme) => ({
 	header: {
 		boxShadow: "0 2px 4px 0 rgba(0,0,0,.3)",
-		backgroundColor: theme.colorScheme === "dark" ? "#333333" : theme.colors.gray[0],
+		backgroundColor: theme.colorScheme === "dark" ? "#181515" : theme.colors.gray[0],
 	},
 
 	container: {

@@ -92,9 +92,13 @@ export type Mutation = {
   deleteComment: Scalars['Boolean'];
   deletePost: Scalars['Boolean'];
   deleteUser: Scalars['Boolean'];
+  /** followerId is the user that is following the user */
+  followUser: Scalars['Boolean'];
   likePost: Post;
   loginUser: LoginResponse;
   providerAuthUser: Scalars['ID'];
+  /** followerId is the user that is following the user */
+  unfollowUser: Scalars['Boolean'];
   unlikePost: Post;
   updateComment: Comment;
   updatePost: Scalars['Boolean'];
@@ -132,6 +136,12 @@ export type MutationDeleteUserArgs = {
 };
 
 
+export type MutationFollowUserArgs = {
+  followerId: Scalars['String'];
+  userId: Scalars['String'];
+};
+
+
 export type MutationLikePostArgs = {
   id: Scalars['String'];
   userId: Scalars['String'];
@@ -146,6 +156,12 @@ export type MutationLoginUserArgs = {
 
 export type MutationProviderAuthUserArgs = {
   UserInput: AuthUserInput;
+};
+
+
+export type MutationUnfollowUserArgs = {
+  followerId: Scalars['String'];
+  userId: Scalars['String'];
 };
 
 
@@ -240,9 +256,17 @@ export type User = {
   __typename?: 'User';
   _id: Scalars['ID'];
   avatar: Scalars['String'];
+  /** user's background image */
+  banner?: Maybe<Scalars['String']>;
   createdAt: Scalars['DateTime'];
   email: Scalars['String'];
+  followers?: Maybe<Array<Scalars['ID']>>;
+  followersCount: Scalars['Float'];
+  following?: Maybe<Array<Scalars['ID']>>;
+  followingCount: Scalars['Float'];
   name: Scalars['String'];
+  posts?: Maybe<Array<Scalars['ID']>>;
+  postsCount: Scalars['Float'];
   updatedAt: Scalars['DateTime'];
   username?: Maybe<Scalars['String']>;
 };
@@ -313,6 +337,22 @@ export type DeleteCommentMutationVariables = Exact<{
 
 export type DeleteCommentMutation = { __typename?: 'Mutation', deleteComment: boolean };
 
+export type FollowUserMutationVariables = Exact<{
+  userId: Scalars['String'];
+  followerId: Scalars['String'];
+}>;
+
+
+export type FollowUserMutation = { __typename?: 'Mutation', followUser: boolean };
+
+export type UnfollowUserMutationVariables = Exact<{
+  userId: Scalars['String'];
+  followerId: Scalars['String'];
+}>;
+
+
+export type UnfollowUserMutation = { __typename?: 'Mutation', unfollowUser: boolean };
+
 export type PostByPostIdQueryVariables = Exact<{
   postId: Scalars['String'];
   populateComments: Scalars['Boolean'];
@@ -345,7 +385,7 @@ export type UserQueryVariables = Exact<{
 }>;
 
 
-export type UserQuery = { __typename?: 'Query', user?: { __typename?: 'User', _id: string, name: string, username?: string | null, avatar: string, email: string } | null };
+export type UserQuery = { __typename?: 'Query', user?: { __typename?: 'User', _id: string, name: string, username?: string | null, avatar: string, email: string, followers?: Array<string> | null, followersCount: number } | null };
 
 export type UsersQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -440,6 +480,16 @@ export const DeleteCommentDocument = gql`
   deleteComment(id: $deleteCommentId)
 }
     `;
+export const FollowUserDocument = gql`
+    mutation FollowUser($userId: String!, $followerId: String!) {
+  followUser(userId: $userId, followerId: $followerId)
+}
+    `;
+export const UnfollowUserDocument = gql`
+    mutation UnfollowUser($userId: String!, $followerId: String!) {
+  unfollowUser(userId: $userId, followerId: $followerId)
+}
+    `;
 export const PostByPostIdDocument = gql`
     query PostByPostId($postId: String!, $populateComments: Boolean!) {
   postByPostId(postId: $postId, populateComments: $populateComments) {
@@ -530,6 +580,8 @@ export const UserDocument = gql`
     username
     avatar
     email
+    followers
+    followersCount
   }
 }
     `;
@@ -620,6 +672,12 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
     },
     DeleteComment(variables: DeleteCommentMutationVariables, requestHeaders?: Dom.RequestInit["headers"]): Promise<DeleteCommentMutation> {
       return withWrapper((wrappedRequestHeaders) => client.request<DeleteCommentMutation>(DeleteCommentDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'DeleteComment', 'mutation');
+    },
+    FollowUser(variables: FollowUserMutationVariables, requestHeaders?: Dom.RequestInit["headers"]): Promise<FollowUserMutation> {
+      return withWrapper((wrappedRequestHeaders) => client.request<FollowUserMutation>(FollowUserDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'FollowUser', 'mutation');
+    },
+    UnfollowUser(variables: UnfollowUserMutationVariables, requestHeaders?: Dom.RequestInit["headers"]): Promise<UnfollowUserMutation> {
+      return withWrapper((wrappedRequestHeaders) => client.request<UnfollowUserMutation>(UnfollowUserDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'UnfollowUser', 'mutation');
     },
     PostByPostId(variables: PostByPostIdQueryVariables, requestHeaders?: Dom.RequestInit["headers"]): Promise<PostByPostIdQuery> {
       return withWrapper((wrappedRequestHeaders) => client.request<PostByPostIdQuery>(PostByPostIdDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'PostByPostId', 'query');

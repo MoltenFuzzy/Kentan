@@ -25,6 +25,7 @@ import { useRouter } from "next/router";
 import useUserStore from "stores/user";
 import useDebounce from "hooks/useDebounce";
 import { Body } from "components/Body/Body";
+import useAppStore from "stores/app";
 export interface PostProps {
 	id: string;
 	author?: NonNullable<PostByPostIdQuery["postByPostId"]>["author"];
@@ -51,6 +52,7 @@ export const Post = ({
 }: PostProps) => {
 	const { colorScheme, toggleColorScheme } = useMantineColorScheme();
 	const { mutate: DeletePost } = useDeletePostMutation<DeletePostMutation, Error>(gqlClient);
+	const { setSelectedPost, setSelectedUser } = useAppStore();
 	const router = useRouter();
 
 	const handleDelete = () => {
@@ -61,14 +63,14 @@ export const Post = ({
 
 	return (
 		<Stack
-			className={`bg-bgPost p-6 ${isOnClick ? "post-border" : "post-border-plain"}`}
+			className={`bg-bgPost p-6 ${isOnClick ? "post-border cursor-pointer" : "post-border-plain"}`}
 			spacing={7}
-			// onClick={() => {
-			// 	// prevents pushing to undefined route on the post page
-			// 	if (isOnClick) {
-			// 		router.push(`post/${postId}`);
-			// 	}
-			// }}
+			onClick={() => {
+				if (isOnClick) {
+					setSelectedPost(postId);
+					setSelectedUser(author?._id!);
+				}
+			}}
 		>
 			<Body
 				id={postId}

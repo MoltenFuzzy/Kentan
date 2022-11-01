@@ -5,6 +5,7 @@ import { prop as Property, getModelForClass } from "@typegoose/typegoose";
 import { Field, ObjectType, InputType, ID } from "type-graphql";
 import { IsEmail, MaxLength, MinLength } from "class-validator";
 import { ObjectId } from "mongodb";
+import { Post } from "./post";
 
 @ObjectType()
 export class User {
@@ -30,6 +31,34 @@ export class User {
 	@Property({ nullable: true })
 	avatar?: string;
 
+	@Field({ nullable: true, description: "user's background image" })
+	@Property({ nullable: true, default: "" })
+	banner: string;
+
+	@Field((type) => [ID], { nullable: true })
+	@Property({ type: ObjectId, required: true })
+	posts: ObjectId[];
+
+	@Field()
+	@Property({ default: 0 })
+	postsCount: number;
+
+	@Field((type) => [ID], { nullable: true })
+	@Property({ type: ObjectId, required: true })
+	followers: ObjectId[];
+
+	@Field()
+	@Property({ default: 0 })
+	followersCount: number;
+
+	@Field((type) => [ID], { nullable: true })
+	@Property({ type: ObjectId, required: true })
+	following: ObjectId[];
+
+	@Field()
+	@Property({ default: 0 })
+	followingCount: number;
+
 	// @Property()
 	// refreshToken!: string;
 
@@ -39,10 +68,6 @@ export class User {
 	@Field((type) => Date)
 	readonly updatedAt: Date;
 }
-
-export const UserModel = getModelForClass(User, {
-	schemaOptions: { timestamps: true },
-}); // UserModel is a regular Mongoose Model with correct types
 
 @InputType()
 export class CreateUserInput {

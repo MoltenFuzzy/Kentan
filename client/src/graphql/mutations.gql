@@ -60,3 +60,11 @@ mutation CreateComment($commentInput: CreateCommentInput!, $populate: Boolean) {
 mutation DeleteComment($deleteCommentId: String!) {
   deleteComment(id: $deleteCommentId)
 }
+
+mutation FollowUser($userId: String!, $followerId: String!) {
+  followUser(userId: $userId, followerId: $followerId)
+}
+
+mutation UnfollowUser($userId: String!, $followerId: String!) {
+  unfollowUser(userId: $userId, followerId: $followerId)
+}
